@@ -1,0 +1,90 @@
+#include <cassert>
+#include <ctime>
+#include <cmath>
+#include <string>
+using std::string;
+#include <iomanip>
+using std::setprecision;
+using std::setw;
+#include <iostream>
+using std::cout;
+using std::endl;
+#include <string>
+using std::string;
+using std::to_string;
+#include <vector>
+using std::vector;
+#include <fstream>
+#include <ctime>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sstream>
+
+
+#include "grid_data.hpp"
+#include "field.hpp"
+#include "solve_metric_fields.hpp"
+#include "initial_data.hpp"
+#include "diagnostics.hpp"
+#include "evolve_scalar_field.hpp"
+#include "outputfiles.hpp"
+
+int main(int argc, char const *argv[]) {
+  /*-----Creating Directory For Output--------*/
+  std::time_t t_path = std::time(0);
+  std::tm *path_time = std::localtime(&t_path);
+
+  string path = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/writing-my-own-code-only-r/output/" + to_string(path_time->tm_mday) +"_"+to_string(path_time->tm_hour)+ "_"+to_string(path_time->tm_min)+"_"+to_string(path_time->tm_sec) ;
+  char* path_arr;
+  path_arr = &path[0];
+  int rc = mkdir(path_arr, 0755);
+  /*----------------------------------------*/
+  Write_data write(path);
+
+  Grid_data grid(3571, 5500,0); //Generate grid with nx, nt and exci
+
+  write.write_grid(grid); //Write grid to file
+
+  double M = 0.; //Starting simulation with Minkowski space so M=0
+
+  //Initializing Field objects for the simulation
+  Field s("shift","odd",grid);
+  Field n("lapse", "even", grid);
+  Field p("dt_phi", "even", grid);
+  Field q("dr_phi", "odd", grid);
+  Field phi("phi", "even", grid);
+
+  //Initialize Evolution classes
+  Evolve_scalar_field evolve_scalar_field;
+  Solve_metric_fields solve_metric;
+  //Initialize Initial_data class
+  Initial_data initialdata(0.25,20.5,13.0, M);
+  //Initialize diagonistics class
+  Diagnostics diagnostics;
+  //============================================================================
+
+  initialdata.set_Minkowski(grid,  n, s, p, q, phi); //Set initial data
+  write.write_fields(n, s , p ,q, phi);
+
+
+  diagnostics.find_apparent_horizon(grid,s); //Check if apparent horizon is present in initial data
+  solve_metric.solve( grid, n, s , p ,q); //Solve for metric fields
+  write.write_fields(n, s , p ,q, phi); //Write data to file
+  diagnostics.find_apparent_horizon(grid,s); //Check if apparent horizon is present
+
+  int i_e = 0;
+  while(i_e<grid.nt){
+
+  evolve_scalar_field.evolve(grid, n, s, p, q, phi);
+
+
+  grid.update_t();
+
+  solve_metric.solve( grid, n, s , p ,q);
+  write.write_fields(n, s , p ,q, phi);
+
+  diagnostics.find_apparent_horizon(grid,s);
+  i_e += 1;
+}
+  return 0;
+}
