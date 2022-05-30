@@ -28,20 +28,21 @@ using std::vector;
 #include "diagnostics.hpp"
 #include "evolve_scalar_field.hpp"
 #include "outputfiles.hpp"
+#include "compute_potentials.hpp"
 
 int main(int argc, char const *argv[]) {
   /*-----Creating Directory For Output--------*/
   std::time_t t_path = std::time(0);
   std::tm *path_time = std::localtime(&t_path);
 
-  string path = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/writing-my-own-code-only-r/output/" + to_string(path_time->tm_mday) +"_"+to_string(path_time->tm_hour)+ "_"+to_string(path_time->tm_min)+"_"+to_string(path_time->tm_sec) ;
+  string path = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/" + to_string(path_time->tm_mday) +"_"+to_string(path_time->tm_hour)+ "_"+to_string(path_time->tm_min)+"_"+to_string(path_time->tm_sec) ;
   char* path_arr;
   path_arr = &path[0];
   int rc = mkdir(path_arr, 0755);
   /*----------------------------------------*/
   Write_data write(path);
 
-  Grid_data grid(3571, 5500,0); //Generate grid with nx, nt and exci
+  Grid_data grid(3571, 5500,20.,0.1); //Generate grid with nx, nt and exci
 
   write.write_grid(grid); //Write grid to file
 
@@ -58,7 +59,7 @@ int main(int argc, char const *argv[]) {
   Evolve_scalar_field evolve_scalar_field;
   Solve_metric_fields solve_metric;
   //Initialize Initial_data class
-  Initial_data initialdata(0.25,20.5,13.0, M);
+  Initial_data initialdata(1e-8,20.5,13.0, M);
   //Initialize diagonistics class
   Diagnostics diagnostics;
   //============================================================================
@@ -68,10 +69,10 @@ int main(int argc, char const *argv[]) {
 
 
   diagnostics.find_apparent_horizon(grid,s); //Check if apparent horizon is present in initial data
-  solve_metric.solve( grid, n, s , p ,q); //Solve for metric fields
+  solve_metric.solve( grid, n, s , p ,q,phi); //Solve for metric fields
   write.write_fields(n, s , p ,q, phi); //Write data to file
   diagnostics.find_apparent_horizon(grid,s); //Check if apparent horizon is present
-
+//
   int i_e = 0;
   while(i_e<grid.nt){
 
@@ -80,7 +81,7 @@ int main(int argc, char const *argv[]) {
 
   grid.update_t();
 
-  solve_metric.solve( grid, n, s , p ,q);
+  solve_metric.solve( grid, n, s , p ,q,phi);
   write.write_fields(n, s , p ,q, phi);
 
   diagnostics.find_apparent_horizon(grid,s);

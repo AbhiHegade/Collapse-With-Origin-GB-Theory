@@ -47,12 +47,13 @@ void Field::check_field_isfinite(
    size_t index=0; //int index = 0  also works.
    for (auto x: vec) {
       if (!isfinite(x)) {
-         cout<<"NaN("<<endl;
+         cout<<"NaN( "<<endl;
          cout<<name<<" ";
          cout<<level<<" ";
          cout<<"time =  "<<time;
+         cout<<" "<<endl;
          cout<<"index =  "<<index;
-         cout<<endl;
+         cout<<" )"<<endl;
          std::exit(0);
       }
       index++;

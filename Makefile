@@ -32,8 +32,9 @@ OBJ= $(addprefix $(OBJDIR), \
 	evolve_scalar_field.o \
 	outputfiles.o \
 	fd_stencils.o	\
+	compute_potentials.o \
 	)
-DEPS=		grid_data.hpp	field.hpp solve_metric_fields.hpp	initial_data.hpp	diagnostics.hpp evolve_scalar_field.hpp	outputfiles.hpp	fd_stencils.hpp
+DEPS=		grid_data.hpp	field.hpp solve_metric_fields.hpp	initial_data.hpp	diagnostics.hpp evolve_scalar_field.hpp	outputfiles.hpp	fd_stencils.hpp compute_potentials.hpp
 #=============================================================================
 all: default.run
 test: $(TEST)

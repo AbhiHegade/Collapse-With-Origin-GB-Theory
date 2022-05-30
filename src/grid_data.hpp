@@ -7,7 +7,7 @@
 class Grid_data{
 public:
   /*----Constructor-----------------------------------------------------------*/
-  Grid_data(const int nx,const int nt,int exc_i = 0 ,const double xl = 0.,const double cl = 100.0, double t_evolve = 0.0, const double cfl = 0.2 );
+  Grid_data(const int nx,const int nt, const double l,int exc_i = 0 ,const double xl = 0.,const double cl = 100.0, double t_evolve = 0.0, const double cfl = 0.2 );
   /*----Destructor------------------------------------------------------------*/
   ~Grid_data(void);
   //----------------------------------------------------------------------------
@@ -24,6 +24,7 @@ public:
   double t_evolve; // Evolution Time
   const double dt;
   const int nt;
+  const double l; //Coupling constant for Gauss Bonnet Term
 
   void update_t();
 

@@ -12,7 +12,7 @@ using std::vector;
 
 #include "grid_data.hpp"
 //==============================================================================
-Grid_data::Grid_data( const int nx,const int nt,int exc_i ,const double xl ,const double cl, double t_evolve, const double cfl )
+Grid_data::Grid_data( const int nx,const int nt, const double l, int exc_i ,const double xl ,const double cl, double t_evolve, const double cfl )
 : nx{nx},
   exc_i{exc_i},
   xl{xl},
@@ -24,7 +24,8 @@ Grid_data::Grid_data( const int nx,const int nt,int exc_i ,const double xl ,cons
   dr(nx,0.),
   t_evolve{t_evolve},
   dt{cfl*dx},
-  nt{nt}
+  nt{nt},
+  l{l}
   {
     x[0] = dx;
     r[0] = r_of_x(x[0]);

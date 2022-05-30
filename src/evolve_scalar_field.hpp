@@ -9,6 +9,7 @@
 #include "grid_data.hpp"
 #include "solve_metric_fields.hpp"
 #include "fd_stencils.hpp"
+#include "compute_potentials.hpp"
 
 class Evolve_scalar_field{
 public:
@@ -40,13 +41,15 @@ private:
   double rhs_p(double r, double nn, double r_Der_nn,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
-  double Q, double r_Der_Q);
+  double Q, double r_Der_Q,
+  double Bep, double Bepp );
   //============================================================================
   /* ds/dt = rhs_s_free, only used if excising. */
   double rhs_s_free(double r, double nn, double r_Der_nn,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
-  double Q, double r_Der_Q);
+  double Q, double r_Der_Q,
+  double Bep, double Bepp);
   //============================================================================
   /* KO filter */
   void KO_filter(const Grid_data grid,
@@ -58,12 +61,12 @@ private:
     std::vector<double> &dqdt,
     std::vector<double> &dphidt);
   //============================================================================
-  void generate_rhs_excised(const Grid_data grid,
-    const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v,
-    double &dsdt,
-    std::vector<double> &dpdt,
-    std::vector<double> &dqdt,
-    std::vector<double> &dphidt);
+  // void generate_rhs_excised(const Grid_data grid,
+  //   const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v,
+  //   double &dsdt,
+  //   std::vector<double> &dpdt,
+  //   std::vector<double> &dqdt,
+  //   std::vector<double> &dphidt);
   //============================================================================
   //============================================================================
   //============================================================================
