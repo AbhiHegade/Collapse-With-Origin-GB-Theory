@@ -181,11 +181,11 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
       double nn = 0.,rr_Der_nn = 0., ss=0., P = 0., rr_Der_P = 0, Q=0.;
 
       nn = n_v.v[i]; r_Der_nn = 0.; rr_Der_nn = (2.*n_v.v[i+1] - 2.*n_v.v[i])/(pow(dr[i],2.));
-      ss = 0.; r_Der_ss = s_v.v[i+1]/dr[i];
+      ss = s_v.v[i]; r_Der_ss = s_v.v[i+1]/dr[i];
 
       P = p_v.v[i]; r_Der_P = 0.; rr_Der_P = (2.*p_v.v[i+1] - 2.*p_v.v[i])/(pow(dr[i],2.));
 
-      Q =0.; r_Der_Q = q_v.v[i+1]/dr[i];
+      Q = q_v.v[i]; r_Der_Q = q_v.v[i+1]/dr[i];
 
 
       Bep = beta_p(l, phi_v.v[i]);

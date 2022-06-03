@@ -14,13 +14,13 @@ double beta_pp(const double l, const double phi){
   return 0;
 }
 
-double solve_cubic_eqn(double a0, double a1, double a2, double init_guess){
+double solve_cubic_eqn(double a0, double a1, double a2, double a3, double init_guess){
   double guess = init_guess;
-  double tol = 1e-5;
-  double err = a0 + a1*guess + a2*pow(guess,2.) + pow(guess,3.);
+  double tol = 1e-10;
+  double err = a0 + a1*guess + a2*pow(guess,2.) + a3*pow(guess,3.);
   while(fabs(err)>tol){
-    guess = guess - ((a0 + a1*guess + a2*pow(guess,2.) + pow(guess,3.))/(a1 + 2.*a2*guess + 3.*pow(guess,2.)));
-    err = a0 + a1*guess + a2*pow(guess,2.) + pow(guess,3.);
+    guess = guess - ((a0 + a1*guess + a2*pow(guess,2.) + a3*pow(guess,3.))/(a1 + 2.*a2*guess + 3.*a3*pow(guess,2.)));
+    err = a0 + a1*guess + a2*pow(guess,2.) + a3*pow(guess,3.);
   }
   return guess;
 

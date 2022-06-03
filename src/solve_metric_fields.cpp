@@ -52,13 +52,11 @@ double Solve_metric_fields::rhs_lapse(double r,
     ;
   }
 
-//NEED TO UPDATE THE SOLVE SHIFT WITH NEW EQUATIONS AND THE BOUNDARY CONDITION WITH CUBIC EQUATION
 //==================================================================================
 //RK2 evolution for shift. The value at the excision point will be determined later.
 //==================================================================================
 void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Field &p_v, const Field &q_v, const Field &phi_v){
-  // assert(fabs(s_v.rbval)<1e-10);
-  // double dx = grid.dx;
+
   double nx = grid.nx;
   int exc_i = grid.exc_i;
   vector<double> dr = grid.dr;
@@ -70,25 +68,42 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
   double savg = 0., pavg = 0., qavg = 0.,derPavg = 0., derQavg = 0., Bepavg = 0., Beppavg=0.;
 
   if(exc_i==0){
+    //NEED TO CHANGE THIS
     {
       int i = exc_i;
       Bep_i = beta_p(l, phi_v.v[i]);
-      if((fabs(p_v.v[i]*Bep_i)>1e-10)){
-        double q1 = 2*(q_v.v[i+1]/dr[i]);
-        double a0 = p_v.v[i]/(48.*Bep_i); double a1 = 0.; double a2 = -(-8.*q1 + 1./Bep_i)/(8.*p_v.v[i]);
-        s_v.v[i] = solve_cubic_eqn(a0, a1, a2)*r[i];
+      if(fabs(l)< 1e-5){
+
+        if(fabs(p_v.v[i])>1e-10){
+          s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*r[i];
+        }
+        else{
+          s_v.v[exc_i] = 1e-10;
+        }
+
+      }
+
+      else {
+        if((fabs(p_v.v[i]*Bep_i)>1e-10)){
+        double q1 = (q_v.v[i+1]/dr[i]);
+        double a0 = pow(p_v.v[i],2.);
+        double a1 = 0.;
+        double a2 = (-6. + 48.*q1*Bep_i);
+        double a3 = 48.*p_v.v[i]*Bep_i;
+        s_v.v[i] = fabs(solve_cubic_eqn(a0, a1, a2, a3,(fabs(p_v.v[i])/(pow(6.,0.5)))))*r[i];
 
       }
       else{
         s_v.v[i] = 1e-10;
       }
     }
+    }
     {
       int i = exc_i;
       r_Der_P_i = 0.;
       r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
 
-      r_Der_Q_i = 2*q_v.v[i+1]/dr[i];
+      r_Der_Q_i = q_v.v[i+1]/dr[i];
       r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
 
       Bep_i = beta_p(l, phi_v.v[i]);
@@ -189,7 +204,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       r_Der_P_i = 0.;
       r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
 
-      r_Der_Q_i = 2*q_v.v[i+1]/dr[i];
+      r_Der_Q_i = q_v.v[i+1]/dr[i];
       r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
 
       Bep_i = beta_p(l, phi_v.v[i]);

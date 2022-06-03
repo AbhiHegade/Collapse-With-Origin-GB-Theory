@@ -13,6 +13,7 @@ using std::string;
 #include "field.hpp"
 #include "grid_data.hpp"
 #include "diagnostics.hpp"
+#include "compute_potentials.hpp"
 //==============================================================================
 Diagnostics::Diagnostics(){
 
@@ -57,7 +58,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
     int index = 0;
     const double err_tol= 1e-3;
 
-    find_abs_min(s_v.v,min_elem,index,1.1);
+    find_abs_min(s_v.v,min_elem,index,1.01);
     // cout<<"Minimum = "<<min_elem<<endl;
 
     if (min_elem<err_tol){
@@ -139,6 +140,149 @@ double &ingoing_c, double &outgoing_c){
 
 }
 //==============================================================================
+void Diagnostics::check_for_elliptic_region(Grid_data &grid,
+  const Field &n_v, const Field &s_v,
+  const Field &p_v, const Field &q_v,
+  const Field &phi_v, vector<double> &ingoing, vector<double> &outgoing){
+
+    vector<double> r = grid.r;
+    int nx = grid.nx;
+    vector<double> dr = grid.dr;
+    double l = grid.l;
+    double ingoing_c=0., outgoing_c=0.;
+    if(grid.exc_i==0){
+   /*---------------------------------------------------------------------------*/
+   /* r=0 */
+      {
+        int i = grid.exc_i;
+
+        double Bep=  beta_p(l, phi_v.v[i]);
+        double Bepp= beta_pp(l, phi_v.v[i]);
+
+        double r_Der_nn=0. ;
+        double r_Der_ss= s_v.v[i+1]/dr[i];
+        double r_Der_P= 0.;
+        double r_Der_Q= q_v.v[i+1]/dr[i];
+
+        int status= compute_radial_characteristic(r[i],
+        n_v.v[i], r_Der_nn,
+        s_v.v[i], r_Der_ss,
+        p_v.v[i], r_Der_P,
+        q_v.v[i], r_Der_Q,
+        Bep, Bepp,
+        ingoing_c, outgoing_c);
+
+        if (status==-1) {
+          cout<<"naked_elliptic_region at r = "<<r[i]<<" , t = "<<grid.t_evolve<<endl;
+          std::exit(0);
+        }
+        ingoing[i]=   ingoing_c;
+        outgoing[i]= outgoing_c;
+      }
+   /*---------------------------------------------------------------------------*/
+   /* interior */
+      for (int i=grid.exc_i + 1; i<nx-2; ++i) {
+        double Bep=  beta_p(l, phi_v.v[i]);
+        double Bepp= beta_pp(l, phi_v.v[i]);
+
+        double r_Der_nn= (n_v.v[i+1] - n_v.v[i-1])/(2.*dr[i]) ;
+        double r_Der_ss= (s_v.v[i+1] - s_v.v[i-1])/(2.*dr[i]);
+        double r_Der_P= (p_v.v[i+1] - p_v.v[i-1])/(2.*dr[i]);
+        double r_Der_Q= (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
+
+        int status= compute_radial_characteristic(r[i],
+        n_v.v[i], r_Der_nn,
+        s_v.v[i], r_Der_ss,
+        p_v.v[i], r_Der_P,
+        q_v.v[i], r_Der_Q,
+        Bep, Bepp,
+        ingoing_c, outgoing_c);
+
+        if (status==-1) {
+          cout<<"naked_elliptic_region at r = "<<r[i]<<" , t = "<<grid.t_evolve<<endl;
+          std::exit(0);
+        }
+        ingoing[i]=   ingoing_c;
+        outgoing[i]= outgoing_c;
+
+      }
+    }
+
+    else{
+        int new_exc_i = grid.exc_i;
+      {
+        int i = grid.exc_i;
+
+        double Bep=  beta_p(l, phi_v.v[i]);
+        double Bepp= beta_pp(l, phi_v.v[i]);
+
+        double r_Der_nn= (-3.*n_v.v[i] + 4.*n_v.v[i+1] -n_v.v[i+2])/(2.*dr[i]) ;
+        double r_Der_ss= (-3.*s_v.v[i] + 4.*s_v.v[i+1] -s_v.v[i+2])/(2.*dr[i]);
+        double r_Der_P= (-3.*p_v.v[i] + 4.*p_v.v[i+1] -p_v.v[i+2])/(2.*dr[i]);
+        double r_Der_Q= (-3.*q_v.v[i] + 4.*q_v.v[i+1] -q_v.v[i+2])/(2.*dr[i]);
+
+        int status= compute_radial_characteristic(r[i],
+        n_v.v[i], r_Der_nn,
+        s_v.v[i], r_Der_ss,
+        p_v.v[i], r_Der_P,
+        q_v.v[i], r_Der_Q,
+        Bep, Bepp,
+        ingoing_c, outgoing_c);
+
+        if (status==-1) {
+          new_exc_i += 1;
+        }
+        ingoing[i]=   ingoing_c;
+        outgoing[i]= outgoing_c;
+      }
+   /*---------------------------------------------------------------------------*/
+   /* interior */
+      for (int i=grid.exc_i + 1; i<nx-2; ++i) {
+
+        double Bep=  beta_p(l, phi_v.v[i]);
+        double Bepp= beta_pp(l, phi_v.v[i]);
+
+        double r_Der_nn= (n_v.v[i+1] - n_v.v[i-1])/(2.*dr[i]) ;
+        double r_Der_ss= (s_v.v[i+1] - s_v.v[i-1])/(2.*dr[i]);
+        double r_Der_P= (p_v.v[i+1] - p_v.v[i-1])/(2.*dr[i]);
+        double r_Der_Q= (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
+
+        int status= compute_radial_characteristic(r[i],
+        n_v.v[i], r_Der_nn,
+        s_v.v[i], r_Der_ss,
+        p_v.v[i], r_Der_P,
+        q_v.v[i], r_Der_Q,
+        Bep, Bepp,
+        ingoing_c, outgoing_c);
+
+        if (status==-1) {
+          new_exc_i += 1;
+        }
+        ingoing[i]=   ingoing_c;
+        outgoing[i]= outgoing_c;
+
+      }
+      grid.exc_i= new_exc_i;
+
+      if (outgoing[grid.exc_i + 1]>0) {
+         cout<<"naked_elliptic_region, t = "<<grid.t_evolve<<endl;
+         std::exit(0);
+      }
+
+    }
+
+      return;
+
+
+
+
+
+
+
+
+    }
+
+
 //==============================================================================
 //==============================================================================
 //==============================================================================

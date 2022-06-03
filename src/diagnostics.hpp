@@ -16,22 +16,28 @@ public:
      ~Diagnostics(void);
   /*---------------------------------------------------------------------------*/
   void find_apparent_horizon(Grid_data &grid, Field &s_v);
-  /* NEED TO ADD,
-  1) CHARACTERISTIC FINDER,
-  2) INDEPENDENT RESIDUAL FINDER
-  3) NULL - CONVERGENCE CHECK
-  4) EFFECTIVE METRIC */
+  /*---------------------------------------------------------------------------*/
+  void check_for_elliptic_region(Grid_data &grid,
+  const Field  &n_v, const Field &s_v,
+  const Field  &p_v, const Field  &q_v,
+  const Field  &phi_v,
+  std::vector<double> &ingoing,
+  std::vector<double> &outgoing);
+  /*---------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------*/
 
 
 private:
   void find_abs_min(const vector<double> &v, double &min_elem, int &index, const double ref_val);
-};
+
   int compute_radial_characteristic(double r, double nn, double r_Der_nn,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
   double Q, double r_Der_Q,
   double Bep, double Bepp,
   double &ingoing_c, double &outgoing_c);
+
+  };
 
 
 

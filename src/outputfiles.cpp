@@ -4,6 +4,8 @@ using std::endl;
 #include <string>
 using std::string;
 #include <fstream>
+#include <vector>
+using std::vector;
 
 #include "outputfiles.hpp"
 #include "grid_data.hpp"
@@ -68,5 +70,37 @@ void Write_data::write_fields(const Field &n, const Field &s, const Field &p, co
   write_field(p);
   write_field(q);
   write_field(phi);
+
+}
+
+void Write_data::write_characteristics(const vector<double> &ingoing, const vector<double> &outgoing){
+  string namein = path + "ingoing" + ".dat";
+  string nameout = path + "outgoing" +".dat";
+  std::ofstream write_output_in(namein , std::ios::app);
+  assert(write_output_in.is_open());
+  write_output_in.precision(10);
+  int nx = ingoing.size();
+
+  for(int i = 0; i<nx - 1; i++ ){
+    write_output_in<<ingoing[i]<<",";
+  }
+  write_output_in<<ingoing[nx-1]<<"\n";
+
+  write_output_in.flush();
+  write_output_in.close();
+
+  std::ofstream write_output_out(nameout , std::ios::app);
+  assert(write_output_out.is_open());
+  write_output_out.precision(10);
+  nx = outgoing.size();
+
+  for(int i = 0; i<nx - 1; i++ ){
+    write_output_out<<outgoing[i]<<",";
+  }
+  write_output_out<<outgoing[nx-1]<<"\n";
+
+  write_output_out.flush();
+  write_output_out.close();
+
 
 }
