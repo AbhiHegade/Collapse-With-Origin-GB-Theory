@@ -27,7 +27,7 @@ Grid_data::Grid_data( const int nx,const int nt, const double l, int exc_i ,cons
   nt{nt},
   l{l}
   {
-    x[0] = dx;
+    x[0] = dx/4.;
     r[0] = r_of_x(x[0]);
     dr[0] = r_p_of_x(x[0])*dx;
   for(int j = 1; j<nx-1; j++){

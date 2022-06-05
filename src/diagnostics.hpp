@@ -23,6 +23,14 @@ public:
   const Field  &phi_v,
   std::vector<double> &ingoing,
   std::vector<double> &outgoing);
+
+  void compute_e_rr_residual(Grid_data &grid,
+  const std::vector<double> &n_v,
+  const std::vector<double> &s_v,
+  const std::vector<double> &p_v, const std::vector<double>  &q_v,
+  const std::vector<double> &phi_v,
+  const std::vector<double> &s_v_np1, const std::vector<double> &p_v_np1,
+  std::vector<double> &residual);
   /*---------------------------------------------------------------------------*/
   /*---------------------------------------------------------------------------*/
 
@@ -37,7 +45,16 @@ private:
   double Bep, double Bepp,
   double &ingoing_c, double &outgoing_c);
 
+  double e_rr_residual(double r, double nn, double r_Der_nn,
+  double ss, double r_Der_ss,
+  double P, double r_Der_P,
+  double Q, double r_Der_Q,
+  double Bep, double Bepp,
+  double t_Der_ss, double t_Der_P);
+
   };
+
+
 
 
 

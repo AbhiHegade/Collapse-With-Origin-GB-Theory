@@ -42,7 +42,7 @@ int main(int argc, char const *argv[]) {
   /*----------------------------------------*/
   Write_data write(path);
 
-  Grid_data grid(3571, 5500,2.); //Generate grid with nx, nt, l and exci
+  Grid_data grid(3000, 4500, 2); //Generate grid with nx, nt, l and exci
 
   write.write_grid(grid); //Write grid to file
 
@@ -59,16 +59,37 @@ int main(int argc, char const *argv[]) {
   Evolve_scalar_field evolve_scalar_field;
   Solve_metric_fields solve_metric;
   //Initialize Initial_data class
-  Initial_data initialdata(2.,20.5,13.0, M);
+  Initial_data initialdata(0.05,10.5,8.0, M);
   //Initialize diagonistics class
   Diagnostics diagnostics;
+  //============================================================================
+  vector<double> residual(grid.nx,0 );
+  vector<double> n_nm1(grid.nx,0);
+  vector<double> s_nm1(grid.nx,0);
+  vector<double> p_nm1(grid.nx,0);
+  vector<double> q_nm1(grid.nx,0);
+  vector<double> phi_nm1(grid.nx,0);
   //============================================================================
   vector<double> ingoing(grid.nx,0);
   vector<double> outgoing(grid.nx,0);
 
-  initialdata.set_Minkowski(grid,  n, s, p, q, phi); //Set initial data
-  write.write_fields(n, s , p ,q, phi);
+  //============================================================================
+  /* Simulation Parameters */
 
+  cout<<"Simulation Parameters"<<"\n"<<"--------------------------------------"<<endl;
+  cout<<"Saving file at : "<<path<<endl;
+  cout<<"nx = "<<grid.nx<<endl;
+  cout<<"nt = "<<grid.nt<<endl;
+  cout<<"dx = "<<grid.dx<<endl;
+  cout<<"dt = "<<grid.dt<<endl;
+  cout<<"GB coupling l = "<<grid.l<<endl;
+  cout<<"Scalar Field Amplitude = "<<initialdata.amp<<endl;
+  cout<<"Scalar Field ru = "<<initialdata.r_u<<" , rl = "<<initialdata.r_l<<endl;
+  cout<<"Starting simulation..."<<endl;
+
+  //============================================================================
+
+  initialdata.set_Minkowski(grid,  n, s, p, q, phi); //Set initial data
 
   diagnostics.find_apparent_horizon(grid,s); //Check if apparent horizon is present in initial data
   solve_metric.solve( grid, n, s , p ,q,phi); //Solve for metric fields
@@ -76,9 +97,15 @@ int main(int argc, char const *argv[]) {
   diagnostics.find_apparent_horizon(grid,s); //Check if apparent horizon is present
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
   write.write_characteristics(ingoing, outgoing);
-//
+
   int i_e = 0;
   while(i_e<grid.nt){
+
+  n_nm1 = n.v;
+  s_nm1 = s.v;
+  p_nm1 = p.v;
+  q_nm1 = q.v;
+  phi_nm1 = phi.v;
 
   evolve_scalar_field.evolve(grid, n, s, p, q, phi);
 
@@ -86,6 +113,11 @@ int main(int argc, char const *argv[]) {
   grid.update_t();
 
   solve_metric.solve( grid, n, s , p ,q,phi);
+
+  diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, s.v, p.v,residual);
+
+  write.write_residual(residual);
+
   write.write_fields(n, s , p ,q, phi);
 
   diagnostics.find_apparent_horizon(grid,s);
@@ -93,5 +125,7 @@ int main(int argc, char const *argv[]) {
   write.write_characteristics(ingoing, outgoing);
   i_e += 1;
 }
+  cout<<"Run finished successfully"<<endl;
+  cout<<"Final time = "<<grid.t_evolve<<endl;
   return 0;
 }

@@ -104,3 +104,21 @@ void Write_data::write_characteristics(const vector<double> &ingoing, const vect
 
 
 }
+
+void Write_data::write_residual(const vector<double> &residual){
+
+  string name = path + "e_rr_res" + ".dat";
+  std::ofstream write_output(name , std::ios::app);
+  assert(write_output.is_open());
+  write_output.precision(10);
+
+  int nx = residual.size();
+  for(int i = 0; i<nx-1; i++ ){
+    write_output<<residual[i]<<",";
+  }
+  write_output<<residual[nx-1]<<"\n";
+
+  write_output.flush();
+  write_output.close();
+
+}

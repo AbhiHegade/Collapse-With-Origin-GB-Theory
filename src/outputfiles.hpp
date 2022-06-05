@@ -15,6 +15,7 @@ public:
   void write_anim(const Field &n, const Field &s, const Field &p, const Field &q, const Field &phi);
   void write_fields(const Field &n, const Field &s, const Field &p, const Field &q, const Field &phi);
   void write_characteristics(const std::vector<double> &ingoing, const std::vector<double> &outgoing);
+  void write_residual(const std::vector<double> &residual);
 private:
   void write_field(const Field &n);
 

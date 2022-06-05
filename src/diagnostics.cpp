@@ -284,7 +284,144 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
 
 
 //==============================================================================
+double Diagnostics::e_rr_residual(double r, double nn, double r_Der_nn,
+double ss, double r_Der_ss,
+double P, double r_Der_P,
+double Q, double r_Der_Q,
+double Bep, double Bepp,
+double t_Der_ss, double t_Der_P){
+
+  double Qr = Q/r;
+  double ssr = ss/r;
+  return
+  -pow(ssr,2) + 8*Bep*r*r_Der_P*pow(ssr,3) - (8*Bep*pow(ssr,2)*t_Der_P)/nn - 8*Bepp*pow(ssr,2)*pow(P,2) + r_Der_ss*(-2*ssr + 16*Bep*Qr*ssr + 16*Bep*pow(ssr,2)*P) + t_Der_ss*(2/(r*nn) - (16*Bep*Qr)/(r*nn) - (16*Bep*ssr*P)/(r*nn)) + r_Der_nn*(2/(r*nn) - (16*Bep*Qr)/(r*nn) + (8*Bep*Qr*r*pow(ssr,2))/nn - (16*Bep*ssr*P)/(r*nn)) + (-(pow(Qr,2)*pow(r,2)) - pow(P,2))/2.
+  ;
+}
 //==============================================================================
+void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n_v, const vector<double> &s_v,
+  const vector<double> &p_v, const vector<double> &q_v, const vector<double> &phi_v, const vector<double> &s_v_np1,
+  const vector<double> &p_v_np1, vector<double> &residual){
+
+    vector<double> dr = grid.dr;
+    vector<double> r = grid.r;
+    double dt = grid.dt;
+    double l = grid.l;
+    int nx = grid.nx;
+    double r_Der_nn = 0.,r_Der_ss=0., r_Der_P=0., r_Der_Q=0., Bep=0., Bepp = 0., t_Der_ss=0., t_Der_P = 0.;
+
+
+
+    if(grid.exc_i==0){
+
+      {
+        int i = grid.exc_i;
+
+        r_Der_nn  = 0.;
+
+        r_Der_ss = s_v[i+1]/dr[i];
+
+        r_Der_P = 0.;
+
+        r_Der_Q = q_v[i+1]/dr[i];
+
+        Bep = beta_p(l, phi_v[i]);
+
+        Bepp = beta_pp(l, phi_v[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], n_v[i], r_Der_nn, s_v[i], r_Der_ss, p_v[i],
+          r_Der_P, q_v[i], r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+
+      }
+
+      for(int i = grid.exc_i+1; i<nx-1; i++){
+
+        r_Der_nn  = (n_v[i+1]-n_v[i-1])/(2.*dr[i]);
+
+        r_Der_ss = (s_v[i+1]-s_v[i-1])/(2.*dr[i]);
+
+        r_Der_P = (p_v[i+1]-p_v[i-1])/(2.*dr[i]);
+
+        r_Der_Q = (q_v[i+1]-q_v[i-1])/(2.*dr[i]);
+
+        Bep = beta_p(l, phi_v[i]);
+
+        Bepp = beta_pp(l, phi_v[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], n_v[i], r_Der_nn,s_v[i], r_Der_ss, p_v[i],
+          r_Der_P, q_v[i], r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+
+      }
+
+      residual[nx-1] = 0.;
+
+    }
+
+    else{
+
+      {
+        int i = grid.exc_i;
+
+        r_Der_nn  =  (-3.*n_v[i] + 4.*n_v[i+1] -n_v[i+2])/(2.*dr[i]);
+
+        r_Der_ss = (-3.*s_v[i] + 4.*s_v[i+1] -s_v[i+2])/(2.*dr[i]);
+
+        r_Der_P = (-3.*p_v[i] + 4.*p_v[i+1] -p_v[i+2])/(2.*dr[i]);
+
+        r_Der_Q = (-3.*q_v[i] + 4.*q_v[i+1] -q_v[i+2])/(2.*dr[i]);
+
+        Bep = beta_p(l, phi_v[i]);
+
+        Bepp = beta_pp(l, phi_v[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], n_v[i], r_Der_nn,s_v[i], r_Der_ss, p_v[i],
+          r_Der_P, q_v[i], r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+
+      }
+
+      for(int i = grid.exc_i+1; i<nx-1; i++){
+
+        r_Der_nn  = (n_v[i+1]-n_v[i-1])/(2.*dr[i]);
+
+        r_Der_ss = (s_v[i+1]-s_v[i-1])/(2.*dr[i]);
+
+        r_Der_P = (p_v[i+1]-p_v[i-1])/(2.*dr[i]);
+
+        r_Der_Q = (q_v[i+1]-q_v[i-1])/(2.*dr[i]);
+
+        Bep = beta_p(l, phi_v[i]);
+
+        Bepp = beta_pp(l, phi_v[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], n_v[i], r_Der_nn,s_v[i], r_Der_ss, p_v[i],
+          r_Der_P, q_v[i], r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+
+      }
+
+      residual[nx-1] = 0.;
+
+
+
+    }
+
+
+
+  }
 //==============================================================================
 //==============================================================================
 //==============================================================================

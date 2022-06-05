@@ -28,12 +28,20 @@ double Solve_metric_fields::rhs_shift(double r,
   double P, double r_Der_P,
   double Q, double r_Der_Q,
   double Bep, double Bepp){
-  double Qr = Q/r;
-  double ssr = ss/r;
 
-  return
-  (-4*Bep*r*r_Der_P*pow(ssr,2))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) + (4*r_Der_Q*ssr*(Bep - 8*pow(Bep,2)*Qr + 4*pow(Bep,2)*Qr*pow(r,2)*pow(ssr,2) - 8*pow(Bep,2)*ssr*P))/(1 - 16*Bep*Qr + 64*pow(Bep,2)*pow(Qr,2) - 20*Bep*ssr*P + 160*pow(Bep,2)*Qr*ssr*P + 96*pow(Bep,2)*pow(ssr,2)*pow(P,2)) + (pow(Qr,2)*pow(r,2) - 8*Bep*pow(Qr,3)*pow(r,2) - 2*pow(ssr,2) + 16*Bep*Qr*pow(ssr,2) + 16*Bepp*pow(Qr,2)*pow(r,2)*pow(ssr,2) - 128*Bep*Bepp*pow(Qr,3)*pow(r,2)*pow(ssr,2) + 4*Bep*pow(Qr,3)*pow(r,4)*pow(ssr,2) - 8*Bep*Qr*pow(r,2)*pow(ssr,4) + 64*Bep*Bepp*pow(Qr,3)*pow(r,4)*pow(ssr,4) + 2*Qr*pow(r,2)*ssr*P - 24*Bep*pow(Qr,2)*pow(r,2)*ssr*P + 16*Bep*pow(ssr,3)*P + 16*Bepp*Qr*pow(r,2)*pow(ssr,3)*P - 256*Bep*Bepp*pow(Qr,2)*pow(r,2)*pow(ssr,3)*P + pow(P,2) - 8*Bep*Qr*pow(P,2) - 20*Bep*Qr*pow(r,2)*pow(ssr,2)*pow(P,2) - 192*Bep*Bepp*Qr*pow(r,2)*pow(ssr,4)*pow(P,2) - 8*Bep*ssr*pow(P,3))/(4.*ssr*(1 - 16*Bep*Qr + 64*pow(Bep,2)*pow(Qr,2) - 20*Bep*ssr*P + 160*pow(Bep,2)*Qr*ssr*P + 96*pow(Bep,2)*pow(ssr,2)*pow(P,2)))
-  ;
+    double Qr = Q/r;
+    double ssr = ss/r;
+
+    double ans=0.;
+
+    ans = -2*pow(r,3)*pow(ssr,2) + 16*Bep*Qr*pow(r,3)*pow(ssr,2) - 8*Bep*Qr*pow(r,5)*pow(ssr,4) + 4*Bep*pow(Qr,3)*pow(r,3)*(-2 + pow(r,2)*pow(ssr,2))*(pow(r,2) + 16*Bepp*pow(r,2)*pow(ssr,2)) + pow(Qr,2)*pow(r,2)*(pow(r,3) + 16*Bepp*pow(r,3)*pow(ssr,2)) + 16*Bep*pow(r,3)*pow(ssr,3)*P - 8*Bep*pow(Qr,2)*pow(r,3)*ssr*(3*pow(r,2) + 32*Bepp*pow(r,2)*pow(ssr,2))*P + 2*Qr*pow(r,2)*ssr*(pow(r,3) + 8*Bepp*pow(r,3)*pow(ssr,2))*P - (-pow(r,3) + 8*Bep*Qr*pow(r,3) + 20*Bep*Qr*pow(r,5)*pow(ssr,2) + 192*Bep*Bepp*Qr*pow(r,5)*pow(ssr,4))*pow(P,2) - 8*Bep*pow(r,3)*ssr*pow(P,3) + r_Der_Q*(16*Bep*pow(r,3)*pow(ssr,2) - 128*pow(Bep,2)*Qr*pow(r,3)*pow(ssr,2) + 64*pow(Bep,2)*Qr*pow(r,5)*pow(ssr,4) - 128*pow(Bep,2)*pow(r,3)*pow(ssr,3)*P) + r_Der_P*(16*Bep*pow(r,4)*pow(ssr,3) - 128*pow(Bep,2)*Qr*pow(r,4)*pow(ssr,3) - 192*pow(Bep,2)*pow(r,4)*pow(ssr,4)*P)
+    ;
+
+    ans /= 4*r*ssr*(pow(r,2) - 16*Bep*Qr*pow(r,2) + 64*pow(Bep,2)*pow(Qr,2)*pow(r,2) - 20*Bep*pow(r,2)*ssr*P + 160*pow(Bep,2)*Qr*pow(r,2)*ssr*P + 96*pow(Bep,2)*pow(r,2)*pow(ssr,2)*pow(P,2))
+    ;
+
+    return ans;
+
 
 }
 //==============================================================================
@@ -47,9 +55,16 @@ double Solve_metric_fields::rhs_lapse(double r,
     double Qr = Q/r;
     double ssr = ss/r;
 
-    return
-    (4*Bep*r_Der_P*ssr*nn)/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) - (16*pow(Bep,2)*Qr*r*r_Der_Q*pow(ssr,2)*nn)/(1 - 16*Bep*Qr + 64*pow(Bep,2)*pow(Qr,2) - 20*Bep*ssr*P + 160*pow(Bep,2)*Qr*ssr*P + 96*pow(Bep,2)*pow(ssr,2)*pow(P,2)) - (r*nn*(2*Bep*pow(Qr,3)*pow(r,2)*ssr - 4*Bep*Qr*pow(ssr,3) + 32*Bep*Bepp*pow(Qr,3)*pow(r,2)*pow(ssr,3) + Qr*P - 8*Bep*pow(Qr,2)*P + 8*Bepp*Qr*pow(ssr,2)*P - 64*Bep*Bepp*pow(Qr,2)*pow(ssr,2)*P - 10*Bep*Qr*ssr*pow(P,2) - 96*Bep*Bepp*Qr*pow(ssr,3)*pow(P,2)))/(2.*ssr*(1 - 16*Bep*Qr + 64*pow(Bep,2)*pow(Qr,2) - 20*Bep*ssr*P + 160*pow(Bep,2)*Qr*ssr*P + 96*pow(Bep,2)*pow(ssr,2)*pow(P,2)))
+    double ans=0.;
+
+    ans = -32*pow(Bep,2)*Qr*pow(r,4)*r_Der_Q*pow(ssr,3)*nn + 8*r_Der_P*nn*(-(Bep*pow(r,3)*pow(ssr,2)) + 8*pow(Bep,2)*Qr*pow(r,3)*pow(ssr,2) + 12*pow(Bep,2)*pow(r,3)*pow(ssr,3)*P) - nn*(2*Bep*pow(Qr,3)*pow(r,6)*ssr - 4*Bep*Qr*pow(r,4)*pow(ssr,3) + 32*Bep*Bepp*pow(Qr,3)*pow(r,6)*pow(ssr,3) + Qr*pow(r,4)*P - 8*Bep*pow(Qr,2)*pow(r,4)*P + 8*Bepp*Qr*pow(r,4)*pow(ssr,2)*P - 64*Bep*Bepp*pow(Qr,2)*pow(r,4)*pow(ssr,2)*P - 10*Bep*Qr*pow(r,4)*ssr*pow(P,2) - 96*Bep*Bepp*Qr*pow(r,4)*pow(ssr,3)*pow(P,2))
     ;
+
+    ans /= 2*r*ssr*(pow(r,2) - 16*Bep*Qr*pow(r,2) + 64*pow(Bep,2)*pow(Qr,2)*pow(r,2) - 20*Bep*pow(r,2)*ssr*P + 160*pow(Bep,2)*Qr*pow(r,2)*ssr*P + 96*pow(Bep,2)*pow(r,2)*pow(ssr,2)*pow(P,2))
+    ;
+
+    return ans;
+
   }
 
 //==================================================================================
@@ -112,6 +127,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       Bepp_i = beta_pp(l, phi_v.v[i]);
       Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
 
+
       savg = (s_v.v[i] + s_v.v[i+1])/2.;
       pavg = (p_v.v[i] + p_v.v[i+1])/2.;
       qavg = (q_v.v[i] + q_v.v[i+1])/2.;
@@ -123,19 +139,30 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       Beppavg = (Bepp_i + Bepp_ip1)/2.;
 
       k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
       k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
       k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
       k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
 
       s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+      // cout<<"i = "<<i<<endl;
+      // cout<<"s_ip1 = "<<s_v.v[i+1]<<endl;
     }
 
     for(int i=exc_i+1; i<nx-2; i++){
       r_Der_P_i = (p_v.v[i+1] - p_v.v[i-1])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      // r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_ip1 = r_Der_P_i;
+
+      // r_Der_Q_i = (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
+      // r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
 
       r_Der_Q_i = (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      // r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_ip1 = r_Der_Q_i;
 
       Bep_i = beta_p(l, phi_v.v[i]);
       Bep_ip1 = beta_p(l, phi_v.v[i+1]);
@@ -149,16 +176,25 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-
+      // cout<<"dp/dr_avg = "<<derPavg<<endl;
+      // cout<<"dq/dr_avg = "<<derQavg<<endl;
+      // cout<<"r = "<<r[i]<<endl;
+      // cout<<"beta_p "<<Bep_i<<endl;
       Bepavg = (Bep_i + Bep_ip1)/2.;
       Beppavg = (Bepp_i + Bepp_ip1)/2.;
 
       k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
       k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
       k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
       k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
 
       s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+      // cout<<"i = "<<i<<endl;
+      // cout<<"s_ip1 = "<<s_v.v[i+1]<<endl;
 
     }
 
