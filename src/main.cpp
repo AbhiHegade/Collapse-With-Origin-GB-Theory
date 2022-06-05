@@ -42,7 +42,7 @@ int main(int argc, char const *argv[]) {
   /*----------------------------------------*/
   Write_data write(path);
 
-  Grid_data grid(3000, 4500, 2); //Generate grid with nx, nt, l and exci
+  Grid_data grid(12000, 18000, 2.); //Generate grid with nx, nt, l and exci
 
   write.write_grid(grid); //Write grid to file
 
