@@ -116,10 +116,10 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
     {
       int i = exc_i;
       r_Der_P_i = 0.;
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i+1], dr[i+1]);
 
-      r_Der_Q_i = q_v.v[i+1]/dr[i];
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], -q_v.v[i+1], dr[i+1]);
 
       Bep_i = beta_p(l, phi_v.v[i]);
       Bep_ip1 = beta_p(l, phi_v.v[i+1]);
@@ -151,18 +151,50 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       // cout<<"i = "<<i<<endl;
       // cout<<"s_ip1 = "<<s_v.v[i+1]<<endl;
     }
+    {
+      int i = exc_i+1;
 
-    for(int i=exc_i+1; i<nx-2; i++){
-      r_Der_P_i = (p_v.v[i+1] - p_v.v[i-1])/(2.*dr[i]);
-      // r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
-      r_Der_P_ip1 = r_Der_P_i;
+      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
 
-      // r_Der_Q_i = (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
-      // r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], -q_v.v[i], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
 
-      r_Der_Q_i = (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
-      // r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
-      r_Der_Q_ip1 = r_Der_Q_i;
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+      k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
+      k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
+      k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
+      k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
+
+      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+    }
+
+    for(int i=exc_i+2; i<nx-3; i++){
+      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
 
       Bep_i = beta_p(l, phi_v.v[i]);
       Bep_ip1 = beta_p(l, phi_v.v[i+1]);
@@ -176,10 +208,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-      // cout<<"dp/dr_avg = "<<derPavg<<endl;
-      // cout<<"dq/dr_avg = "<<derQavg<<endl;
-      // cout<<"r = "<<r[i]<<endl;
-      // cout<<"beta_p "<<Bep_i<<endl;
+
       Bepavg = (Bep_i + Bep_ip1)/2.;
       Beppavg = (Bepp_i + Bepp_ip1)/2.;
 
@@ -196,6 +225,42 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       // cout<<"i = "<<i<<endl;
       // cout<<"s_ip1 = "<<s_v.v[i+1]<<endl;
 
+    }
+    {
+      int i = nx-3;
+
+      r_Der_P_i = Dx_ptc_4th(0., p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+      r_Der_P_ip1 = Dx_ptm1_4th(0., p_v.v[i+1], p_v.v[i], p_v.v[i-1], p_v.v[i-2], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptc_4th(0., q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptm1_4th(0., q_v.v[i+1], q_v.v[i], q_v.v[i-1], q_v.v[i-2], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+      k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
+      k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
+      k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
+      k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
+
+      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
     }
 
     s_v.v[nx-1] = 0.;
@@ -206,16 +271,164 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
 
   else{
-    cout<<"Shift vector solver not implemented for excised spacetimes. Exiting."<<endl;
-    std::exit(0);
+    for(int i =0; i<exc_i; i++){
+      s_v.v[i] = 1.;
 
+    }
 
+    {
+      int i = exc_i;
+      r_Der_P_i = Dx_ptp0_4th(p_v.v[i+4], p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+      r_Der_P_ip1 = Dx_ptp1_4th(p_v.v[i+4], p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i+1]);
 
+      r_Der_Q_i = Dx_ptp0_4th(q_v.v[i+4], q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+      r_Der_Q_ip1 = Dx_ptp1_4th(q_v.v[i+4], q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i+1]);
 
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+      k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
+      k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
+      k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
+      k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
+
+      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+      // cout<<"i = "<<i<<endl;
+      // cout<<"s_ip1 = "<<s_v.v[i+1]<<endl;
+    }
+    {
+      int i = exc_i+1;
+
+      r_Der_P_i = Dx_ptp1_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i-1], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptp1_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], q_v.v[i-1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+      k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
+      k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
+      k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
+      k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
+
+      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+    }
+
+    for(int i=exc_i+2; i<nx-3; i++){
+      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+      k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
+      k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
+      k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
+      k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
+
+      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+      // cout<<"i = "<<i<<endl;
+      // cout<<"s_ip1 = "<<s_v.v[i+1]<<endl;
+
+    }
+    {
+      int i = nx-3;
+
+      r_Der_P_i = Dx_ptc_4th(0., p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+      r_Der_P_ip1 = Dx_ptm1_4th(0., p_v.v[i+1], p_v.v[i], p_v.v[i-1], p_v.v[i-2], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptc_4th(0., q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptm1_4th(0., q_v.v[i+1], q_v.v[i], q_v.v[i-1], q_v.v[i-2], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+      k1 = dr[i]*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      // cout<<"k1 = "<<k1<<endl;
+      k2 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k2 = "<<k2<<endl;
+      k3 = dr[i]*rhs_shift(r[i] + 0.5*dr[i], s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+      // cout<<"k3 = "<<k3<<endl;
+      k4 = dr[i]*rhs_shift(r[i] + dr[i], s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      // cout<<"k4 = "<<k4<<endl;
+
+      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+    }
+
+    s_v.v[nx-1] = 0.;
+    s_v.check_isfinite(grid.t_evolve);
   }
 
-
-}
+  }
 //==============================================================================
 /*RK2 evolution for lapse. The value at the excision point is set to 1 initially
 and then we rescale the solution in the end.
@@ -238,10 +451,76 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     {
       int i = exc_i;
       r_Der_P_i = 0.;
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i+1], dr[i+1]);
 
-      r_Der_Q_i = q_v.v[i+1]/dr[i];
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], -q_v.v[i+1], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+
+      k1 = dr[i]*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      k2 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k1, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k3 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k2, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k4 = dr[i]*rhs_lapse(r[i] + dr[i], n_v.v[i+1],s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1,Bepp_ip1);
+
+      n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+    }
+    {
+      int i = exc_i+1;
+
+      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], -q_v.v[i], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+      k1 = dr[i]*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      k2 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k1, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k3 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k2, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k4 = dr[i]*rhs_lapse(r[i] + dr[i], n_v.v[i+1],s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1,Bepp_ip1);
+
+      n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+    }
+
+    for(int i =exc_i+2; i<nx-3; i++){
+      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
 
       Bep_i = beta_p(l, phi_v.v[i]);
       Bep_ip1 = beta_p(l, phi_v.v[i+1]);
@@ -267,39 +546,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
       n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
     }
-
-    for(int i =exc_i+1; i<nx-2; i++){
-      r_Der_P_i = (p_v.v[i+1] - p_v.v[i-1])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
-
-      r_Der_Q_i = (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
-
-      Bep_i = beta_p(l, phi_v.v[i]);
-      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
-
-      Bepp_i = beta_pp(l, phi_v.v[i]);
-      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
-
-      savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-
-      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
-      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-
-      Bepavg = (Bep_i + Bep_ip1)/2.;
-      Beppavg = (Bepp_i + Bepp_ip1)/2.;
-
-
-      k1 = dr[i]*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
-      k2 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k1, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
-      k3 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k2, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
-      k4 = dr[i]*rhs_lapse(r[i] + dr[i], n_v.v[i+1],s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1,Bepp_ip1);
-
-      n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
-    }
-    n_v.v[nx-1] = n_v.v[nx-2];
+    n_v.v[nx-1] = n_v.v[nx-2] = n_v.v[nx-3];
     n_v.rescale();
 
     n_v.check_isfinite(grid.t_evolve);
@@ -313,43 +560,11 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     }
     {
       int i = exc_i;
-      r_Der_P_i = (-3.*p_v.v[i] + 4.*p_v.v[i+1] -p_v.v[i+2])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_i = Dx_ptp0_4th(p_v.v[i+4], p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+      r_Der_P_ip1 = Dx_ptp1_4th(p_v.v[i+4], p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = (-3.*q_v.v[i] + 4.*q_v.v[i+1] -q_v.v[i+2])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
-
-      Bep_i = beta_p(l, phi_v.v[i]);
-      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
-
-      Bepp_i = beta_pp(l, phi_v.v[i]);
-      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
-
-      savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-
-      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
-      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-
-      Bepavg = (Bep_i + Bep_ip1)/2.;
-      Beppavg = (Bepp_i + Bepp_ip1)/2.;
-
-
-      k1 = dr[i]*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
-      k2 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k1, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
-      k3 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k2, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
-      k4 = dr[i]*rhs_lapse(r[i] + dr[i], n_v.v[i+1],s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1,Bepp_ip1);
-
-      n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
-    }
-
-    for(int i =exc_i+1; i<nx-2; i++){
-      r_Der_P_i = (p_v.v[i+1] - p_v.v[i-1])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
-
-      r_Der_Q_i = (q_v.v[i+1] - q_v.v[i-1])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptp0_4th(q_v.v[i+4], q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+      r_Der_Q_ip1 = Dx_ptp1_4th(q_v.v[i+4], q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(l, phi_v.v[i]);
       Bep_ip1 = beta_p(l, phi_v.v[i+1]);
@@ -375,7 +590,73 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
       n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
     }
-    n_v.v[nx-1] = n_v.v[nx-2];
+    {
+      int i = exc_i+1;
+
+      r_Der_P_i = Dx_ptp1_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i-1], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptp1_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], q_v.v[i-1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+
+      k1 = dr[i]*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      k2 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k1, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k3 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k2, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k4 = dr[i]*rhs_lapse(r[i] + dr[i], n_v.v[i+1],s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1,Bepp_ip1);
+
+      n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+
+    }
+
+    for(int i =exc_i+2; i<nx-3; i++){
+      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+
+      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+
+      Bep_i = beta_p(l, phi_v.v[i]);
+      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+
+      Bepp_i = beta_pp(l, phi_v.v[i]);
+      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+
+      savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+
+      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+
+      Bepavg = (Bep_i + Bep_ip1)/2.;
+      Beppavg = (Bepp_i + Bepp_ip1)/2.;
+
+
+      k1 = dr[i]*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+      k2 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k1, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k3 = dr[i]*rhs_lapse(r[i] + 0.5*dr[i], n_v.v[i] + 0.5*k2, savg ,pavg , derPavg, qavg, derQavg, Bepavg, Beppavg);
+      k4 = dr[i]*rhs_lapse(r[i] + dr[i], n_v.v[i+1],s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1,Bepp_ip1);
+
+      n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+    }
+    n_v.v[nx-1] = n_v.v[nx-2]=n_v.v[nx-3];
     n_v.rescale();
 
     n_v.check_isfinite(grid.t_evolve);

@@ -177,40 +177,78 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
   double Bep = 0., Bepp = 0.;
 
   {
-      int i =0;
+      int i =grid.exc_i;
       double nn = 0.,rr_Der_nn = 0., ss=0., P = 0., rr_Der_P = 0, Q=0.;
 
-      nn = n_v.v[i]; r_Der_nn = 0.; rr_Der_nn = (2.*n_v.v[i+1] - 2.*n_v.v[i])/(pow(dr[i],2.));
-      ss = s_v.v[i]; r_Der_ss = s_v.v[i+1]/dr[i];
+      nn = n_v.v[i];
+      r_Der_nn = 0.;
+      rr_Der_nn = Dx_2_ptpc_4th(n_v.v[i+3], n_v.v[i+2], n_v.v[i+1], n_v.v[i], n_v.v[i+1], n_v.v[i+2], n_v.v[i+3], dr[i]);
 
-      P = p_v.v[i]; r_Der_P = 0.; rr_Der_P = (2.*p_v.v[i+1] - 2.*p_v.v[i])/(pow(dr[i],2.));
+      ss = s_v.v[i];
+      r_Der_ss = Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], -s_v.v[i+1], -s_v.v[i+2], dr[i]);
 
-      Q = q_v.v[i]; r_Der_Q = q_v.v[i+1]/dr[i];
+      P = p_v.v[i];
+      r_Der_P = 0.;
+      rr_Der_P = Dx_2_ptpc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i+1], p_v.v[i+2], p_v.v[i+3], dr[i]);
+
+      Q = q_v.v[i];
+      r_Der_Q = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
 
 
       Bep = beta_p(l, phi_v.v[i]);
       Bepp = beta_pp(l, phi_v.v[i]);
 
+      //Written this way because of expansion around zero and appearance of second derivatives.
       dpdt[i] = (-8*Bep*rr_Der_nn*pow(r_Der_ss,2)*nn + 128*pow(Bep,2)*rr_Der_nn*r_Der_Q*pow(r_Der_ss,2)*nn - 512*pow(Bep,3)*rr_Der_nn*pow(r_Der_Q,2)*pow(r_Der_ss,2)*nn + 3*r_Der_Q*pow(nn,2) - 48*Bep*pow(r_Der_Q,2)*pow(nn,2) + 192*pow(Bep,2)*pow(r_Der_Q,3)*pow(nn,2) - 32*pow(Bep,2)*rr_Der_P*pow(r_Der_ss,3)*pow(nn,2) + 256*pow(Bep,3)*rr_Der_P*r_Der_Q*pow(r_Der_ss,3)*pow(nn,2) - 12*Bep*pow(r_Der_ss,4)*pow(nn,2) + 64*pow(Bep,2)*r_Der_Q*pow(r_Der_ss,4)*pow(nn,2) + 256*pow(Bep,3)*pow(r_Der_Q,2)*pow(r_Der_ss,4)*pow(nn,2) + 128*pow(Bep,2)*rr_Der_nn*pow(r_Der_ss,3)*nn*P - 1024*pow(Bep,3)*rr_Der_nn*r_Der_Q*pow(r_Der_ss,3)*nn*P + 3*r_Der_ss*pow(nn,2)*P - 100*Bep*r_Der_Q*r_Der_ss*pow(nn,2)*P + 608*pow(Bep,2)*pow(r_Der_Q,2)*r_Der_ss*pow(nn,2)*P - 32*Bep*Bepp*r_Der_Q*pow(r_Der_ss,3)*pow(nn,2)*P + 256*pow(Bep,2)*Bepp*pow(r_Der_Q,2)*pow(r_Der_ss,3)*pow(nn,2)*P + 256*pow(Bep,3)*rr_Der_P*pow(r_Der_ss,4)*pow(nn,2)*P + 96*pow(Bep,2)*pow(r_Der_ss,5)*pow(nn,2)*P + 256*pow(Bep,3)*r_Der_Q*pow(r_Der_ss,5)*pow(nn,2)*P - 512*pow(Bep,3)*rr_Der_nn*pow(r_Der_ss,4)*nn*pow(P,2) - 54*Bep*pow(r_Der_ss,2)*pow(nn,2)*pow(P,2) + 656*pow(Bep,2)*r_Der_Q*pow(r_Der_ss,2)*pow(nn,2)*pow(P,2) - 96*Bep*Bepp*pow(r_Der_ss,4)*pow(nn,2)*pow(P,2) + 1024*pow(Bep,2)*Bepp*r_Der_Q*pow(r_Der_ss,4)*pow(nn,2)*pow(P,2) + 240*pow(Bep,2)*pow(r_Der_ss,3)*pow(nn,2)*pow(P,3) + 768*pow(Bep,2)*Bepp*pow(r_Der_ss,5)*pow(nn,2)*pow(P,3))/(nn*(1 - 16*Bep*r_Der_Q + 64*pow(Bep,2)*pow(r_Der_Q,2) + 96*pow(Bep,2)*pow(r_Der_ss,4) - 768*pow(Bep,3)*r_Der_Q*pow(r_Der_ss,4) - 16*Bep*r_Der_ss*P + 128*pow(Bep,2)*r_Der_Q*r_Der_ss*P - 768*pow(Bep,3)*pow(r_Der_ss,5)*P + 64*pow(Bep,2)*pow(r_Der_ss,2)*pow(P,2)));
 
       dqdt[i] = 0.;
 
       dphidt[i] = n_v.v[i]*p_v.v[i];
      }
+     {
+       int i = grid.exc_i + 1;
+       r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i], dr[i]);
+       r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], -s_v.v[i], dr[i]);
+       r_Der_P= Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i], dr[i]);
+       r_Der_Q= Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], -q_v.v[i], dr[i]);
+       Bep = beta_p(l,phi_v.v[i]);
+       Bepp = beta_pp(l,phi_v.v[i]);
+
+       dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
+       dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+       dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
 
 
-  for(int i = 1; i<nx-1; i++){
-    r_Der_nn = (n_v.v[i+1] - n_v.v[i-1])/(2*dr[i]);
-    r_Der_ss = (s_v.v[i+1] - s_v.v[i-1])/(2*dr[i]);
-    r_Der_P = (p_v.v[i+1] - p_v.v[i-1])/(2*dr[i]);
-    r_Der_Q = (q_v.v[i+1] - q_v.v[i-1])/(2*dr[i]);
+     }
+
+
+  for(int i = grid.exc_i + 2; i<nx-2; i++){
+    r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i-2], dr[i]);
+    r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], s_v.v[i-2], dr[i]);
+    r_Der_P= Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+    r_Der_Q= Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
     Bep = beta_p(l,phi_v.v[i]);
     Bepp = beta_pp(l,phi_v.v[i]);
 
-      dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
-      dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-      dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
+    dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
 
+
+  }
+  {
+    int i = nx-2;
+
+    r_Der_nn= Dx_ptm1_4th(n_v.v[i+1], n_v.v[i], n_v.v[i-1], n_v.v[i-2],n_v.v[i-3], dr[i]);
+    r_Der_ss= Dx_ptm1_4th(s_v.v[i+1], s_v.v[i], s_v.v[i-1], s_v.v[i-2],s_v.v[i-3], dr[i]);
+    r_Der_P= Dx_ptm1_4th(p_v.v[i+1], p_v.v[i], p_v.v[i-1], p_v.v[i-2],p_v.v[i-3], dr[i]);
+    r_Der_Q= Dx_ptm1_4th(q_v.v[i+1], q_v.v[i], q_v.v[i-1], q_v.v[i-2],q_v.v[i-3], dr[i]);
+    Bep = beta_p(l,phi_v.v[i]);
+    Bepp = beta_pp(l,phi_v.v[i]);
+
+    dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
+    dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
 
   }
 
@@ -230,64 +268,101 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
 //==============================================================================
 // Generate RHS With Excision
 //==============================================================================
-// void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
-//   const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v,
-//   double &dsdt,
-//   vector<double> &dpdt,
-//   vector<double> &dqdt,
-//   vector<double> &dphidt){
-//
-//   //Field ordering s_v, p_v,q_v,phi_v
-//   assert(grid.exc_i >0);
-//   vector<double> r = grid.r;
-//   int nx = grid.nx;
-//   vector<double> dr = grid.dr;
-//
-//   double r_Der_nn=0., r_Der_ss = 0., r_Der_P = 0., r_Der_Q = 0.;
-//
-//
-//   {
-//     int i = grid.exc_i;
-//     r_Der_nn = (-3.*n_v.v[i] + 4.*n_v.v[i+1] - n_v.v[i+2])/(2*dr[i]);
-//     r_Der_ss = (-3.*s_v.v[i] + 4.*s_v.v[i+1] - s_v.v[i+2])/(2*dr[i]);
-//     r_Der_P =  (-3.*p_v.v[i] + 4.*p_v.v[i+1] - p_v.v[i+2])/(2*dr[i]);;
-//     r_Der_Q =  (-3.*q_v.v[i] + 4.*q_v.v[i+1] - q_v.v[i+2])/(2*dr[i]);;
-//
-//     dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-//     dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-//     dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-//     dsdt = rhs_s_free(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-//
-//
-//   }
-//
-//
-//   for(int i = grid.exc_i + 1; i<nx-1; i++){
-//     r_Der_nn = (n_v.v[i+1] - n_v.v[i-1])/(2*dr[i]);
-//     r_Der_ss = (s_v.v[i+1] - s_v.v[i-1])/(2*dr[i]);
-//     r_Der_P = (p_v.v[i+1] - p_v.v[i-1])/(2*dr[i]);
-//     r_Der_Q = (q_v.v[i+1] - q_v.v[i-1])/(2*dr[i]);
-//
-//       dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-//       dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-//       dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
-//
-//
-//   }
-//
-//   {
-//     int i = nx-1;
-//     dpdt[i] = 0.;
-//     dqdt[i] = 0.;
-//     dphidt[i] = 0.;
-//
-//   }
-//
-//   KO_filter(grid, "even", dpdt, p_v.v);
-//   KO_filter(grid, "odd", dqdt, q_v.v);
-//   KO_filter(grid, "even" ,dphidt, phi_v.v);
-//
-// }
+void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
+  const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v,
+  double &dsdt,
+  vector<double> &dpdt,
+  vector<double> &dqdt,
+  vector<double> &dphidt){
+
+  //Field ordering s_v, p_v,q_v,phi_v
+  assert(grid.exc_i >0);
+  vector<double> r = grid.r;
+  int nx = grid.nx;
+  vector<double> dr = grid.dr;
+  double l = grid.l;
+
+
+
+  {
+    int i = grid.exc_i;
+
+    double Bep=  beta_p(l, phi_v.v[i]);
+    double Bepp= beta_pp(l, phi_v.v[i]);
+
+    double r_Der_nn= Dx_ptp0_4th(n_v.v[i+4], n_v.v[i+3], n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
+    double r_Der_ss= Dx_ptp0_4th(s_v.v[i+4], s_v.v[i+3], s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
+    double r_Der_P= Dx_ptp0_4th(p_v.v[i+4], p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+    double r_Der_Q= Dx_ptp0_4th(q_v.v[i+4], q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+
+    dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
+    dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dsdt = rhs_s_free(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
+
+
+  }
+  {
+    int i = grid.exc_i + 1;
+
+    double Bep=  beta_p(l, phi_v.v[i]);
+    double Bepp= beta_pp(l, phi_v.v[i]);
+
+    double r_Der_nn= Dx_ptp1_4th(n_v.v[i+3], n_v.v[i+2], n_v.v[i+1], n_v.v[i], n_v.v[i-1], dr[i]);
+    double r_Der_ss= Dx_ptp1_4th(s_v.v[i+3], s_v.v[i+2], s_v.v[i+1], s_v.v[i], s_v.v[i-1], dr[i]);
+    double r_Der_P= Dx_ptp1_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i-1], dr[i]);
+    double r_Der_Q= Dx_ptp1_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i+1], q_v.v[i], q_v.v[i-1], dr[i]);
+
+    dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
+    dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+
+  }
+
+
+  for(int i = grid.exc_i + 2; i<nx-2; i++){
+    double Bep=  beta_p(l, phi_v.v[i]);
+    double Bepp= beta_pp(l, phi_v.v[i]);
+
+    double r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i-2], dr[i]);
+    double r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], s_v.v[i-2], dr[i]);
+    double r_Der_P= Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+    double r_Der_Q= Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+
+    dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q,Bep,Bepp);
+    dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+
+
+  }
+  {
+    int i = nx-2;
+    double Bep=  beta_p(l, phi_v.v[i]);
+    double Bepp= beta_pp(l, phi_v.v[i]);
+
+    double r_Der_nn= Dx_ptm1_4th(n_v.v[i+1], n_v.v[i], n_v.v[i-1], n_v.v[i-2],n_v.v[i-3], dr[i]);
+    double r_Der_ss= Dx_ptm1_4th(s_v.v[i+1], s_v.v[i], s_v.v[i-1], s_v.v[i-2],s_v.v[i-3], dr[i]);
+    double r_Der_P= Dx_ptm1_4th(p_v.v[i+1], p_v.v[i], p_v.v[i-1], p_v.v[i-2],p_v.v[i-3], dr[i]);
+    double r_Der_Q= Dx_ptm1_4th(q_v.v[i+1], q_v.v[i], q_v.v[i-1], q_v.v[i-2],q_v.v[i-3], dr[i]);
+
+    dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q,Bep,Bepp);
+    dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+    dphidt[i] = rhs_phi(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
+  }
+
+  {
+    int i = nx-1;
+    dpdt[i] = 0.;
+    dqdt[i] = 0.;
+    dphidt[i] = 0.;
+
+  }
+
+  KO_filter(grid, "even", dpdt, p_v.v);
+  KO_filter(grid, "odd", dqdt, q_v.v);
+  KO_filter(grid, "even" ,dphidt, phi_v.v);
+
+}
 
 //==============================================================================
 //==============================================================================
@@ -295,131 +370,131 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
   Solve_metric_fields solve_metric_fields;
 
   if(grid.exc_i>0){
-    cout<<"Excision not implemented for evolution equations. Exit. "<<endl;
-    std::exit(0);
-    // vector<double> r = grid.r;
-    // int nx = grid.nx;
-    // double dt = grid.dt;
-    // vector<double> dr = grid.dr;
-    // int exc_i = grid.exc_i;
-    //
-    // vector<double> kp1(nx,0), kq1(nx,0), kphi1(nx,0);
-    // vector<double> kp2(nx,0), kq2(nx,0), kphi2(nx,0);
-    // vector<double> kp3(nx,0), kq3(nx,0), kphi3(nx,0);
-    // vector<double> kp4(nx,0), kq4(nx,0), kphi4(nx,0);
-    // double sk1 = 0, sk2 = 0, sk3 = 0, sk4 = 0;
-    // vector<double> dpdt(nx,0), dqdt(nx,0), dphidt(nx,0);
-    // double dsdt;
-    //
-    // generate_rhs_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dsdt, dpdt, dqdt, dphidt);
-    //
-    // for(int i =exc_i; i<nx-1; i++){
-    //   kp1[i] = dt*dpdt[i];
-    //   kq1[i] = dt*dqdt[i];
-    //   kphi1[i] = dt*dphidt[i];
-    //
-    // }
-    // sk1 = dt*dsdt;
-    // {
-    //   Field n_1("n_k1", "even", grid);
-    //   Field s_1("s_k1", "odd", grid);
-    //   Field p_1("p_k1", "even", grid);
-    //   Field q_1("q_k1", "odd", grid);
-    //   Field phi_1("phi_k1", "even", grid);
-    //
-    //   for(int i = exc_i; i<nx-1; i++){
-    //     n_1.v[i] = n_v.v[i];
-    //     s_1.v[i] = s_v.v[i] ;
-    //     p_1.v[i] = p_v.v[i] + 0.5*kp1[i];
-    //     q_1.v[i] = q_v.v[i] + 0.5*kq1[i];
-    //     phi_1.v[i] = phi_v.v[i] + 0.5*kphi1[i];
-    //   }
-    //   s_1.v[exc_i] = s_v.v[exc_i] + 0.5*sk1;
-    //   solve_metric_fields.solve(grid, n_1, s_1, p_1, q_1);
-    //   generate_rhs_excised(grid, n_1, s_1, p_1, q_1, phi_1, dsdt, dpdt, dqdt, dphidt);
-    //
-    //   for(int i =0; i<nx-1; i++){
-    //     kp2[i] = dt*dpdt[i];
-    //     kq2[i] = dt*dqdt[i];
-    //     kphi2[i] = dt*dphidt[i];
-    //
-    //   }
-    //   sk2 = dt*dsdt;
-    // }
-    //
-    //   {
-    //     Field n_2("n_k2", "even", grid);
-    //     Field s_2("s_k2", "odd", grid);
-    //     Field p_2("p_k2", "even", grid);
-    //     Field q_2("q_k2", "odd", grid);
-    //     Field phi_2("phi_k2", "even", grid);
-    //
-    //     for(int i = exc_i; i<nx-1; i++){
-    //       n_2.v[i] = n_v.v[i];
-    //       s_2.v[i] = s_v.v[i] ;
-    //       p_2.v[i] = p_v.v[i] + 0.5*kp2[i];
-    //       q_2.v[i] = q_v.v[i] + 0.5*kq2[i];
-    //       phi_2.v[i] = phi_v.v[i] + 0.5*kphi2[i];
-    //     }
-    //     s_2.v[exc_i] = s_v.v[exc_i] + 0.5*sk2;
-    //     solve_metric_fields.solve(grid, n_2, s_2, p_2, q_2);
-    //     generate_rhs_excised(grid, n_2, s_2, p_2, q_2, phi_2, dsdt, dpdt, dqdt, dphidt);
-    //
-    //     for(int i =exc_i; i<nx-1; i++){
-    //       kp3[i] = dt*dpdt[i];
-    //       kq3[i] = dt*dqdt[i];
-    //       kphi3[i] = dt*dphidt[i];
-    //
-    //     }
-    //     sk3 = dt*dsdt;
-    //
-    //
-    //
-    //   }
-    //   {
-    //     Field n_3("n_k3", "even", grid);
-    //     Field s_3("s_k3", "odd", grid);
-    //     Field p_3("p_k3", "even", grid);
-    //     Field q_3("q_k3", "odd", grid);
-    //     Field phi_3("phi_k3", "even", grid);
-    //
-    //     for(int i = exc_i; i<nx-1; i++){
-    //       n_3.v[i] = n_v.v[i];
-    //       s_3.v[i] = s_v.v[i];
-    //       p_3.v[i] = p_v.v[i] + kp3[i];
-    //       q_3.v[i] = q_v.v[i] + kq3[i];
-    //       phi_3.v[i] = phi_v.v[i] + kphi3[i];
-    //     }
-    //     s_3.v[exc_i] = s_v.v[exc_i] + sk3;
-    //     solve_metric_fields.solve(grid, n_3, s_3, p_3, q_3);
-    //     generate_rhs_excised(grid, n_3, s_3, p_3, q_3, phi_3, dsdt, dpdt, dqdt, dphidt);
-    //
-    //     for(int i =exc_i; i<nx-1; i++){
-    //       kp4[i] = dt*dpdt[i];
-    //       kq4[i] = dt*dqdt[i];
-    //       kphi4[i] = dt*dphidt[i];
-    //
-    //     }
-    //     sk4 = dt*dsdt;
-    //
-    //
-    //
-    //   }
-    //   for(int i=exc_i; i<nx-1; i++){
-    //     p_v.v[i] += (1./6.)*kp1[i] + (1./3.)*kp2[i] + (1./3.)*kp3[i] + (1./6.)*kp4[i];
-    //     q_v.v[i] += (1./6.)*kq1[i] + (1./3.)*kq2[i] + (1./3.)*kq3[i] + (1./6.)*kq4[i];
-    //     phi_v.v[i] += (1./6.)*kphi1[i] + (1./3.)*kphi2[i] + (1./3.)*kphi3[i] + (1./6.)*kphi4[i];
-    //   }
-    //   for(int i=0; i<exc_i; i++){
-    //     p_v.v[i] = p_v.v[exc_i];
-    //     q_v.v[i] = s_v.v[exc_i];
-    //     phi_v.v[i] = phi_v.v[exc_i];
-    //   }
-    //   s_v.v[exc_i] += (1./6.)*sk1 + (1./3.)*sk2 + (1./3.)*sk3 + (1./6.)*sk4;
-    //
-    //   p_v.check_isfinite(grid.t_evolve);
-    //   q_v.check_isfinite(grid.t_evolve);
-    //   phi_v.check_isfinite(grid.t_evolve);
+    // cout<<"Excision not implemented for evolution equations. Exit. "<<endl;
+    // std::exit(0);
+    vector<double> r = grid.r;
+    int nx = grid.nx;
+    double dt = grid.dt;
+    vector<double> dr = grid.dr;
+    int exc_i = grid.exc_i;
+
+    vector<double> kp1(nx,0), kq1(nx,0), kphi1(nx,0);
+    vector<double> kp2(nx,0), kq2(nx,0), kphi2(nx,0);
+    vector<double> kp3(nx,0), kq3(nx,0), kphi3(nx,0);
+    vector<double> kp4(nx,0), kq4(nx,0), kphi4(nx,0);
+    double sk1 = 0, sk2 = 0, sk3 = 0, sk4 = 0;
+    vector<double> dpdt(nx,0), dqdt(nx,0), dphidt(nx,0);
+    double dsdt;
+
+    generate_rhs_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dsdt, dpdt, dqdt, dphidt);
+
+    for(int i =exc_i; i<nx-1; i++){
+      kp1[i] = dt*dpdt[i];
+      kq1[i] = dt*dqdt[i];
+      kphi1[i] = dt*dphidt[i];
+
+    }
+    sk1 = dt*dsdt;
+    {
+      Field n_1("n_k1", "even", grid);
+      Field s_1("s_k1", "odd", grid);
+      Field p_1("p_k1", "even", grid);
+      Field q_1("q_k1", "odd", grid);
+      Field phi_1("phi_k1", "even", grid);
+
+      for(int i = exc_i; i<nx-1; i++){
+        n_1.v[i] = n_v.v[i];
+        s_1.v[i] = s_v.v[i] ;
+        p_1.v[i] = p_v.v[i] + 0.5*kp1[i];
+        q_1.v[i] = q_v.v[i] + 0.5*kq1[i];
+        phi_1.v[i] = phi_v.v[i] + 0.5*kphi1[i];
+      }
+      s_1.v[exc_i] = s_v.v[exc_i] + 0.5*sk1;
+      solve_metric_fields.solve(grid, n_1, s_1, p_1, q_1,phi_1);
+      generate_rhs_excised(grid, n_1, s_1, p_1, q_1, phi_1, dsdt, dpdt, dqdt, dphidt);
+
+      for(int i =0; i<nx-1; i++){
+        kp2[i] = dt*dpdt[i];
+        kq2[i] = dt*dqdt[i];
+        kphi2[i] = dt*dphidt[i];
+
+      }
+      sk2 = dt*dsdt;
+    }
+
+      {
+        Field n_2("n_k2", "even", grid);
+        Field s_2("s_k2", "odd", grid);
+        Field p_2("p_k2", "even", grid);
+        Field q_2("q_k2", "odd", grid);
+        Field phi_2("phi_k2", "even", grid);
+
+        for(int i = exc_i; i<nx-1; i++){
+          n_2.v[i] = n_v.v[i];
+          s_2.v[i] = s_v.v[i] ;
+          p_2.v[i] = p_v.v[i] + 0.5*kp2[i];
+          q_2.v[i] = q_v.v[i] + 0.5*kq2[i];
+          phi_2.v[i] = phi_v.v[i] + 0.5*kphi2[i];
+        }
+        s_2.v[exc_i] = s_v.v[exc_i] + 0.5*sk2;
+        solve_metric_fields.solve(grid, n_2, s_2, p_2, q_2,phi_2);
+        generate_rhs_excised(grid, n_2, s_2, p_2, q_2, phi_2, dsdt, dpdt, dqdt, dphidt);
+
+        for(int i =exc_i; i<nx-1; i++){
+          kp3[i] = dt*dpdt[i];
+          kq3[i] = dt*dqdt[i];
+          kphi3[i] = dt*dphidt[i];
+
+        }
+        sk3 = dt*dsdt;
+
+
+
+      }
+      {
+        Field n_3("n_k3", "even", grid);
+        Field s_3("s_k3", "odd", grid);
+        Field p_3("p_k3", "even", grid);
+        Field q_3("q_k3", "odd", grid);
+        Field phi_3("phi_k3", "even", grid);
+
+        for(int i = exc_i; i<nx-1; i++){
+          n_3.v[i] = n_v.v[i];
+          s_3.v[i] = s_v.v[i];
+          p_3.v[i] = p_v.v[i] + kp3[i];
+          q_3.v[i] = q_v.v[i] + kq3[i];
+          phi_3.v[i] = phi_v.v[i] + kphi3[i];
+        }
+        s_3.v[exc_i] = s_v.v[exc_i] + sk3;
+        solve_metric_fields.solve(grid, n_3, s_3, p_3, q_3,phi_3);
+        generate_rhs_excised(grid, n_3, s_3, p_3, q_3, phi_3, dsdt, dpdt, dqdt, dphidt);
+
+        for(int i =exc_i; i<nx-1; i++){
+          kp4[i] = dt*dpdt[i];
+          kq4[i] = dt*dqdt[i];
+          kphi4[i] = dt*dphidt[i];
+
+        }
+        sk4 = dt*dsdt;
+
+
+
+      }
+      for(int i=exc_i; i<nx-1; i++){
+        p_v.v[i] += (1./6.)*kp1[i] + (1./3.)*kp2[i] + (1./3.)*kp3[i] + (1./6.)*kp4[i];
+        q_v.v[i] += (1./6.)*kq1[i] + (1./3.)*kq2[i] + (1./3.)*kq3[i] + (1./6.)*kq4[i];
+        phi_v.v[i] += (1./6.)*kphi1[i] + (1./3.)*kphi2[i] + (1./3.)*kphi3[i] + (1./6.)*kphi4[i];
+      }
+      for(int i=0; i<exc_i; i++){
+        p_v.v[i] = p_v.v[exc_i];
+        q_v.v[i] = s_v.v[exc_i];
+        phi_v.v[i] = phi_v.v[exc_i];
+      }
+      s_v.v[exc_i] += (1./6.)*sk1 + (1./3.)*sk2 + (1./3.)*sk3 + (1./6.)*sk4;
+
+      p_v.check_isfinite(grid.t_evolve);
+      q_v.check_isfinite(grid.t_evolve);
+      phi_v.check_isfinite(grid.t_evolve);
 
   }
   else{

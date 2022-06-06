@@ -93,4 +93,24 @@ inline double make_Dx_zero(
 	;
 }
 
+/*============================================================================*/
+inline double Dx_2_ptpc_4th(
+	const double vp3, const double vp2, const double vp1,
+	const double vp0, const double vm1, const double vm2,
+	const double vm3, const double dr
+){
+
+	double ans = 0.;
+
+	ans = 2.*vm3 - 27.*vm2 + 270.*vm1 - 490.*vp0 + 270.*vp1 - 27.*vp2 + 2.*vp3;
+	ans/= (180.*dr*dr);
+
+	return ans;
+}
+/*============================================================================*/
+
+/*============================================================================*/
+
+/*============================================================================*/
+
 #endif

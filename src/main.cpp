@@ -35,14 +35,14 @@ int main(int argc, char const *argv[]) {
   std::time_t t_path = std::time(0);
   std::tm *path_time = std::localtime(&t_path);
 
-  string path = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/" + to_string(path_time->tm_mday) +"_"+to_string(path_time->tm_hour)+ "_"+to_string(path_time->tm_min)+"_"+to_string(path_time->tm_sec) ;
+  string path = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Convergence-1/" + to_string(path_time->tm_mday) +"_"+to_string(path_time->tm_hour)+ "_"+to_string(path_time->tm_min)+"_"+to_string(path_time->tm_sec) ;
   char* path_arr;
   path_arr = &path[0];
   int rc = mkdir(path_arr, 0755);
   /*----------------------------------------*/
   Write_data write(path);
 
-  Grid_data grid(12000, 18000, 2.); //Generate grid with nx, nt, l and exci
+  Grid_data grid(2000, 3000,0.3); //Generate grid with nx, nt, l and exci
 
   write.write_grid(grid); //Write grid to file
 
@@ -76,7 +76,7 @@ int main(int argc, char const *argv[]) {
   //============================================================================
   /* Simulation Parameters */
 
-  cout<<"Simulation Parameters"<<"\n"<<"--------------------------------------"<<endl;
+  cout<<"Simulation Parameters"<<"\n"<<"---------------------------------------"<<endl;
   cout<<"Saving file at : "<<path<<endl;
   cout<<"nx = "<<grid.nx<<endl;
   cout<<"nt = "<<grid.nt<<endl;

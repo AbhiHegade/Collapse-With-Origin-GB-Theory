@@ -61,12 +61,12 @@ private:
     std::vector<double> &dqdt,
     std::vector<double> &dphidt);
   //============================================================================
-  // void generate_rhs_excised(const Grid_data grid,
-  //   const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v,
-  //   double &dsdt,
-  //   std::vector<double> &dpdt,
-  //   std::vector<double> &dqdt,
-  //   std::vector<double> &dphidt);
+  void generate_rhs_excised(const Grid_data grid,
+    const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v,
+    double &dsdt,
+    std::vector<double> &dpdt,
+    std::vector<double> &dqdt,
+    std::vector<double> &dphidt);
   //============================================================================
   //============================================================================
   //============================================================================
