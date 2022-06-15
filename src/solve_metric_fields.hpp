@@ -18,6 +18,9 @@ public:
   void solve(const Grid_data grid,Field &n_v,Field &s_v, const Field &p_v, const Field &q_v, const Field &phi_v);
 
 private:
+  double interp_4_c(double ym2, double ym1, double y0, double y1, double y2);
+  double interp_4_pm1(double ym1, double y0, double y1, double y2, double y3);
+  double interp_4_p0(double y0, double y1, double y2, double y3, double y4);
   double rhs_shift(double r,
     double ss, double P,
     double r_Der_P, double Q, double r_Der_Q, double Bep, double Bepp);

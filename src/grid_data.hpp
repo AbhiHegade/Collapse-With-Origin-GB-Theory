@@ -29,8 +29,7 @@ public:
   void update_t();
 
 private:
-  double r_of_x(double x1); // r(x)
-  double r_p_of_x(double x1); // dr/dx
+
 };
 
 #endif

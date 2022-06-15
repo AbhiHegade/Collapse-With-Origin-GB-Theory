@@ -35,7 +35,6 @@ void Diagnostics::find_abs_min(const vector<double> &v,
 
     for(int i=0; i<len;i++){
       v_abs[i] = fabs(ref_val - v[i]);
-      // cout<<"v_abs = "<<v_abs[i]<<endl;
     }
 
     auto minret = min_element(v_abs.begin(), v_abs.end());
@@ -57,7 +56,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
     assert(grid.exc_i==0);
     double min_elem = 0;
     int index = 0;
-    const double err_tol= 1e-3;
+    const double err_tol= 1e-2;
 
     find_abs_min(s_v.v,min_elem,index,1.01);
     // cout<<"Minimum = "<<min_elem<<endl;
