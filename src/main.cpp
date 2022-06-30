@@ -14,11 +14,11 @@ using std::string;
 using std::to_string;
 #include <vector>
 using std::vector;
-#include <fstream>
-#include <ctime>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sstream>
+// #include <fstream>
+// #include <ctime>
+// #include <sys/stat.h>
+// #include <sys/types.h>
+// #include <sstream>
 
 //==============================================================================
 
@@ -30,32 +30,37 @@ using std::vector;
 #include "evolve_scalar_field.hpp"
 #include "outputfiles.hpp"
 #include "compute_potentials.hpp"
+#include "sim_params.hpp"
 
 //==============================================================================
 
 int main(int argc, char const *argv[]) {
   /*-----Creating Directory For Output--------*/
 
-  std::time_t t_path = std::time(0);
-  std::tm *path_time = std::localtime(&t_path);
-
-  string path = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/" + to_string(path_time->tm_mday) +"_"+to_string(path_time->tm_hour)+ "_"+to_string(path_time->tm_min)+"_"+to_string(path_time->tm_sec) ;
-  char* path_arr;
-  path_arr = &path[0];
-  int rc = mkdir(path_arr, 0755);
+  // std::time_t t_path = std::time(0);
+  // std::tm *path_time = std::localtime(&t_path);
+  // string path = argv[1];
+  // string path = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/" + to_string(path_time->tm_mday) +"_"+to_string(path_time->tm_hour)+ "_"+to_string(path_time->tm_min)+"_"+to_string(path_time->tm_sec) ;
+  // char* path_arr;
+  // path_arr = &path[0];
+  // int rc = mkdir(path_arr, 0755);
 
   /*----------------------------------------*/
+  assert(argc == 2);
+  string path = argv[1];
+
+  Sim_params sp(path);
   Write_data write(path);
 
   //Generate grid with nx, nt, l and exci
-  Grid_data grid(2000, 2000,0.01);
-  int save_steps = 400;
+  Grid_data grid(sp.nx, sp.nt,sp.l);
+  int save_steps = sp.save_steps;
 
   //Write grid to file
   write.write_grid(grid);
 
   //Starting simulation with Minkowski space so M=0
-  double M = 0.;
+  double M = sp.M;
 
   //Initialize Evolution classes
 
@@ -63,7 +68,7 @@ int main(int argc, char const *argv[]) {
   Solve_metric_fields solve_metric;
 
   //Initialize Initial_data class
-  Initial_data initialdata(0.27,12.,8., M);
+  Initial_data initialdata(sp.A,sp.ru,sp.rl, M);
 
   //Initialize diagonistics class
   Diagnostics diagnostics;
@@ -91,10 +96,9 @@ int main(int argc, char const *argv[]) {
   //============================================================================
   /* Simulation Parameters */
 
-  cout<<"Simulation Parameters"<<"\n"<<endl;
-  cout<<"---------------------------------------------------------------"<<endl;
-  cout<<"---------------------------------------------------------------"<<endl;
-  cout<<"Run type : Basic Run"<<endl;
+  // cout<<"Simulation Parameters"<<"\n"<<endl;
+  // cout<<"---------------------------------------------------------------"<<endl;
+  // cout<<"---------------------------------------------------------------"<<endl;
   cout<<"Saving file at : "<<path<<endl;
   cout<<"nx = "<<grid.nx<<endl;
   cout<<"nt = "<<grid.nt<<endl;
@@ -103,7 +107,8 @@ int main(int argc, char const *argv[]) {
   cout<<"dt = "<<grid.dt<<endl;
   cout<<"GB coupling l = "<<grid.l<<endl;
   cout<<"Scalar Field Amplitude = "<<initialdata.amp<<endl;
-  cout<<"Scalar Field ru = "<<initialdata.r_u<<" , rl = "<<initialdata.r_l<<endl;
+  cout<<"ru = "<<initialdata.r_u<<endl;
+  cout<<"rl = "<<initialdata.r_l<<endl;
   cout<<"Starting simulation..."<<endl;
 
   //============================================================================
@@ -148,9 +153,9 @@ int main(int argc, char const *argv[]) {
 
 
 }
-  cout<<"Run finished successfully"<<endl;
   cout<<"Final time = "<<grid.t_evolve<<endl;
-  cout<<"---------------------------------------------------------------"<<endl;
-  cout<<"---------------------------------------------------------------"<<endl;
+  cout<<"Run finished successfully"<<endl;
+  // cout<<"---------------------------------------------------------------"<<endl;
+  // cout<<"---------------------------------------------------------------"<<endl;
   return 0;
 }

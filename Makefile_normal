@@ -24,6 +24,7 @@ endif
 #=============================================================================
 OBJ= $(addprefix $(OBJDIR), \
 	main.o \
+	sim_params.o \
 	compute_potentials.o \
 	grid_data.o \
 	field.o \
@@ -34,7 +35,7 @@ OBJ= $(addprefix $(OBJDIR), \
 	outputfiles.o \
 	fd_stencils.o	\
 	)
-DEPS=		grid_data.hpp	compute_potentials.hpp field.hpp solve_metric_fields.hpp	initial_data.hpp	diagnostics.hpp evolve_scalar_field.hpp	outputfiles.hpp	fd_stencils.hpp
+DEPS=	sim_params.hpp	compute_potentials.hpp grid_data.hpp field.hpp solve_metric_fields.hpp	initial_data.hpp	diagnostics.hpp evolve_scalar_field.hpp	outputfiles.hpp	fd_stencils.hpp
 #=============================================================================
 all: default.run
 test: $(TEST)
