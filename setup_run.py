@@ -17,7 +17,8 @@ for j in range(len(Amps)):
 
 
 sim = Sim()
-sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory"
+# sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory"
+sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Phi-Squared-Theory"
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
 sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Animation-Script.ipynb"
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     while True:
         if not result.ready():
             print('We\'re not done yet, %s tasks to go!' % result._number_left)
-            time.sleep(10)
+            time.sleep(20)
         else:
             break
     # pool.close()

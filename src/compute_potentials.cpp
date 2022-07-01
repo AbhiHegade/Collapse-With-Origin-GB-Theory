@@ -23,7 +23,7 @@ double beta_p(const double l, const double phi){
 }
 
 double beta_pp(const double l, const double phi){
-  return 0;
+  return 0.;
 }
 
 void beta_gen(const double l, const std::vector<double> &phi_v, std::vector<double> &beta_v1,
