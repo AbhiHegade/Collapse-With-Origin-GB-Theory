@@ -3,9 +3,11 @@ from sim_class import Sim
 import numpy as np
 from multiprocessing import Pool
 import time
+import os
 #===============================================================================
-Amps = np.array([0.7])
-ls = np.array([0])
+Amps = np.linspace(1e-4,1,40)
+# Amps = np.linspace(0.2,0.4,20)
+ls = np.array([0.5])
 # Amps = [1]
 # ls = [1]
 input_data = []
@@ -13,11 +15,14 @@ for j in range(len(Amps)):
     for l in range(len(ls)):
         input_data.append([ls[l],Amps[j]])
 
+
 sim = Sim()
 sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory"
+if not os.path.exists(sim.out_dir):
+    os.makedirs(sim.out_dir)
 sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Animation-Script.ipynb"
-sim.nx = 4000
-sim.nt = 4000
+sim.nx = 8000
+sim.nt = 8000
 sim.save_steps = 100
 # sim.l = 0.1
 sim.initial_mass = 0.
@@ -35,7 +40,7 @@ def launch_sim(vals):
 if __name__ == '__main__':
     t_start = time.time()
     print("Starting multiprocessing pool..")
-    pool = Pool(5)
+    pool = Pool(7)
     result = pool.map_async(launch_sim, input_data)
     pool.close()
 

@@ -56,19 +56,20 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
 
     find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
     int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
+    int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
     if (min_elem<err_tol){
       if (index==0){
         cout<<"Apparent Horizon at the origin."<<endl;
         std::exit(0);
       }
-      else if(indexby2 == grid.exc_i ){
+      else if (new_exc_i == grid.exc_i){
 
       }
       else{
         cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
         cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
-        cout<<"Updating excision point to i = "<<indexby2<<", r = "<<grid.r[indexby2]<<endl;
-        grid.exc_i = indexby2;
+        cout<<"Updating excision point to i = "<<new_exc_i<<", r = "<<grid.r[new_exc_i]<<endl;
+        grid.exc_i = new_exc_i;
         cout<<"done."<<endl;
       }
     }
@@ -89,7 +90,8 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
         std::exit(0);
       }
       else{
-        int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
+        // int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
+        int indexby2 = (index/3 ==0) ? (index/2) : (index/3);
 
         cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
         cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;

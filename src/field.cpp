@@ -52,7 +52,7 @@ void Field::check_field_isfinite(
          cout<<level<<" ";
          cout<<"time =  "<<time;
          cout<<" ";
-         cout<<"index =  "<<index;
+         cout<<"index =  "<<index<<" r = "<<grid.r[index];
          cout<<" )"<<endl;
          std::exit(0);
       }
