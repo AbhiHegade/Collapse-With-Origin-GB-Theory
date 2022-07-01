@@ -24,10 +24,13 @@ class Sim:
         self.output_file= self.output_dir+'/'+'output.out'
         with open(self.output_file, 'w') as f:
             pass
+    def copy_anim_script(self):
+        subprocess.call('cp {} {}/'.format(self.animscript,self.output_dir), shell=True)
 #===============================================================
     def launch(self):
         self.make_output_dir()
         self.make_output_file()
         self.write_sim_params()
+        self.copy_anim_script()
         subprocess.call('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)
         # subprocess.Popen('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)

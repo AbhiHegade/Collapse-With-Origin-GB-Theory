@@ -36,7 +36,7 @@ public:
 
 
 private:
-  void find_abs_min(const vector<double> &v, double &min_elem, int &index, const double ref_val);
+  void find_abs_min(const vector<double> &v, double &min_elem, int &index, const double ref_val, const int start_index);
 
   int compute_radial_characteristic(double r, double nn, double r_Der_nn,
   double ss, double r_Der_ss,

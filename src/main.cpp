@@ -140,7 +140,9 @@ int main(int argc, char const *argv[]) {
   grid.update_t();
   solve_metric.solve( grid, n, s , p ,q,phi);
   diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, s.v, p.v,residual);
+  if(i_e%10 ==0){
   diagnostics.find_apparent_horizon(grid,s);
+  }
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
 
   i_e += 1;
@@ -153,8 +155,15 @@ int main(int argc, char const *argv[]) {
 
 
 }
+
   cout<<"Final time = "<<grid.t_evolve<<endl;
-  cout<<"Run finished successfully"<<endl;
+  if(grid.exc_i>0){
+    int mass_extraction_radius = 3*(grid.nx/4);
+    cout<<"exit_code_1, BH_Formation , MS_mass = "<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<", run finished successfully."<<endl;
+  }
+  else{
+    cout<<"exit_code_0, no black hole formation, run finished successfully."<<endl;
+  }
   // cout<<"---------------------------------------------------------------"<<endl;
   // cout<<"---------------------------------------------------------------"<<endl;
   return 0;

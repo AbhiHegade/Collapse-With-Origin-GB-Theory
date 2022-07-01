@@ -27,13 +27,14 @@ Diagnostics::~Diagnostics(void){
 void Diagnostics::find_abs_min(const vector<double> &v,
   double &min_elem,
   int &index,
-  const double ref_val )
+  const double ref_val,
+  const int start_index )
   {
     int len = v.size();
 
-    vector<double> v_abs(len);
+    vector<double> v_abs(len,1);
 
-    for(int i=0; i<len;i++){
+    for(int i=start_index; i<len;i++){
       v_abs[i] = fabs(ref_val - v[i]);
     }
 
@@ -49,6 +50,28 @@ void Diagnostics::find_abs_min(const vector<double> &v,
 void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
 
   if(grid.exc_i>0){
+    double min_elem = 0;
+    int index = 0;
+    const double err_tol= 1e-2;
+
+    find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
+    int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
+    if (min_elem<err_tol){
+      if (index==0){
+        cout<<"Apparent Horizon at the origin."<<endl;
+        std::exit(0);
+      }
+      else if(indexby2 == grid.exc_i ){
+
+      }
+      else{
+        cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
+        cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
+        cout<<"Updating excision point to i = "<<indexby2<<", r = "<<grid.r[indexby2]<<endl;
+        grid.exc_i = indexby2;
+        cout<<"done."<<endl;
+      }
+    }
 
 
   }
@@ -58,8 +81,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
     int index = 0;
     const double err_tol= 1e-2;
 
-    find_abs_min(s_v.v,min_elem,index,1.01);
-    // cout<<"Minimum = "<<min_elem<<endl;
+    find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
 
     if (min_elem<err_tol){
       if (index==0){
@@ -67,10 +89,12 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
         std::exit(0);
       }
       else{
+        int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
+
         cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
         cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
-        cout<<"Updating excision point...."<<endl;
-        grid.exc_i = index;
+        cout<<"Updating excision point to i = "<<indexby2<<", r = "<<grid.r[indexby2]<<endl;
+        grid.exc_i = indexby2;
         cout<<"done."<<endl;
       }
     }
@@ -319,8 +343,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
       }
       grid.exc_i= new_exc_i;
 
-      if (outgoing[grid.exc_i + 1]>0) {
-         cout<<"naked_elliptic_region, t = "<<grid.t_evolve<<endl;
+      if (outgoing[2*(grid.exc_i + 1) + 1]>0) {
+         cout<<"naked_elliptic_region at r = "<<r[2*(grid.exc_i + 1) + 1]<<" , t = "<<grid.t_evolve<<endl;
          std::exit(0);
       }
 
