@@ -6,6 +6,7 @@ using std::string;
 #include <fstream>
 #include <vector>
 using std::vector;
+#include<cassert>
 
 #include "outputfiles.hpp"
 #include "grid_data.hpp"

@@ -9,6 +9,7 @@ using std::exp;
 using std::vector;
 #include <string>
 using std::string;
+#include <cassert>
 
 #include "field.hpp"
 #include "initial_data.hpp"

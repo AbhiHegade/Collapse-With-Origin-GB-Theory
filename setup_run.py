@@ -5,8 +5,8 @@ from multiprocessing import Pool
 import time
 import os
 #===============================================================================
-Amps = np.linspace(1e-3,1,50)
-ls = np.array([0.5])
+Amps = np.linspace(1e-4,1,50)
+ls = np.linspace(0.01,1,10)
 # Amps = [1]
 # ls = [1]
 input_data = []
@@ -19,7 +19,7 @@ sim = Sim()
 # sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory"
 sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/Animation-Script.ipynb"
 sim.nx = 5000
-sim.nt = 10000
+sim.nt = 5000
 sim.save_steps = 100
 sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_{}".format(sim.nx,sim.nt)
 if not os.path.exists(sim.out_dir):

@@ -9,6 +9,9 @@ using std::exp;
 using std::vector;
 #include <string>
 using std::string;
+#include<cassert>
+#include <algorithm>
+using std::min_element;
 
 #include "field.hpp"
 #include "grid_data.hpp"
