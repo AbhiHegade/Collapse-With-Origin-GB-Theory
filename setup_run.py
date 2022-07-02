@@ -5,8 +5,7 @@ from multiprocessing import Pool
 import time
 import os
 #===============================================================================
-Amps = np.linspace(1e-4,1,40)
-# Amps = np.linspace(0.2,0.4,20)
+Amps = np.linspace(1e-3,1,50)
 ls = np.array([0.5])
 # Amps = [1]
 # ls = [1]
@@ -18,13 +17,13 @@ for j in range(len(Amps)):
 
 sim = Sim()
 # sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory"
-sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Phi-Squared-Theory"
+sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/Animation-Script.ipynb"
+sim.nx = 5000
+sim.nt = 10000
+sim.save_steps = 100
+sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_{}".format(sim.nx,sim.nt)
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
-sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Animation-Script.ipynb"
-sim.nx = 8000
-sim.nt = 8000
-sim.save_steps = 100
 # sim.l = 0.1
 sim.initial_mass = 0.
 sim.rl = 8.

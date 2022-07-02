@@ -140,9 +140,7 @@ int main(int argc, char const *argv[]) {
   grid.update_t();
   solve_metric.solve( grid, n, s , p ,q,phi);
   diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, s.v, p.v,residual);
-  if(i_e%10 ==0){
   diagnostics.find_apparent_horizon(grid,s);
-  }
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
 
   i_e += 1;
