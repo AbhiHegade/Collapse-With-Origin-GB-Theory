@@ -94,7 +94,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
       }
       else{
         // int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
-        int indexby2 = (index/3 ==0) ? (index/2) : (index/3);
+        int indexby2 = (index/2 ==0) ? (index) : (index/2);
 
         cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
         cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
