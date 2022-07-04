@@ -1,6 +1,7 @@
 #include <cmath>
 #include<vector>
 using std::vector;
+#include<iostream>
 
 #include "compute_potentials.hpp"
 //==============================================================================
@@ -42,10 +43,19 @@ std::vector<double> &beta_pp1){
 double solve_cubic_eqn(double a0, double a1, double a2, double a3, double init_guess){
   double guess = init_guess;
   double tol = 1e-10;
+  int counter = 0;
+  int max_steps = 10000;
   double err = a0 + a1*guess + a2*pow(guess,2.) + a3*pow(guess,3.);
-  while(fabs(err)>tol){
+  while((fabs(err)>tol)&&(counter<max_steps)){
     guess = guess - ((a0 + a1*guess + a2*pow(guess,2.) + a3*pow(guess,3.))/(a1 + 2.*a2*guess + 3.*a3*pow(guess,2.)));
     err = a0 + a1*guess + a2*pow(guess,2.) + a3*pow(guess,3.);
+    counter += 1;
+  }
+  if(counter >= max_steps){
+    std::cout<<"Max steps exceeded, stopping find root. Error = "<<err<<std::endl;
+  }
+  else{
+
   }
   return guess;
 

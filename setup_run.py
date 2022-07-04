@@ -6,8 +6,9 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-Amps = np.linspace(1e-4,1,5)
-ls = np.linspace(0.01,1,1)
+Amps = np.array([0.4694408163265306,1.0,0.9591877551020408,0.5918775510204082,0.9387816326530612,0.9795938775510205,0.897969387755102,0.9183755102040816])
+# ls = np.linspace(0.01,1,1)
+ls = np.array([1])
 # Amps = [1]
 # ls = [1]
 input_data = []
@@ -39,8 +40,9 @@ def launch_sim(vals):
     sim.launch()
 
 if sim.slurm == True:
-    sim.memory = '50'
+    sim.memory = '30'
     for j in range(len(Amps)):
+        # launch_sim([ls[j],Amps[j]])
         for l in range(len(ls)):
             launch_sim([ls[l],Amps[j]])
 else:
