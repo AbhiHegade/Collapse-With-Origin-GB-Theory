@@ -17,6 +17,7 @@ public:
   const double cl; // Compactification Length
   const double dx; // dx
   const double cfl;
+  int ah_index;
 
   std::vector<double> x; // x grid values stored in a vector
   std::vector<double> r; // r grid values stored in a vector

@@ -62,13 +62,14 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
     int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
     if (min_elem<err_tol){
       if (index==0){
-        cout<<"Apparent Horizon at the origin."<<endl;
+        cout<<"Apparent horizon at the origin."<<endl;
         std::exit(0);
       }
       else if (new_exc_i == grid.exc_i){
-
+        grid.ah_index = index;
       }
       else{
+        grid.ah_index = index;
         cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
         cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
         cout<<"Updating excision point to i = "<<new_exc_i<<", r = "<<grid.r[new_exc_i]<<endl;
@@ -81,12 +82,12 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
   }
   else{
     assert(grid.exc_i==0);
+    assert(grid.ah_index ==0);
     double min_elem = 0;
     int index = 0;
     const double err_tol= 1e-2;
 
     find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
-
     if (min_elem<err_tol){
       if (index==0){
         cout<<"Apparent Horizon at the origin."<<endl;
@@ -94,11 +95,12 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
       }
       else{
         // int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
+        grid.ah_index = index;
         int indexby2 = (index/3 ==0) ? (index/2) : (index/3);
 
         cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
         cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
-        cout<<"Updating excision point to i = "<<indexby2<<", r = "<<grid.r[indexby2]<<endl;
+        cout<<"Updating excision point to i = "<<indexby2<<", r = "<<grid.r[indexby2]<<", ";
         grid.exc_i = indexby2;
         cout<<"done."<<endl;
       }
@@ -257,6 +259,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         ingoing_c, outgoing_c);
 
         if (status==-1) {
+          cout<<"Elliptic region formation in flat space."<<endl;
           cout<<"naked_elliptic_region at r = "<<r[i]<<" , t = "<<grid.t_evolve<<endl;
           std::exit(0);
         }
@@ -346,22 +349,27 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         outgoing[i]= outgoing_c;
 
       }
+      if(new_exc_i >= grid.ah_index){
+        grid.exc_i= new_exc_i;
+        if(outgoing[grid.exc_i + 1]>0){
+          cout<<"AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<")"<<"exci at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<")"<<endl;
+          cout<<"naked_elliptic_region at i = "<<grid.exc_i + 1<<", r = "<<r[(grid.exc_i + 1)]<<" , t = "<<grid.t_evolve<<", outgoing characterisitcs are postive."<<endl;
+          std::exit(0);
+        }
+      }
+      else{
       grid.exc_i= new_exc_i;
 
-      if (outgoing[2*(grid.exc_i + 1) + 1]>0) {
-         cout<<"naked_elliptic_region at r = "<<r[2*(grid.exc_i + 1) + 1]<<" , t = "<<grid.t_evolve<<endl;
-         std::exit(0);
+      if (outgoing[grid.ah_index + 1]>0) {
+        cout<<"AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<")"<<"exci at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<")"<<endl;
+        cout<<"naked_elliptic_region at i = "<<grid.exc_i + 1<<", r = "<<r[(grid.exc_i + 1)]<<" , t = "<<grid.t_evolve<<", outgoing characterisitcs are postive."<<endl;
+        std::exit(0);
       }
 
     }
+  }
 
       return;
-
-
-
-
-
-
 
 
     }

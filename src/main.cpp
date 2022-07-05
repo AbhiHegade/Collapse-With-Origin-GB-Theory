@@ -148,6 +148,7 @@ int main(int argc, char const *argv[]) {
     write.write_residual(residual);
     write.write_fields(n, s , p ,q, phi);
     write.write_characteristics(ingoing, outgoing);
+    write.write_ah(grid);
   }
 
 

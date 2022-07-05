@@ -20,6 +20,7 @@ Grid_data::Grid_data( const int nx,const int nt, const double l, int exc_i ,cons
   cl{cl},
   dx{(cl)/(nx)},
   cfl{cfl},
+  ah_index{0},
   x(nx,0.),
   r(nx,0.),
   dr(nx,0.),

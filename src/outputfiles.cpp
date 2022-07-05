@@ -49,6 +49,23 @@ void Write_data::write_grid(const Grid_data grid){
   write_output_1.close();
 }
 
+void Write_data::write_ah(const Grid_data grid){
+  string name_ah = path + "ah" + ".dat";
+  string name_exci = path + "exci.dat";
+  std::ofstream write_output(name_ah , std::ios::app);
+  assert(write_output.is_open());
+  write_output.precision(10);
+  write_output<<grid.ah_index<<" ";
+  write_output.flush();
+  write_output.close();
+
+  std::ofstream write_output_1(name_exci , std::ios::app);
+  assert(write_output_1.is_open());
+  write_output_1.precision(10);
+  write_output_1<<grid.exc_i<<" ";
+  write_output_1.flush();
+  write_output_1.close();
+}
 void Write_data::write_field(const Field &f){
   string name = path + f.name + ".dat";
   std::ofstream write_output(name , std::ios::app);

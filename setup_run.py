@@ -6,9 +6,11 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-Amps = np.array([0.4694408163265306,1.0,0.9591877551020408,0.5918775510204082,0.9387816326530612,0.9795938775510205,0.897969387755102,0.9183755102040816])
+# Amps = np.concatenate((np.linspace(1e-4,1e-3,10), np.linspace(1e-3,1e-2,10),np.linspace(1e-2,1e-1,10),np.linspace(1e-1,1,5)))
+# Amps = np.unique(Amps)
+Amps = np.array([0.3])
 # ls = np.linspace(0.01,1,1)
-ls = np.array([1])
+ls = np.array([0,0.7])
 # Amps = [1]
 # ls = [1]
 input_data = []
@@ -21,9 +23,9 @@ sim = Sim()
 sim.slurm = False
 # sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/Animation-Script.ipynb"
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 5000
-sim.nt = 5000
-sim.save_steps = 100
+sim.nx = 8000
+sim.nt = 10000
+sim.save_steps = 200
 # sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 sim.out_dir = "./output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 if not os.path.exists(sim.out_dir):
