@@ -8,9 +8,11 @@ import os
 #===============================================================================
 # Amps = np.concatenate((np.linspace(1e-4,1e-3,10), np.linspace(1e-3,1e-2,10),np.linspace(1e-2,1e-1,10),np.linspace(1e-1,1,5)))
 # Amps = np.unique(Amps)
-Amps = np.array([0.3])
+# Amps = np.concatenate((np.linspace(0.01,0.1,10),np.array([0.2,0.3,0.4,0.5])))
+# Amps = np.unique(Amps)
+Amps = np.array([0.5])
 # ls = np.linspace(0.01,1,1)
-ls = np.array([0,0.7])
+ls = np.array([0.5])
 # Amps = [1]
 # ls = [1]
 input_data = []

@@ -204,7 +204,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         ingoing_c, outgoing_c);
 
         if (status==-1) {
-          cout<<"naked_elliptic_region at r = "<<r[i]<<" , t = "<<grid.t_evolve<<endl;
+          cout<<"Elliptic region formation in flat space."<<endl;
+          cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
           std::exit(0);
         }
         ingoing[i]=   ingoing_c;
@@ -231,7 +232,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         ingoing_c, outgoing_c);
 
         if (status==-1) {
-          cout<<"naked_elliptic_region at r = "<<r[i]<<" , t = "<<grid.t_evolve<<endl;
+          cout<<"Elliptic region formation in flat space."<<endl;
+          cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
           std::exit(0);
         }
         ingoing[i]=   ingoing_c;
@@ -260,7 +262,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
 
         if (status==-1) {
           cout<<"Elliptic region formation in flat space."<<endl;
-          cout<<"naked_elliptic_region at r = "<<r[i]<<" , t = "<<grid.t_evolve<<endl;
+          cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
           std::exit(0);
         }
         ingoing[i]=   ingoing_c;
@@ -349,24 +351,23 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         outgoing[i]= outgoing_c;
 
       }
-      if(new_exc_i >= grid.ah_index){
-        grid.exc_i= new_exc_i;
-        if(outgoing[grid.exc_i + 1]>0){
-          cout<<"AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<")"<<"exci at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<")"<<endl;
-          cout<<"naked_elliptic_region at i = "<<grid.exc_i + 1<<", r = "<<r[(grid.exc_i + 1)]<<" , t = "<<grid.t_evolve<<", outgoing characterisitcs are postive."<<endl;
-          std::exit(0);
-        }
+        if(new_exc_i>grid.exc_i)
+        {
+          grid.exc_i = new_exc_i;
+          cout<<"Elliptic region at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<"), AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<"), t = "<<grid.t_evolve<<endl;
       }
-      else{
-      grid.exc_i= new_exc_i;
-
-      if (outgoing[grid.ah_index + 1]>0) {
-        cout<<"AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<")"<<"exci at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<")"<<endl;
-        cout<<"naked_elliptic_region at i = "<<grid.exc_i + 1<<", r = "<<r[(grid.exc_i + 1)]<<" , t = "<<grid.t_evolve<<", outgoing characterisitcs are postive."<<endl;
+        else{
+          grid.exc_i = new_exc_i;
+      }
+      if(outgoing[grid.exc_i + 1]>0){
+        cout<<"naked elliptic region with positive characterisitics inside the horizon, inconsistent."<<endl;
+        cout<<"naked_elliptic_region at i = "<<grid.exc_i <<", r = "<<r[(grid.exc_i )]<<" , t = "<<grid.t_evolve<<endl;
         std::exit(0);
       }
-
-    }
+      else if (grid.exc_i >= grid.ah_index){
+        cout<<"naked_elliptic_region outside horizon."<<endl;
+        std::exit(0);
+      }
   }
 
       return;
