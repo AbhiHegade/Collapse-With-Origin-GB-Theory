@@ -47,13 +47,13 @@ class Sim:
             f.write("module load gcc/7.2.0 \n")
             # f.write("conda activate esgb \n")
             f.write("{}/bin/default.run {}".format(self.home_dir,self.output_dir))
-#===============================================================================
+
 #===============================================================================
     def write_record(self, line):
         with open(self.record, 'a') as f:
             f.write(line + "\n")
 #===============================================================================
-    def amplitude_search(self, l, Amp_range, run_type):
+    def amplitude_search(self, l, Amp_range, run_type, tol = 1e-3):
         with open(self.record, 'w') as f:
             f.write('run_type = {}\n'.format(run_type))
             f.write('l = {}\n'.format(l))
@@ -62,7 +62,7 @@ class Sim:
         if run_type == "flat_space_to_naked_elliptic":
             A_low = Amp_range[0]
             A_high = Amp_range[1]
-            while((A_high - A_low)>1e-3):
+            while((A_high - A_low)>tol):
                 val = (A_high + A_low)/2
                 self.l = l
                 self.A = val
@@ -87,12 +87,14 @@ class Sim:
                                 self.write_record("flat_space; Amp = {}".format(val))
                                 A_low = val
                                 done = True
-                                
+            self.write_record("Run finished.")
+            self.write_record("A_low = {}; flat_space".format(A_low))
+            self.write_record("A_high = {}; naked_elliptic_region".format(A_high))
         if run_type == "naked_elliptic_to_bh":
 
             A_low = Amp_range[0]
             A_high = Amp_range[1]
-            while((A_high - A_low)>1e-3):
+            while((A_high - A_low)>tol):
                 val = (A_high + A_low)/2
                 self.l = l
                 self.A = val
@@ -118,7 +120,9 @@ class Sim:
                                 A_high = val
                                 done = True
 
-
+            self.write_record("Run finished.")
+            self.write_record("A_low = {}; naked_elliptic_region".format(A_low))
+            self.write_record("A_high = {}; bh".format(A_high))
 
 #===============================================================================
     def launch(self):
