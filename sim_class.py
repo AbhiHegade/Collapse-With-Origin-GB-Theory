@@ -13,6 +13,10 @@ class Sim:
         self.output_dir = self.output_dir + "_A_" + "{:.2e}".format(self.A) +"_l_" + "{:.2e}".format(self.l)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
+        # self.record_dir = self.out_dir + "/Record_params"
+        # if not os.path.exists(self.record_dir):
+        #     os.makedirs(self.record_dir)
+        # self.record = self.record_dir + "/record.dat"
 #===============================================================================
     def write_sim_params(self):
         with open(self.output_dir+'/sim_params.txt','w') as f:
@@ -43,6 +47,79 @@ class Sim:
             f.write("module load gcc/7.2.0 \n")
             # f.write("conda activate esgb \n")
             f.write("{}/bin/default.run {}".format(self.home_dir,self.output_dir))
+#===============================================================================
+#===============================================================================
+    def write_record(self, line):
+        with open(self.record, 'a') as f:
+            f.write(line + "\n")
+#===============================================================================
+    def amplitude_search(self, l, Amp_range, run_type):
+        with open(self.record, 'w') as f:
+            f.write('run_type = {}\n'.format(run_type))
+            f.write('l = {}\n'.format(l))
+            f.write('A_low = {}\nA_high = {}\n'.format(Amp_range[0], Amp_range[1]))
+
+        if run_type == "flat_space_to_naked_elliptic":
+            A_low = Amp_range[0]
+            A_high = Amp_range[1]
+            while((A_high - A_low)>1e-3):
+                val = (A_high + A_low)/2
+                self.l = l
+                self.A = val
+                self.launch()
+                done = False
+                while not done:
+                    time.sleep(30)
+                    with open(self.output_dir + "/output.out") as f:
+                        for line in f:
+                            if line.startswith("NaN"):
+                                self.write_record("NaN; Amp = {}".format(val))
+                                A_high = val
+                                done = True
+
+                            elif line.startswith("naked"):
+                                self.write_record("naked_elliptic_region; Amp = {}".format(val))
+                                A_high = val
+                                done = True
+
+
+                            elif line.startswith("exit_code_0"):
+                                self.write_record("flat_space; Amp = {}".format(val))
+                                A_low = val
+                                done = True
+                                
+        if run_type == "naked_elliptic_to_bh":
+
+            A_low = Amp_range[0]
+            A_high = Amp_range[1]
+            while((A_high - A_low)>1e-3):
+                val = (A_high + A_low)/2
+                self.l = l
+                self.A = val
+                self.launch()
+                done = False
+                while not done:
+                    time.sleep(30)
+                    with open(self.output_dir + "/output.out") as f:
+                        for line in f:
+                            if line.startswith("NaN"):
+                                self.write_record("NaN; Amp = {}".format(val))
+                                A_low = val
+                                done = True
+
+                            elif line.startswith("naked"):
+                                self.write_record("naked_elliptic_region; Amp = {}".format(val))
+                                A_low = val
+                                done = True
+
+
+                            elif line.startswith("exit_code_1"):
+                                self.write_record("bh; Amp = {}".format(val))
+                                A_high = val
+                                done = True
+
+
+
 #===============================================================================
     def launch(self):
         self.make_output_dir()
