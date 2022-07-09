@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
   Write_data write(path);
 
   //Generate grid with nx, nt, l and exci
-  Grid_data grid(sp.nx, sp.nt,sp.l);
+  Grid_data grid(sp.nx, sp.nt,sp.l,sp.exc_i);
   int save_steps = sp.save_steps;
 
   //Write grid to file
@@ -112,8 +112,31 @@ int main(int argc, char const *argv[]) {
 
   //============================================================================
   //Set initial data
+  if(M<fabs(1e-16)){
   initialdata.set_Minkowski(grid,  n, s, p, q, phi);
+  }
+  else{
+    initialdata.set_bh_bump(grid,n,s,p,q,phi );
+  }
+  //Check if initial data is a naked singularity
+  vector<double> ns_check(grid.nx,0);
+  for(int j =grid.exc_i; j<grid.nx; j++){
+    ns_check[j] = grid.r[j] - 8.*q.v[j]*beta_p(grid.l, phi.v[j]);
+  }
+  {
+    double min_elem = 0.;
+    int start_index = 100;
+    int index = 0;
 
+  diagnostics.find_abs_min(ns_check, min_elem, index, 0, start_index);
+  cout<<min_elem<<endl;
+  if(min_elem<1e-2){
+    cout<<"Data too strong leads to naked signularity."<<endl;
+    cout<<"NaN"<<endl;
+  }
+  }
+  //===========================================================================
+  write.write_initial_data(p,q,phi);
   //Check if apparent horizon is present in initial data (only relevant for black hole initial data).
   diagnostics.find_apparent_horizon(grid,s);
 
@@ -125,6 +148,10 @@ int main(int argc, char const *argv[]) {
   //Write data to file
   write.write_fields(n, s , p ,q, phi);
   write.write_characteristics(ingoing, outgoing);
+
+  int mass_extraction_radius = 3*(grid.nx/4);
+  cout<<"Initial MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<endl;
+
 
   int i_e = 0;
   while(i_e<grid.nt){

@@ -81,7 +81,49 @@ void Write_data::write_field(const Field &f){
   write_output.flush();
   write_output.close();
 }
+void Write_data::write_initial_data(const Field &p, const Field &q,const Field &phi){
+  string name = path + "p_init"+ ".dat";
+  std::ofstream write_output(name , std::ios::app);
+  assert(write_output.is_open());
+  // write_output.setf(std::ios::scientific);
+  write_output.precision(10);
 
+  for(int i = 0; i<p.v.size()-1; i++ ){
+    write_output<<p.v[i]<<",";
+  }
+  write_output<<p.v[p.v.size()-1]<<"\n";
+
+  write_output.flush();
+  write_output.close();
+
+  string name_q = path + "q_init"+ ".dat";
+  std::ofstream write_output_1(name_q , std::ios::app);
+  assert(write_output_1.is_open());
+  // write_output.setf(std::ios::scientific);
+  write_output_1.precision(10);
+
+  for(int i = 0; i<q.v.size()-1; i++ ){
+    write_output_1<<q.v[i]<<",";
+  }
+  write_output_1<<q.v[q.v.size()-1]<<"\n";
+
+  write_output_1.flush();
+  write_output_1.close();
+
+  string name_phi = path + "phi_init"+ ".dat";
+  std::ofstream write_output_2(name_phi , std::ios::app);
+  assert(write_output_2.is_open());
+  // write_output.setf(std::ios::scientific);
+  write_output_2.precision(10);
+
+  for(int i = 0; i<phi.v.size()-1; i++ ){
+    write_output_2<<phi.v[i]<<",";
+  }
+  write_output_2<<phi.v[phi.v.size()-1]<<"\n";
+
+  write_output_2.flush();
+  write_output_2.close();
+}
 void Write_data::write_fields(const Field &n, const Field &s, const Field &p, const Field &q, const Field &phi){
   write_field(n);
   write_field(s);

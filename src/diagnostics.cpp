@@ -51,14 +51,18 @@ void Diagnostics::find_abs_min(const vector<double> &v,
 }
 //==============================================================================
 void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
+  // int pt = 2;
+  // int indexby2 = (index/pt ==0 ) ? (index/(pt-1)) : (index/pt);
 
   if(grid.exc_i>0){
     double min_elem = 0;
     int index = 0;
     const double err_tol= 1e-2;
 
+
     find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
-    int indexby2 = (index/3 ==0 ) ? (index/2) : (index/3);
+    // int indexby2 = (index/pt ==0 ) ? (index/(pt-1)) : (index/pt);
+    int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
     int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
     if (min_elem<err_tol){
       if (index==0){
@@ -88,6 +92,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
     const double err_tol= 1e-2;
 
     find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
+    int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
     if (min_elem<err_tol){
       if (index==0){
         cout<<"Apparent Horizon at the origin."<<endl;
@@ -96,7 +101,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
       else{
         // int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
         grid.ah_index = index;
-        int indexby2 = (index/3 ==0) ? (index/2) : (index/3);
+        // int indexby2 = (index/pt ==0) ? (index/(pt-1)) : (index/pt);
 
         cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
         cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
@@ -368,6 +373,10 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         cout<<"naked_elliptic_region outside horizon."<<endl;
         std::exit(0);
       }
+    // if (grid.exc_i >= grid.ah_index){
+    //     cout<<"naked_elliptic_region outside horizon."<<endl;
+    //     std::exit(0);
+    //   }
   }
 
       return;

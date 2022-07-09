@@ -10,6 +10,7 @@ public:
    int nt;
    int save_steps;
 
+   int exc_i;
    double l;
    double M;
    double A;
