@@ -8,7 +8,7 @@ import os
 #===============================================================================
 # Amps = np.linspace(1e-2,1,100)
 # ls = np.linspace(1e-1,10,100)
-Amps = np.array([0.265625])
+Amps = np.array([0.24])
 ls = np.array([0.1])
 
 # Amps = np.array([0.3,5])

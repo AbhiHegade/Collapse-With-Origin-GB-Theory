@@ -53,7 +53,7 @@ void Diagnostics::find_abs_min(const vector<double> &v,
 void Diagnostics::find_outer_most_index(const vector<double> &v, int &elem, const int start_index){
 
   double ref_val = 1.;
-  double tol = 1e-1;
+  double tol = 1e-2;
   int index_val = -1;
   int len = (v.size())/2;
   for(int i = start_index; i<len; i++){
