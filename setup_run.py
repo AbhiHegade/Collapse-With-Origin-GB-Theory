@@ -9,7 +9,7 @@ import os
 # Amps = np.linspace(1e-2,1,100)
 # ls = np.linspace(1e-1,10,100)
 Amps = np.array([0.265625])
-ls = np.array([0.])
+ls = np.array([0.1])
 
 # Amps = np.array([0.3,5])
 # ls = np.array([1])
@@ -26,10 +26,10 @@ sim = Sim()
 sim.slurm = False
 # sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/Animation-Script.ipynb"
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 10000
-sim.nt = 10000
+sim.nx = 5000
+sim.nt = 5000
 sim.save_steps = int(sim.nt/10)
-sim.search =True
+sim.search =False
 # sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 if sim.search == True:
     sim.out_dir = "./output/Phase-Space/Shift-Symmetric-Theory/Search/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -89,7 +89,7 @@ else:
         # data_search = np.array([[0.5,1e-3,6e-3], [0.6,1e-3,6e-3],
         # [0.7, 1e-3, 5e-3], [0.8, 9e-4, 2e-3], [0.9, 8e-4,2e-3],
         # [1,7e-4,2e-3]])
-        data_search = np.array([[0.1, 0.009, 0.8], [0.15,0.009,0.8], [0.2,0.009,0.8],[0.25,0.009,0.8], [0.3,0.009,0.8 ]])
+        data_search = np.array([[0.1, 0.2, 0.4], [0.15,0.2,0.4], [0.2,0.2,0.4],[0.25,0.2,0.4], [0.3,0.2,0.4 ]])
         # data_search = np.array([[0.1, 0.25, 0.35]])
         # data_search = []
         # for x in np.linspace(0.1,1 ,19)[5:-2]:

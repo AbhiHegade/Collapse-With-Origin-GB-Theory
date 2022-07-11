@@ -50,67 +50,69 @@ void Diagnostics::find_abs_min(const vector<double> &v,
     return;
 }
 //==============================================================================
+void Diagnostics::find_outer_most_index(const vector<double> &v, int &elem, const int start_index){
+
+  double ref_val = 1.;
+  double tol = 1e-1;
+  int index_val = -1;
+  int len = (v.size())/2;
+  for(int i = start_index; i<len; i++){
+    if(fabs(ref_val - v[i])<tol){
+      index_val = i;
+    }
+  }
+  elem = index_val;
+  return;
+
+}
+//==============================================================================
 void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v){
-  // int pt = 2;
-  // int indexby2 = (index/pt ==0 ) ? (index/(pt-1)) : (index/pt);
+  int index = 0;
+  find_outer_most_index(s_v.v,index,grid.exc_i);
+  // cout<<"index = "<<index<<endl;
+  if(index>=0){
+    if(grid.exc_i>0){
+      int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
+      int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
 
-  if(grid.exc_i>0){
-    double min_elem = 0;
-    int index = 0;
-    const double err_tol= 1e-2;
-
-
-    find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
-    // int indexby2 = (index/pt ==0 ) ? (index/(pt-1)) : (index/pt);
-    int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
-    int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
-    if (min_elem<err_tol){
       if (index==0){
-        cout<<"Apparent horizon at the origin."<<endl;
-        std::exit(0);
-      }
+          cout<<"Apparent horizon at the origin."<<endl;
+          std::exit(0);
+        }
       else if (new_exc_i == grid.exc_i){
-        grid.ah_index = index;
-      }
+          grid.ah_index = index;
+        }
       else{
-        grid.ah_index = index;
-        cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
-        cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
-        cout<<"Updating excision point to i = "<<new_exc_i<<", r = "<<grid.r[new_exc_i]<<endl;
-        grid.exc_i = new_exc_i;
-        cout<<"done."<<endl;
+          grid.ah_index = index;
+          cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
+          cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
+          cout<<"Updating excision point to i = "<<new_exc_i<<", r = "<<grid.r[new_exc_i]<<endl;
+          grid.exc_i = new_exc_i;
+          cout<<"done."<<endl;
+        }
       }
-    }
 
-
-  }
-  else{
-    assert(grid.exc_i==0);
-    assert(grid.ah_index ==0);
-    double min_elem = 0;
-    int index = 0;
-    const double err_tol= 1e-2;
-
-    find_abs_min(s_v.v,min_elem,index,1.01,grid.exc_i);
-    int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
-    if (min_elem<err_tol){
+    else{
+      assert(grid.exc_i==0);
+      assert(grid.ah_index ==0);
+      int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
       if (index==0){
-        cout<<"Apparent Horizon at the origin."<<endl;
-        std::exit(0);
-      }
+          cout<<"Apparent Horizon at the origin."<<endl;
+          std::exit(0);
+        }
       else{
-        // int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
-        grid.ah_index = index;
-        // int indexby2 = (index/pt ==0) ? (index/(pt-1)) : (index/pt);
+          // int indexby2 = (index%2 ==0 ) ? (index/2) : (index+1)/2;
+          grid.ah_index = index;
+          // int indexby2 = (index/pt ==0) ? (index/(pt-1)) : (index/pt);
 
-        cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
-        cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
-        cout<<"Updating excision point to i = "<<indexby2<<", r = "<<grid.r[indexby2]<<", ";
-        grid.exc_i = indexby2;
-        cout<<"done."<<endl;
+          cout<<"Found apparent horizon at i = "<<index<<" , "<<"r = "<<grid.r[index]<<" , "<< "t = "<< grid.t_evolve<<endl;
+          cout<<"Previous excision point at i = "<<grid.exc_i<<" , "<<"r = "<<grid.r[grid.exc_i]<<endl;
+          cout<<"Updating excision point to i = "<<indexby2<<", r = "<<grid.r[indexby2]<<", ";
+          grid.exc_i = indexby2;
+          cout<<"done."<<endl;
+        }
       }
     }
-  }
 }
 //==============================================================================
 int Diagnostics::compute_radial_characteristic(double r,
@@ -369,7 +371,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
       //   cout<<"Value at AH = "<<outgoing[grid.ah_index]<<endl;
       //   // std::exit(0);
       // }
-      if (grid.exc_i >= grid.ah_index-5){
+      if (grid.exc_i >= grid.ah_index-3){
         cout<<"naked_elliptic_region outside horizon."<<endl;
         std::exit(0);
       }
