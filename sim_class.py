@@ -87,6 +87,13 @@ class Sim:
                                 self.write_record("flat_space; Amp = {}".format(val))
                                 A_low = val
                                 done = True
+
+                            elif line.startswith("exit_code_1"):
+                                self.write_record("Problem with run, black hole formed.")
+                                A_high = val
+                                done = True
+
+
             self.write_record("Run finished.")
             self.write_record("A_low = {}; flat_space".format(A_low))
             self.write_record("A_high = {}; naked_elliptic_region".format(A_high))
@@ -118,6 +125,10 @@ class Sim:
                             elif line.startswith("exit_code_1"):
                                 self.write_record("bh; Amp = {}".format(val))
                                 A_high = val
+                                done = True
+                            elif line.startswith("exit_code_0"):
+                                self.write_record("Problem with run, flat space formed.")
+                                A_low = val
                                 done = True
 
             self.write_record("Run finished.")

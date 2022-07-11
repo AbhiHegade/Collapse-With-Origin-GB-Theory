@@ -8,8 +8,8 @@ import os
 #===============================================================================
 # Amps = np.linspace(1e-2,1,100)
 # ls = np.linspace(1e-1,10,100)
-Amps = np.linspace(2e-2, 3e-2, 11)[1:-1]
-ls = np.array([0.1])
+Amps = np.array([0.265625])
+ls = np.array([0.])
 
 # Amps = np.array([0.3,5])
 # ls = np.array([1])
@@ -26,11 +26,15 @@ sim = Sim()
 sim.slurm = False
 # sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/Animation-Script.ipynb"
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 8000
-sim.nt = 8000
+sim.nx = 10000
+sim.nt = 10000
 sim.save_steps = int(sim.nt/10)
+sim.search =True
 # sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
-sim.out_dir = "./output/Phase-Space/Shift-Symmetric-Theory/Search/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+if sim.search == True:
+    sim.out_dir = "./output/Phase-Space/Shift-Symmetric-Theory/Search/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+else:
+    sim.out_dir = "./output/Phase-Space/Shift-Symmetric-Theory/Runs/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
@@ -39,7 +43,7 @@ sim.initial_mass = 0
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
-sim.search =True
+
 #====================================================
 run_params = sim.out_dir + "/Run_params"
 if not os.path.exists(run_params):
@@ -82,12 +86,19 @@ if sim.slurm == True:
 
 else:
     if sim.search == True:
-        data_search = np.array([[0.5,1e-3,6e-3], [0.6,1e-3,6e-3],
-        [0.7, 1e-3, 5e-3], [0.8, 9e-4, 2e-3], [0.9, 8e-4,2e-3],
-        [1,7e-4,2e-3]])
-        tol = 5e-5
-        pool_nums = 6
-        run_type = "flat_space_to_naked_elliptic"
+        # data_search = np.array([[0.5,1e-3,6e-3], [0.6,1e-3,6e-3],
+        # [0.7, 1e-3, 5e-3], [0.8, 9e-4, 2e-3], [0.9, 8e-4,2e-3],
+        # [1,7e-4,2e-3]])
+        data_search = np.array([[0.1, 0.009, 0.8], [0.15,0.009,0.8], [0.2,0.009,0.8],[0.25,0.009,0.8], [0.3,0.009,0.8 ]])
+        # data_search = np.array([[0.1, 0.25, 0.35]])
+        # data_search = []
+        # for x in np.linspace(0.1,1 ,19)[5:-2]:
+        #     data_search.append([x,0.45, 0.7])
+        #
+        # data_search = np.array(data_search)
+        tol = 1e-3
+        pool_nums = 5
+        run_type = "naked_elliptic_to_bh"
         def launch_search(arr):
             l = arr[0]
             Amp_range = [arr[1],arr[2]]
@@ -129,7 +140,7 @@ else:
                 f.write("Data saved at:{} \n".format(sim.out_dir))
     else:
         if __name__ == '__main__':
-            pool_nums = 7
+            pool_nums = 1
             t_start = time.time()
             print("Starting multiprocessing pool..")
             pool = Pool(pool_nums)
@@ -144,16 +155,16 @@ else:
                     break
         # pool.close()
         # pool.join()
-        pool.join()
+            pool.join()
 
-        t_end = time.time()
-        print("Finished process. \nTime = ",t_end-t_start," s")
-        print("Data saved at:{}".format(sim.out_dir))
+            t_end = time.time()
+            print("Finished process. \nTime = ",t_end-t_start," s")
+            print("Data saved at:{}".format(sim.out_dir))
 
-        with open(run_params + "/run_params.dat", "w" ) as f:
-            f.write("Number of pools = {}\n".format(pool_nums))
-            f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
-            f.write("Data saved at:{} \n".format(sim.out_dir))
+            with open(run_params + "/run_params.dat", "w" ) as f:
+                f.write("Number of pools = {}\n".format(pool_nums))
+                f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
+                f.write("Data saved at:{} \n".format(sim.out_dir))
 
         # print("Ending caffeinate...")
         # subprocess.call("killall caffeinate" , shell = True)
