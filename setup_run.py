@@ -7,7 +7,8 @@ from datetime import datetime
 import os
 #===============================================================================
 theory = "gaussian"
-Amps = np.array([0.24])
+Amps = np.concatenate((np.linspace(1e-3,1e-2,10), np.linspace(1e-2,1e-1,10), np.linspace(1e-1,1)))
+np.unique(Amps)
 ls = np.array([0.1])
 
 if theory == "shift_symm":
@@ -27,9 +28,9 @@ sim = Sim()
 sim.slurm = False
 # sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/Animation-Script.ipynb"
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 5000
-sim.nt = 5000
-sim.save_steps = int(sim.nt/10)
+sim.nx = 10000
+sim.nt = 10000
+sim.save_steps = int(sim.nt/1000)
 sim.search =False
 # sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 if sim.search == True:
@@ -141,7 +142,7 @@ else:
                 f.write("Data saved at:{} \n".format(sim.out_dir))
     else:
         if __name__ == '__main__':
-            pool_nums = 1
+            pool_nums = 6
             t_start = time.time()
             print("Starting multiprocessing pool..")
             pool = Pool(pool_nums)
