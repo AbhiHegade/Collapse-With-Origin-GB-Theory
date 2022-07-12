@@ -16,15 +16,15 @@ double r_p_of_x(double l,double x){
 //==============================================================================
 
 double beta(const double l, const double phi){
-  return pow(l,2)*phi;
+  return - pow(l,2)*(exp(-6.*phi*phi))/12.;
 }
 
 double beta_p(const double l, const double phi){
-  return pow(l,2);
+  return pow(l,2)*phi*exp(-6.*phi*phi);
 }
 
 double beta_pp(const double l, const double phi){
-  return 0.;
+  return pow(l,2)*exp(-6.*phi*phi) -12.*phi*pow(l,2)*exp(-6.*phi*phi);
 }
 
 void beta_gen(const double l, const std::vector<double> &phi_v, std::vector<double> &beta_v1,

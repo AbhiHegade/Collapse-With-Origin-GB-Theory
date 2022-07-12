@@ -6,13 +6,14 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-# Amps = np.linspace(1e-2,1,100)
-# ls = np.linspace(1e-1,10,100)
+theory = "gaussian"
 Amps = np.array([0.24])
 ls = np.array([0.1])
 
-# Amps = np.array([0.3,5])
-# ls = np.array([1])
+if theory == "shift_symm":
+    out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
+else:
+    out_path = "./output/Phase-Space/Gaussian"
 
 input_data = []
 
@@ -32,9 +33,9 @@ sim.save_steps = int(sim.nt/10)
 sim.search =False
 # sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 if sim.search == True:
-    sim.out_dir = "./output/Phase-Space/Shift-Symmetric-Theory/Search/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+    sim.out_dir = out_path+"/Search/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 else:
-    sim.out_dir = "./output/Phase-Space/Shift-Symmetric-Theory/Runs/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+    sim.out_dir = out_path + "/Runs/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
