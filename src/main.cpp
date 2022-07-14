@@ -143,6 +143,17 @@ int main(int argc, char const *argv[]) {
   //Solve for metric fields
   solve_metric.solve( grid, n, s , p ,q,phi);
   diagnostics.find_apparent_horizon(grid,s);
+
+  if(sp.collapse_and_bh == 0){
+    if(grid.exc_i>0){
+      cout<<"BH formation at t=0."<<endl;
+      std::exit(0);
+    }
+    else{
+      cout<<"No BH formation at t=0."<<endl;
+      std::exit(0);
+    }
+  }
   // diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
 
   //Write data to file

@@ -9,13 +9,14 @@ public:
    int nx;
    int nt;
    int save_steps;
-
+   int collapse_and_bh;
    int exc_i;
    double l;
    double M;
    double A;
    double rl;
    double ru;
+
 
    Sim_params(const std::string output_dir);
    ~Sim_params(void);

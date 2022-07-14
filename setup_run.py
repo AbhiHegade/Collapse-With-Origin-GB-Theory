@@ -6,11 +6,14 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-theory = "gaussian"
-# Amps = np.concatenate((np.linspace(1e-3,1e-2,10), np.linspace(1e-2,1e-1,10), np.linspace(1e-1,1)))
+theory = "shift_symm"
+# theory = "gaussian"
+# Amps = np.concatenate((np.linspace(1e-3,1e-2,10), np.linspace(1e-2,1e-1,10)))
 # np.unique(Amps)
-Amps = np.array([0.009])
-ls = np.array([0.1])
+Amps = np.linspace(0.8,1,3)
+# Amps = np.linspace(1e-2,2e-2,10)
+# Amps = np.array([0.009])
+ls = np.array([0])
 
 if theory == "shift_symm":
     out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
@@ -31,21 +34,22 @@ sim.slurm = False
 sim.animscript = "./Animation-Script.ipynb"
 sim.nx = 6000
 sim.nt = 6000
-sim.save_steps = 200
-sim.search =False
-# sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
-if sim.search == True:
-    sim.out_dir = out_path+"/Search/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
-else:
-    sim.out_dir = out_path + "/Runs/Run_nx_{}_nt_{}_".format(sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
-
-if not os.path.exists(sim.out_dir):
-    os.makedirs(sim.out_dir)
-
+sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
+sim.search =True
+# sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+if sim.search == True:
+    sim.out_dir = out_path+"/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+else:
+    sim.out_dir = out_path + "/Runs_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+
+if not os.path.exists(sim.out_dir):
+    os.makedirs(sim.out_dir)
+
+
 
 #====================================================
 run_params = sim.out_dir + "/Run_params"
@@ -92,7 +96,8 @@ else:
         # data_search = np.array([[0.5,1e-3,6e-3], [0.6,1e-3,6e-3],
         # [0.7, 1e-3, 5e-3], [0.8, 9e-4, 2e-3], [0.9, 8e-4,2e-3],
         # [1,7e-4,2e-3]])
-        data_search = np.array([[0.1, 0.2, 0.4], [0.15,0.2,0.4], [0.2,0.2,0.4],[0.25,0.2,0.4], [0.3,0.2,0.4 ]])
+        # data_search = np.array([[0.1, 0., 0.4], [0.15,0.2,0.4], [0.2,0.2,0.4],[0.25,0.2,0.4], [0.3,0.2,0.4 ]])
+        data_search = np.array([[0, 0.075, 0.1]])
         # data_search = np.array([[0.1, 0.25, 0.35]])
         # data_search = []
         # for x in np.linspace(0.1,1 ,19)[5:-2]:
@@ -100,8 +105,13 @@ else:
         #
         # data_search = np.array(data_search)
         tol = 1e-3
-        pool_nums = 5
-        run_type = "naked_elliptic_to_bh"
+        if len(data_search) >=6:
+            pool_nums = 6
+        else :
+            pool_nums = len(data_search)
+
+        print("pool_nums = ", pool_nums)
+        run_type = "flat_space_fs_to_bh"
         def launch_search(arr):
             l = arr[0]
             Amp_range = [arr[1],arr[2]]

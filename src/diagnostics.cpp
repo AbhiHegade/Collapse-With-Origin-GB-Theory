@@ -55,7 +55,7 @@ void Diagnostics::find_outer_most_index(const vector<double> &v, int &elem, cons
   double ref_val = 1.;
   double tol = 1e-2;
   int index_val = -1;
-  int len = (v.size())/2;
+  int len = 3*(v.size())/4;
   for(int i = start_index; i<len; i++){
     if(fabs(ref_val - v[i])<tol){
       index_val = i;

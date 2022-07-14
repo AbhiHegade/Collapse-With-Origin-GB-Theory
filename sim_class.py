@@ -97,7 +97,8 @@ class Sim:
             self.write_record("Run finished.")
             self.write_record("A_low = {}; flat_space".format(A_low))
             self.write_record("A_high = {}; naked_elliptic_region".format(A_high))
-        if run_type == "naked_elliptic_to_bh":
+
+        elif run_type == "naked_elliptic_to_bh":
 
             A_low = Amp_range[0]
             A_high = Amp_range[1]
@@ -133,6 +134,74 @@ class Sim:
 
             self.write_record("Run finished.")
             self.write_record("A_low = {}; naked_elliptic_region".format(A_low))
+            self.write_record("A_high = {}; bh".format(A_high))
+
+        elif run_type == "flat_space_fs_to_bh":
+
+            A_low = Amp_range[0]
+            A_high = Amp_range[1]
+            assert l== 0, "l must be 0."
+            while((A_high - A_low)>tol):
+                val = (A_high + A_low)/2
+                self.l = l
+                self.A = val
+                self.launch()
+                done = False
+                while not done:
+                    time.sleep(30)
+                    with open(self.output_dir + "/output.out") as f:
+                        for line in f:
+                            if line.startswith("NaN"):
+                                self.write_record("NaN; Amp = {}".format(val))
+                                A_high = val
+                                done = True
+
+                            elif line.startswith("naked"):
+                                self.write_record("naked_elliptic_region; Amp = {}".format(val))
+                                A_high = val
+                                done = True
+
+
+                            elif line.startswith("exit_code_1"):
+                                self.write_record("bh; Amp = {}".format(val))
+                                A_high = val
+                                done = True
+                            elif line.startswith("exit_code_0"):
+                                self.write_record("fs; Amp = {}".format(val))
+                                A_low = val
+                                done = True
+
+            self.write_record("Run finished.")
+            self.write_record("A_low = {}; flat_space".format(A_low))
+            self.write_record("A_high = {}; bh".format(A_high))
+
+        elif run_type == "collapse_to_bh":
+            self.collapse_and_bh = 0
+            A_low = Amp_range[0]
+            A_high = Amp_range[1]
+            while((A_high - A_low)>tol):
+                val = (A_high + A_low)/2
+                self.l = l
+                self.A = val
+                self.launch()
+                done = False
+                while not done:
+                    time.sleep(30)
+                    with open(self.output_dir + "/output.out") as f:
+                        for line in f:
+                            if line.startswith("BH formation at t=0."):
+                                self.write_record("BH_formation; Amp = {}".format(val))
+                                A_high = val
+                                done = True
+
+                            elif line.startswith("No BH formation at t=0."):
+                                self.write_record("collapse; Amp = {}".format(val))
+                                A_low = val
+                                done = True
+
+
+            self.write_record("Run finished.")
+            self.write_record("A_low = {}; collapse".format(A_low))
             self.write_record("A_high = {}; bh".format(A_high))
 
 #===============================================================================
