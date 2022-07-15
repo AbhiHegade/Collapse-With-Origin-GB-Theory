@@ -6,10 +6,10 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-# theory = "shift_symm"
-theory = "gaussian"
-Amps = np.array([0.3])
-ls = np.array([1.1])
+theory = "shift_symm"
+# theory = "gaussian"
+Amps = np.array([0.4])
+ls = np.array([0])
 
 if theory == "shift_symm":
     out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
@@ -26,13 +26,14 @@ current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 8000
-sim.nt = 8000
+sim.nx = 12000
+sim.nt = 12000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
+sim.collapse_and_bh = 1;
 sim.search =True
 #===============================================================================
 if sim.search == True:
@@ -88,18 +89,19 @@ if sim.slurm == True:
 
 else:
     if sim.search == True:
-        data_search = []
-        ls = np.linspace(1,2,11)[1:]
+        # data_search = []
+        # ls = np.linspace(1,2,11)
+        #
+        # for j in range(len(ls)):
+        #     data_search.append([ls[j], 0.25,0.5])
+        #
+        # data_search = np.array(data_search)
+        data_search = np.array([[0,0.08125,0.5]])
+        tol = 1e-2
 
-        for j in range(len(ls)):
-            data_search.append([ls[j], 0.3,0.5])
-
-        data_search = np.array(data_search)
-        tol = 5e-3
 
 
-
-        run_type = "naked_elliptic_to_bh"
+        run_type = "collapse_to_bh"
 
         def launch_search(arr):
             l = arr[0]
@@ -151,15 +153,16 @@ else:
                 f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
                 f.write("Data saved at:{} \n".format(sim.out_dir))
     else:
-        if len(input_data) >=6:
-            pool_nums = 6
-        else :
-            pool_nums = len(input_data)
 
-
-        print("pool_nums = ", pool_nums)
 
         if __name__ == '__main__':
+            if len(input_data) >=6:
+                pool_nums = 6
+            else :
+                pool_nums = len(input_data)
+
+
+            print("pool_nums = ", pool_nums)
 
             t_start = time.time()
             print("Starting multiprocessing pool..")

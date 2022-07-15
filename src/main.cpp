@@ -145,9 +145,10 @@ int main(int argc, char const *argv[]) {
   //==========================================
   int mass_extraction_radius = 3*(grid.nx/4);
   cout<<"Initial MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<endl;
+  // std::exit(0);
   //==========================================
   diagnostics.find_apparent_horizon(grid,s);
-
+  cout<< "collapse_and_bh = "<< sp.collapse_and_bh<< endl;
   if(sp.collapse_and_bh == 0){
     if(grid.exc_i>0){
       cout<<"BH formation at t=0."<<endl;
