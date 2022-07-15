@@ -6,55 +6,50 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-theory = "shift_symm"
-# theory = "gaussian"
-# Amps = np.concatenate((np.linspace(1e-3,1e-2,10), np.linspace(1e-2,1e-1,10)))
-# np.unique(Amps)
-Amps = np.array([0.009,0.5])
-# Amps = np.linspace(1e-2,2e-2,10)
-# Amps = np.array([0.009])
-ls = np.array([0.1])
+# theory = "shift_symm"
+theory = "gaussian"
+Amps = np.array([0.3])
+ls = np.array([1.1])
 
 if theory == "shift_symm":
     out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
 else:
     out_path = "./output/Phase-Space/Gaussian"
-
+#===============================================================================
 input_data = []
 
 for j in range(len(Amps)):
     for l in range(len(ls)):
         input_data.append([ls[l],Amps[j]])
 
-# input_data = np.array(input_data)[400:1000]
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-# sim.animscript = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/Animation-Script.ipynb"
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 12000
-sim.nt = 12000
+sim.nx = 8000
+sim.nt = 8000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
-sim.search =False
-# sim.out_dir = "/Users/abhi/Work/Projects/Hyperbolitcity-Gravitational-Collapse/code-f-phi/output/Phase-Space/Shift-Symmetric-Theory/Run_nx_{}_nt_".format(sim.nx,sim.nt)+ current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+sim.search =True
+#===============================================================================
 if sim.search == True:
-    sim.out_dir = out_path+"/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+    sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 else:
-    sim.out_dir = out_path + "/Runs_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+    sim.out_dir = out_path + "/Runs/Runs_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
 
 
 
-#====================================================
+#===============================================================================
 run_params = sim.out_dir + "/Run_params"
 if not os.path.exists(run_params):
     os.makedirs(run_params)
+
 if sim.search == False:
     with open(run_params + "/run_params.dat", "w" ) as f:
         f.write("Total number of runs = {}\n".format(len(input_data)))
@@ -93,25 +88,19 @@ if sim.slurm == True:
 
 else:
     if sim.search == True:
-        # data_search = np.array([[0.5,1e-3,6e-3], [0.6,1e-3,6e-3],
-        # [0.7, 1e-3, 5e-3], [0.8, 9e-4, 2e-3], [0.9, 8e-4,2e-3],
-        # [1,7e-4,2e-3]])
-        # data_search = np.array([[0.1, 0., 0.4], [0.15,0.2,0.4], [0.2,0.2,0.4],[0.25,0.2,0.4], [0.3,0.2,0.4 ]])
-        data_search = np.array([[0.1, 0.009, 0.5]])
-        # data_search = np.array([[0.1, 0.25, 0.35]])
-        # data_search = []
-        # for x in np.linspace(0.1,1 ,19)[5:-2]:
-        #     data_search.append([x,0.45, 0.7])
-        #
-        # data_search = np.array(data_search)
-        tol = 1e-3
-        if len(data_search) >=6:
-            pool_nums = 6
-        else :
-            pool_nums = len(data_search)
+        data_search = []
+        ls = np.linspace(1,2,11)[1:]
 
-        print("pool_nums = ", pool_nums)
-        run_type = "flat_space_to_naked_elliptic"
+        for j in range(len(ls)):
+            data_search.append([ls[j], 0.3,0.5])
+
+        data_search = np.array(data_search)
+        tol = 5e-3
+
+
+
+        run_type = "naked_elliptic_to_bh"
+
         def launch_search(arr):
             l = arr[0]
             Amp_range = [arr[1],arr[2]]
@@ -120,17 +109,28 @@ else:
 
         #--------------------------------------------------------------------------
         if __name__ == '__main__':
+            if len(data_search) >=6:
+                pool_nums = 6
+            else :
+                pool_nums = len(data_search)
+
+
+
+            print("pool_nums = ", pool_nums)
 
             t_start = time.time()
+
             print("Searching amplitude...")
             print("run_type = {}".format(run_type))
-            # print("l = {}".format(data_search[:,0]))
-            # print("Amp_range = {}".format(Amp_range))
+
             print(data_search)
+
             print("Data saved at:{}".format(sim.out_dir))
 
             print("Starting multiprocessing pool..")
+
             pool = Pool(pool_nums)
+
             result = pool.map_async(launch_search, data_search)
 
             pool.close()
@@ -142,8 +142,7 @@ else:
                     break
 
             pool.join()
-            # for xx in data_search:
-            #     launch_search(xx)
+
             t_end = time.time()
 
             print("Finished process. \nTime = ",t_end-t_start," s")
@@ -152,12 +151,16 @@ else:
                 f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
                 f.write("Data saved at:{} \n".format(sim.out_dir))
     else:
+        if len(input_data) >=6:
+            pool_nums = 6
+        else :
+            pool_nums = len(input_data)
+
+
+        print("pool_nums = ", pool_nums)
+
         if __name__ == '__main__':
-            if len(input_data) >=6:
-                pool_nums = 6
-            else :
-                pool_nums = len(input_data)
-            print("pool_nums = ", pool_nums)
+
             t_start = time.time()
             print("Starting multiprocessing pool..")
             pool = Pool(pool_nums)
@@ -170,8 +173,7 @@ else:
                     time.sleep(20)
                 else:
                     break
-        # pool.close()
-        # pool.join()
+
             pool.join()
 
             t_end = time.time()
