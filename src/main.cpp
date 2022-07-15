@@ -142,6 +142,10 @@ int main(int argc, char const *argv[]) {
 
   //Solve for metric fields
   solve_metric.solve( grid, n, s , p ,q,phi);
+  //==========================================
+  int mass_extraction_radius = 3*(grid.nx/4);
+  cout<<"Initial MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<endl;
+  //==========================================
   diagnostics.find_apparent_horizon(grid,s);
 
   if(sp.collapse_and_bh == 0){
@@ -159,9 +163,6 @@ int main(int argc, char const *argv[]) {
   //Write data to file
   write.write_fields(n, s , p ,q, phi);
   write.write_characteristics(ingoing, outgoing);
-
-  int mass_extraction_radius = 3*(grid.nx/4);
-  cout<<"Initial MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<endl;
 
 
   int i_e = 0;
