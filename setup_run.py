@@ -8,8 +8,9 @@ import os
 #===============================================================================
 theory = "shift_symm"
 # theory = "gaussian"
-Amps = np.array([0.4])
-ls = np.array([0])
+print("theory = ",theory)
+Amps = np.array([1e-3])
+ls = np.array([2])
 
 if theory == "shift_symm":
     out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
@@ -26,8 +27,8 @@ current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 12000
-sim.nt = 12000
+sim.nx = 6000
+sim.nt = 6000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 sim.exc_i = 0
@@ -93,15 +94,15 @@ else:
         # ls = np.linspace(1,2,11)
         #
         # for j in range(len(ls)):
-        #     data_search.append([ls[j], 0.25,0.5])
+        #     data_search.append([ls[j],1e-3 ,2e-2])
         #
         # data_search = np.array(data_search)
-        data_search = np.array([[0,0.08125,0.5]])
+        data_search = np.array([[0.1,0.1,0.4]])
         tol = 1e-2
 
 
 
-        run_type = "collapse_to_bh"
+        run_type = "flat_space_to_naked_elliptic"
 
         def launch_search(arr):
             l = arr[0]

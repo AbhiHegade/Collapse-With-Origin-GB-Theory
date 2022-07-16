@@ -55,10 +55,13 @@ class Sim:
 #===============================================================================
     def amplitude_search(self, l, Amp_range, run_type, tol = 1e-3):
         with open(self.record, 'w') as f:
+            f.write('Bisection search\n')
             f.write('run_type = {}\n'.format(run_type))
+            f.write('rl = {}; ru = {}\n'.format(self.rl,self.ru))
+            f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
             f.write('l = {}\n'.format(l))
             f.write('A_low = {}\nA_high = {}\n'.format(Amp_range[0], Amp_range[1]))
-
+        M_init = 0
         if run_type == "flat_space_to_naked_elliptic":
             A_low = Amp_range[0]
             A_high = Amp_range[1]
@@ -72,19 +75,23 @@ class Sim:
                     time.sleep(30)
                     with open(self.output_dir + "/output.out") as f:
                         for line in f:
-                            if line.startswith("NaN"):
-                                self.write_record("NaN; Amp = {}".format(val))
+                            if line.startswith("Initial MS_mass = "):
+                                index = len("Initial MS_mass = ")
+                                M_init = float(line[index:])
+                                done = False
+                            elif line.startswith("NaN"):
+                                self.write_record("NaN; Amp = {}; M_init = {}".format(val,M_init))
                                 A_high = val
                                 done = True
 
                             elif line.startswith("naked"):
-                                self.write_record("naked_elliptic_region; Amp = {}".format(val))
+                                self.write_record("naked_elliptic_region; Amp = {}; M_init = {}".format(val,M_init))
                                 A_high = val
                                 done = True
 
 
                             elif line.startswith("exit_code_0"):
-                                self.write_record("flat_space; Amp = {}".format(val))
+                                self.write_record("flat_space; Amp = {}; M_init = {}".format(val,M_init))
                                 A_low = val
                                 done = True
 
@@ -112,19 +119,24 @@ class Sim:
                     time.sleep(30)
                     with open(self.output_dir + "/output.out") as f:
                         for line in f:
+                            if line.startswith("Initial MS_mass = "):
+                                index = len("Initial MS_mass = ")
+                                M_init = float(line[index:])
+                                done = False
+
                             if line.startswith("NaN"):
-                                self.write_record("NaN; Amp = {}".format(val))
+                                self.write_record("NaN; Amp = {}; M_init = {}".format(val,M_init))
                                 A_low = val
                                 done = True
 
                             elif line.startswith("naked"):
-                                self.write_record("naked_elliptic_region; Amp = {}".format(val))
+                                self.write_record("naked_elliptic_region; Amp = {}; M_init = {}".format(val,M_init))
                                 A_low = val
                                 done = True
 
 
                             elif line.startswith("exit_code_1"):
-                                self.write_record("bh; Amp = {}".format(val))
+                                self.write_record("bh; Amp = {}; M_init = {}".format(val,M_init))
                                 A_high = val
                                 done = True
                             elif line.startswith("exit_code_0"):
@@ -151,23 +163,28 @@ class Sim:
                     time.sleep(30)
                     with open(self.output_dir + "/output.out") as f:
                         for line in f:
+                            if line.startswith("Initial MS_mass = "):
+                                index = len("Initial MS_mass = ")
+                                M_init = float(line[index:])
+                                done = False
+
                             if line.startswith("NaN"):
-                                self.write_record("NaN; Amp = {}".format(val))
+                                self.write_record("NaN; Amp = {}; M_init = {}".format(val,M_init))
                                 A_high = val
                                 done = True
 
                             elif line.startswith("naked"):
-                                self.write_record("naked_elliptic_region; Amp = {}".format(val))
+                                self.write_record("naked_elliptic_region; Amp = {}; M_init = {}".format(val,M_init))
                                 A_high = val
                                 done = True
 
 
                             elif line.startswith("exit_code_1"):
-                                self.write_record("bh; Amp = {}".format(val))
+                                self.write_record("bh; Amp = {}; M_init = {}".format(val,M_init))
                                 A_high = val
                                 done = True
                             elif line.startswith("exit_code_0"):
-                                self.write_record("fs; Amp = {}".format(val))
+                                self.write_record("fs; Amp = {}; M_init = {}".format(val,M_init))
                                 A_low = val
                                 done = True
 
@@ -189,13 +206,17 @@ class Sim:
                     time.sleep(30)
                     with open(self.output_dir + "/output.out") as f:
                         for line in f:
+                            if line.startswith("Initial MS_mass = "):
+                                index = len("Initial MS_mass = ")
+                                M_init = float(line[index:])
+                                done = False
                             if line.startswith("BH formation at t=0."):
-                                self.write_record("BH_formation; Amp = {}".format(val))
+                                self.write_record("BH_formation; Amp = {}; M_init = {}".format(val,M_init))
                                 A_high = val
                                 done = True
 
                             elif line.startswith("No BH formation at t=0."):
-                                self.write_record("collapse; Amp = {}".format(val))
+                                self.write_record("collapse; Amp = {}; M_init = {}".format(val,M_init))
                                 A_low = val
                                 done = True
 
