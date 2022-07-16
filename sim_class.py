@@ -155,7 +155,7 @@ class Sim:
             self.write_record("A_low = {}; M_init = {}; flat_space".format(A_low,M_low))
             self.write_record("A_high = {}; M_init = {}; naked_elliptic_region".format(A_high,M_high))
 
-        elif run_type == "naked_elliptic_to_bh":
+        elif run_type == "naked_elliptic_to_blackhole":
 
             while((A_high - A_low)>tol):
                 val = (A_high + A_low)/2
@@ -202,7 +202,7 @@ class Sim:
             self.write_record("A_low = {}; M_init = {}; naked_elliptic_region".format(A_low, M_low))
             self.write_record("A_high = {}; M_init = {}; bh".format(A_high, M_high))
 
-        elif run_type == "flat_space_fs_to_bh":
+        elif run_type == "flat_space_fs_to_blackhole":
 
             assert l== 0, "l must be 0."
             while((A_high - A_low)>tol):
@@ -251,7 +251,7 @@ class Sim:
             self.write_record("A_low = {}; M_init = {}; flat_space".format(A_low,M_low))
             self.write_record("A_high = {}; M_init = {}; bh".format(A_high, M_high))
 
-        elif run_type == "collapse_to_bh":
+        elif run_type == "collapse_to_blackhole":
 
             self.collapse_and_bh = 0
             while((A_high - A_low)>tol):
