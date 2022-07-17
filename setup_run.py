@@ -6,11 +6,11 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-theory = "shift_symm"
-# theory = "gaussian"
+# theory = "shift_symm"
+theory = "gaussian"
 print("theory = ",theory)
-Amps = np.array([1e-3])
-ls = np.array([2])
+Amps = np.array([0.28])
+ls = np.array([0.2])
 
 if theory == "shift_symm":
     out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
@@ -27,15 +27,15 @@ current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 10000
-sim.nt = 10000
-sim.save_steps = int(sim.nt/10)
+sim.nx = 12000
+sim.nt = 12000
+sim.save_steps = int(sim.nt/1000)
 sim.initial_mass = 0
 sim.exc_i = 0
-sim.rl = 20.
-sim.ru =24.
+sim.rl = 8.
+sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =False
+sim.search =True
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -97,30 +97,19 @@ else:
         #     data_search.append([ls[j],1e-3 ,2e-2])
         #
         # data_search = np.array(data_search)
-        data_search = np.array([
-       [1.000000e-01, 6.562500e-03, 1.050000e-01],
-       [1.500000e-01, 4.609375e-03, 7.375000e-02],
-       [2.000000e-01, 3.281250e-03, 5.250000e-02],
-       [2.500000e-01, 2.375000e-03, 3.800000e-02],
-       [3.000000e-01, 1.718750e-03, 2.750000e-02],
-       [3.500000e-01, 1.469580e-03, 2.351328e-02],
-       [4.000000e-01, 1.000000e-03, 1.600000e-02],
-       [4.500000e-01, 9.706550e-04, 1.553048e-02],
-       [5.000000e-01, 8.066400e-04, 1.290624e-02],
-       [5.500000e-01, 6.860475e-04, 1.097676e-02],
-       [6.000000e-01, 5.917975e-04, 9.468760e-03],
-       [6.500000e-01, 5.361425e-04, 8.578280e-03],
-       [7.000000e-01, 4.375000e-04, 7.000000e-03],
-       [7.500000e-01, 3.880325e-04, 6.208520e-03],
-       [8.000000e-01, 3.625000e-04, 5.800000e-03],
-       [8.500000e-01, 3.041425e-04, 4.866280e-03],
-       [9.000000e-01, 2.750000e-04, 4.400000e-03],
-       [9.500000e-01, 2.445525e-04, 3.912840e-03],
-       [1.000000e+00, 2.257825e-04, 3.612520e-03]])
+        data_search = np.array([[0.1    , 0.01   , 0.08125],
+       [0.2    , 0.01   , 0.08125],
+       [0.3    , 0.01   , 0.08125],
+       [0.4    , 0.01   , 0.08125],
+       [0.5    , 0.01   , 0.08125],
+       [0.6    , 0.01   , 0.08125],
+       [0.7    , 0.01   , 0.08125],
+       [0.8    , 0.01   , 0.08125],
+       [0.9    , 0.01   , 0.08125]])
 
-        tol = 1e-4
+        tol = 1e-2
 
-
+        #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
         run_type = "flat_space_to_naked_elliptic"
 

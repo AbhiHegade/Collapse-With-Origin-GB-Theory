@@ -104,7 +104,6 @@ class Sim:
             f.write('l = {}\n'.format(l))
             f.write('A_low = {}; M_init = {}\nA_high = {}; M_init = {}\n'.format(Amp_range[0],M_low, Amp_range[1],M_high))
 
-
         if run_type == "flat_space_to_naked_elliptic":
 
             while((A_high - A_low)>tol):
