@@ -6,11 +6,11 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-# theory = "shift_symm"
-theory = "gaussian"
-print("theory = ",theory)
-Amps = np.array([0.28])
-ls = np.array([0.2])
+theory = "shift_symm"
+# theory = "gaussian"
+
+Amps = np.array([ 0.17,0.175,0.18,0.2])
+ls = np.array([0.1])
 
 if theory == "shift_symm":
     out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
@@ -27,15 +27,15 @@ current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 12000
-sim.nt = 12000
+sim.nx = 20000
+sim.nt = 20000
 sim.save_steps = int(sim.nt/1000)
 sim.initial_mass = 0
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -97,21 +97,27 @@ else:
         #     data_search.append([ls[j],1e-3 ,2e-2])
         #
         # data_search = np.array(data_search)
-        data_search = np.array([[0.1    , 0.01   , 0.08125],
-       [0.2    , 0.01   , 0.08125],
-       [0.3    , 0.01   , 0.08125],
-       [0.4    , 0.01   , 0.08125],
-       [0.5    , 0.01   , 0.08125],
-       [0.6    , 0.01   , 0.08125],
-       [0.7    , 0.01   , 0.08125],
-       [0.8    , 0.01   , 0.08125],
-       [0.9    , 0.01   , 0.08125]])
+        # data_search = np.array([[0.1    , 0.01   , 0.08125],
+        #                        [0.2    , 0.01   , 0.08125],
+        #                        [0.3    , 0.01   , 0.08125],
+        #                        [0.4    , 0.01   , 0.08125],
+        #                        [0.5    , 0.01   , 0.08125],
+        #                        [0.6    , 0.01   , 0.08125],
+        #                        [0.7    , 0.01   , 0.08125],
+        #                        [0.8    , 0.01   , 0.08125],
+        #                        [0.9    , 0.01   , 0.08125]])
+        data_search = np.array([[0.1, 0.2, 0.26],
+                                [0.08,0.2, 0.26],
+                                [0.06,0.2, 0.26],
+                                [0.04,0.2, 0.26],
+                                [0.02,0.2, 0.26],
+                                [0.01,0.1, 0.2]])
 
-        tol = 1e-2
+        tol = 1e-3
 
         #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
-        run_type = "flat_space_to_naked_elliptic"
+        run_type = "naked_elliptic_to_blackhole"
 
         def launch_search(arr):
             l = arr[0]
@@ -121,6 +127,7 @@ else:
 
         #--------------------------------------------------------------------------
         if __name__ == '__main__':
+            print("theory = ",theory)
             if len(data_search) >=6:
                 pool_nums = 6
             else :
@@ -134,6 +141,7 @@ else:
 
             print("Searching amplitude...")
             print("run_type = {}".format(run_type))
+            print("tol = ", tol)
 
             print(data_search)
 
@@ -149,7 +157,7 @@ else:
             while True:
                 if not result.ready():
                     print('We\'re not done yet, %s tasks to go!' % result._number_left)
-                    time.sleep(20)
+                    time.sleep(60)
                 else:
                     break
 
@@ -183,7 +191,7 @@ else:
             while True:
                 if not result.ready():
                     print('We\'re not done yet, %s tasks to go!' % result._number_left)
-                    time.sleep(20)
+                    time.sleep(5)
                 else:
                     break
 

@@ -119,18 +119,18 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       Bep_i = beta_p(l, phi_v.v[i]);
       if(fabs(l)< 1e-5){
 
-        if(fabs(p_v.v[i])>1e-10){
+        if(fabs(p_v.v[i])>1e-6){
           s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i];
         }
         else{
-          s_v.v[exc_i] = 1e-12;
+          s_v.v[exc_i] = 1e-10;
 
         }
 
       }
 
       else {
-        if((fabs(p_v.v[i]*Bep_i)>1e-10)){
+        if((fabs(p_v.v[i]*Bep_i)>1e-6)){
         double q1 = (q_v.v[i+1]/dr[i]);
         double a0 = pow(p_v.v[i],2.);
         double a1 = 0.;
@@ -139,8 +139,11 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
         s_v.v[i] = fabs(solve_cubic_eqn(a0, a1, a2, a3,(fabs(p_v.v[i])/(pow(6.,0.5)))))*dr[i];
 
       }
+      else if(fabs(p_v.v[i])> 1e-6){
+        s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i];
+      }
       else{
-        s_v.v[exc_i] = 1e-12;
+        s_v.v[exc_i] = 1e-10;
       }
     }
     }
@@ -188,7 +191,13 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
 
 
-      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+      s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
+
+      // if(s_v.v[i+1]<-1e-20){
+      //   cout<<"q = "<<q_v.v[i]<<"; p = "<<p_v.v[i]<<"; phi = "<<phi_v.v[i]<<endl;
+      // cout<<"k1 = "<<k1<<"; k2 = "<<k2<<"; k3 = "<<k3<<"; k4 = "<<k4<<"; extra = "<<+ k1/6. + k2/3. + k3/3. + k4/6.<<endl;
+      // cout<<"i = "<<i<<"; s_v.v[i] = "<<s_v.v[i]<<"; s_v.v[i+1] = "<<s_v.v[i+1]<<endl;
+      // }
 
     }
     {
@@ -272,9 +281,14 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
 
 
-      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
-
+      s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
+      // if(s_v.v[i+1]<-1e-20){
+      //   cout<<"q = "<<q_v.v[i]<<"; p = "<<p_v.v[i]<<"; phi = "<<phi_v.v[i]<<endl;
+      // cout<<"k1 = "<<k1<<"; k2 = "<<k2<<"; k3 = "<<k3<<"; k4 = "<<k4<<"; extra = "<<+ k1/6. + k2/3. + k3/3. + k4/6.<<endl;
+      // cout<<"i = "<<i<<"; s_v.v[i] = "<<s_v.v[i]<<"; s_v.v[i+1] = "<<s_v.v[i+1]<<endl;
+      // }
     }
+
     {
       int i = nx-3;
 
@@ -319,6 +333,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
     s_v.v[nx-1] = 0.;
     s_v.check_isfinite(grid.t_evolve);
+    s_v.check_non_negative(grid.t_evolve);
   }
 
 

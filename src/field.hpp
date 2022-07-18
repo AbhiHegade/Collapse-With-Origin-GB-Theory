@@ -21,6 +21,7 @@ public:
    void set_to_val(const int min, const int max, const double val);
    void check_isfinite(const double time);
    void rescale();
+   void check_non_negative(const double time);
 private:
   Grid_data grid;
 

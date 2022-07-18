@@ -210,9 +210,9 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         ingoing_c, outgoing_c);
 
         if (status==-1) {
-          // cout<<"Elliptic region formation in flat space."<<endl;
-          // cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
-          // std::exit(0);
+          cout<<"Elliptic region formation in flat space."<<endl;
+          cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
+          std::exit(0);
         }
         ingoing[i]=   ingoing_c;
         outgoing[i]= outgoing_c;
@@ -238,9 +238,9 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         ingoing_c, outgoing_c);
 
         if (status==-1) {
-          // cout<<"Elliptic region formation in flat space."<<endl;
-          // cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
-          // std::exit(0);
+          cout<<"Elliptic region formation in flat space."<<endl;
+          cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
+          std::exit(0);
         }
         ingoing[i]=   ingoing_c;
         outgoing[i]= outgoing_c;

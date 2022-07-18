@@ -65,5 +65,14 @@ void Field::check_isfinite(const double time)
    check_field_isfinite(time,"v",v);
 }
 /*===========================================================================*/
+void Field::check_non_negative(const double time){
+  for (int j =0; j<grid.nx; j++){
+    if(v[j] + 1e-1< 1e-20){
+      cout<<name<<" negative at index = "<<j<<"; value = "<<v[j]<<"; time = "<<time<<endl;
+      std::exit(0);
+      break;
+    }
+  }
+}
 /*===========================================================================*/
 /*===========================================================================*/
