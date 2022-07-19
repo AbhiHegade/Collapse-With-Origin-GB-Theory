@@ -134,49 +134,68 @@ void Write_data::write_fields(const Field &n, const Field &s, const Field &p, co
 }
 
 void Write_data::write_characteristics(const vector<double> &ingoing, const vector<double> &outgoing){
-  string namein = path + "ingoing" + ".dat";
-  string nameout = path + "outgoing" +".dat";
-  std::ofstream write_output_in(namein , std::ios::app);
-  assert(write_output_in.is_open());
-  write_output_in.precision(10);
-  int nx = ingoing.size();
-
-  for(int i = 0; i<nx - 1; i++ ){
-    write_output_in<<ingoing[i]<<",";
-  }
-  write_output_in<<ingoing[nx-1]<<"\n";
-
-  write_output_in.flush();
-  write_output_in.close();
-
-  std::ofstream write_output_out(nameout , std::ios::app);
-  assert(write_output_out.is_open());
-  write_output_out.precision(10);
-  nx = outgoing.size();
-
-  for(int i = 0; i<nx - 1; i++ ){
-    write_output_out<<outgoing[i]<<",";
-  }
-  write_output_out<<outgoing[nx-1]<<"\n";
-
-  write_output_out.flush();
-  write_output_out.close();
+  // string namein = path + "ingoing" + ".dat";
+  // string nameout = path + "outgoing" +".dat";
+  // std::ofstream write_output_in(namein , std::ios::app);
+  // assert(write_output_in.is_open());
+  // write_output_in.precision(10);
+  // int nx = ingoing.size();
+  //
+  // for(int i = 0; i<nx - 1; i++ ){
+  //   write_output_in<<ingoing[i]<<",";
+  // }
+  // write_output_in<<ingoing[nx-1]<<"\n";
+  //
+  // write_output_in.flush();
+  // write_output_in.close();
+  //
+  // std::ofstream write_output_out(nameout , std::ios::app);
+  // assert(write_output_out.is_open());
+  // write_output_out.precision(10);
+  // nx = outgoing.size();
+  //
+  // for(int i = 0; i<nx - 1; i++ ){
+  //   write_output_out<<outgoing[i]<<",";
+  // }
+  // write_output_out<<outgoing[nx-1]<<"\n";
+  //
+  // write_output_out.flush();
+  // write_output_out.close();
+  write_vec(ingoing, "ingoing");
+  write_vec(outgoing, "outgoing");
 
 
 }
 
 void Write_data::write_residual(const vector<double> &residual){
+  write_vec(residual, "e_rr_res");
+  // string name = path + "e_rr_res" + ".dat";
+  // std::ofstream write_output(name , std::ios::app);
+  // assert(write_output.is_open());
+  // write_output.precision(10);
+  //
+  // int nx = residual.size();
+  // for(int i = 0; i<nx-1; i++ ){
+  //   write_output<<residual[i]<<",";
+  // }
+  // write_output<<residual[nx-1]<<"\n";
+  //
+  // write_output.flush();
+  // write_output.close();
 
-  string name = path + "e_rr_res" + ".dat";
+}
+
+void Write_data::write_vec(const vector<double> &vec, const string name_v){
+  string name = path + name_v + ".dat";
   std::ofstream write_output(name , std::ios::app);
   assert(write_output.is_open());
   write_output.precision(10);
 
-  int nx = residual.size();
+  int nx = vec.size();
   for(int i = 0; i<nx-1; i++ ){
-    write_output<<residual[i]<<",";
+    write_output<<vec[i]<<",";
   }
-  write_output<<residual[nx-1]<<"\n";
+  write_output<<vec[nx-1]<<"\n";
 
   write_output.flush();
   write_output.close();

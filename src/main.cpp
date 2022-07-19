@@ -84,6 +84,7 @@ int main(int argc, char const *argv[]) {
 
   //============================================================================
   vector<double> residual(grid.nx,0 );
+  vector<double> gb(grid.nx,0);
   vector<double> n_nm1(grid.nx,0);
   vector<double> s_nm1(grid.nx,0);
   vector<double> p_nm1(grid.nx,0);
@@ -185,10 +186,18 @@ int main(int argc, char const *argv[]) {
   i_e += 1;
 
   if ((i_e%save_steps ==0) ){
+    diagnostics.compute_GB(grid,
+    n_nm1,
+    s_nm1,
+    s.v,
+    n.v,
+    gb);
+    write.write_vec(gb, "gb");
     write.write_residual(residual);
     write.write_fields(n, s , p ,q, phi);
     write.write_characteristics(ingoing, outgoing);
     write.write_ah(grid);
+
   }
 
 

@@ -130,7 +130,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       }
 
       else {
-        if((fabs(p_v.v[i]*Bep_i)>1e-6)){
+        if((fabs(p_v.v[i]*Bep_i)>1e-8)){
         double q1 = (q_v.v[i+1]/dr[i]);
         double a0 = pow(p_v.v[i],2.);
         double a1 = 0.;
@@ -241,7 +241,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
 
 
-      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+      s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
     }
 
     for(int i=exc_i+2; i<nx-3; i++){
@@ -333,7 +333,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
     s_v.v[nx-1] = 0.;
     s_v.check_isfinite(grid.t_evolve);
-    s_v.check_non_negative(grid.t_evolve);
+    // s_v.check_non_negative(grid.t_evolve);
   }
 
 

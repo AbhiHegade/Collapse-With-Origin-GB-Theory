@@ -55,7 +55,8 @@ double solve_cubic_eqn(double a0, double a1, double a2, double a3, double init_g
     counter += 1;
   }
   if(counter >= max_steps){
-    std::cout<<"Max steps exceeded, stopping find root. Error = "<<err<<std::endl;
+    std::cout<<"Max steps exceeded, stopping find root. Error = "<<err;
+    std::cout<<"; polynomial coeffs, a0 = "<<a0<<"; a1 = "<<a1<<"; a2 = "<<a2<<"; a3 = "<<a3<<"; root = "<<guess<<"."<<std::endl;
   }
   else{
 
