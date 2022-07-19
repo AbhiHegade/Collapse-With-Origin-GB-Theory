@@ -117,7 +117,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
     {
       int i = exc_i;
       Bep_i = beta_p(l, phi_v.v[i]);
-      if(fabs(l)< 1e-5){
+      if(fabs(l)< 1e-1){
 
         if(fabs(p_v.v[i])>1e-6){
           s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i];
@@ -130,17 +130,16 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       }
 
       else {
-        if((fabs(p_v.v[i]*Bep_i)>1e-8)){
-        double q1 = (q_v.v[i+1]/dr[i]);
+        if((fabs(p_v.v[i])>1e-6)){
+        double q1 = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
         double a0 = pow(p_v.v[i],2.);
         double a1 = 0.;
         double a2 = (-6. + 48.*q1*Bep_i);
         double a3 = 48.*p_v.v[i]*Bep_i;
-        s_v.v[i] = fabs(solve_cubic_eqn(a0, a1, a2, a3,(fabs(p_v.v[i])/(pow(6.,0.5)))))*dr[i];
+        double root = 0;
+        // root = solve_cubic_eqn((dr[i]*dr[i]*dr[i])*a0, (dr[i]*dr[i])*a1,  a2*(dr[i]), a3, 1e-3);
+        s_v.v[i] = fabs((fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i] + (2./3.)*(pow(p_v.v[i], 3))*dr[i]*Bep_i + 2.*pow((2./3.) , 0.5)*p_v.v[i]*q1*dr[i]*Bep_i );
 
-      }
-      else if(fabs(p_v.v[i])> 1e-6){
-        s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i];
       }
       else{
         s_v.v[exc_i] = 1e-10;
