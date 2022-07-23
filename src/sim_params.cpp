@@ -39,7 +39,7 @@ Sim_params::Sim_params(const string output_dir)
    ru= stod(read_sim_params(output_dir,"ru"));
    exc_i = stoi(read_sim_params(output_dir, "exc_i"));
    collapse_and_bh = stoi(read_sim_params(output_dir, "collapse_and_bh"));
-
+   cl = stod(read_sim_params(output_dir, "cl"));
 }
 /*===========================================================================*/
 Sim_params::~Sim_params(void)

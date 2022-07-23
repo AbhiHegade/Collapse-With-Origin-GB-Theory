@@ -81,7 +81,7 @@ void Initial_data::set_bh_bump(Grid_data grid,  Field &n_v, Field &s_v, Field &p
   assert(M>0);
   assert(r_u>r_l);
   assert(grid.exc_i>0);
-  assert(grid.r[grid.exc_i]<(3*M)/4);
+  assert(grid.r[grid.exc_i]<(3.*M)/2.);
   double max_vN= 0;
   for (int i=grid.exc_i; i<grid.nx-1; ++i) {
      double r= grid.r[i];

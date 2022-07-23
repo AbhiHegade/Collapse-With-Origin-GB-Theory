@@ -16,6 +16,7 @@ public:
    double A;
    double rl;
    double ru;
+   double cl;
 
 
    Sim_params(const std::string output_dir);

@@ -9,45 +9,56 @@ import os
 theory = "shift_symm"
 # theory = "gaussian"
 home_path = "."
-#home_path = "/home/ah30/scratch/code-f-phi"
-Amps = np.array([0.1,0.2])
-ls = np.array([0.5,0.6,0.7,0.8,0.9])
-
+#home_path = "/home/ah30/scratch/Mass-var"
+Ms = np.array([2.4,2.5,2.6])
+ls = np.array([1.])
 
 if theory == "shift_symm":
     out_path = home_path+ "/output/Phase-Space/Shift-Symmetric-Theory"
 else:
     out_path = home_path+ "/output/Phase-Space/Gaussian"
 #===============================================================================
-input_data = []
+input_data  = [[0.5, 1.17],
+ [0.5, 1.25],
+ [0.6, 1.3],
+ [0.6, 1.5],
+ [0.7, 1.4],
+ [0.7, 1.7],
+ [0.8, 1.6],
+ [0.8, 2.0],
+ [0.9, 2.1],
+ [0.9, 2.3],
+ [1.0, 2.3],
+ [1.0, 2.5]]
 
-for j in range(len(Amps)):
-    for l in range(len(ls)):
-        input_data.append([ls[l],Amps[j]])
+# for j in range(len(Ms)):
+#     for l in range(len(ls)):
+#         assert (ls[l]>0), "l must be greater than zero."
+#         input_data.append([ls[l],Ms[j]])
 
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.animscript = home_path +"/Animation-Script.ipynb"
+sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 5000
-sim.nt = 8000
+sim.nx = 2000
+sim.nt = 4000
 sim.save_steps = int(sim.nt/10)
-sim.initial_mass = 0
+sim.initial_mass = 1
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.exc_i = 0
+sim.A = 0.
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
-    sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+    sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 else:
-    sim.out_dir = out_path + "/Runs/Runs_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+    sim.out_dir = out_path + "/Runs/Runs_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
@@ -68,7 +79,7 @@ if sim.search == False:
 
 
     np.savetxt(run_params + "/ls.dat" , ls)
-    np.savetxt(run_params + "/Amps.dat", Amps)
+    np.savetxt(run_params + "/masses.dat", Ms)
 else:
 #===================================================
     with open(run_params + "/run_params.dat", "w" ) as f:
@@ -79,42 +90,48 @@ else:
 #===================================================
 def launch_sim(vals):
     l_val = vals[0]
-    Amp = vals[1]
+    Mass_val = vals[1]
     sim.l = l_val
-    sim.A = Amp
+    sim.initial_mass = Mass_val
+    dx = sim.cl/sim.nx
+    sim.exc_i = int((0.5/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
     sim.launch()
 
 if sim.slurm == True:
     sim.memory = '30'
     if sim.search == True:
-        l = 0.1
-        Amp_range = [0.025,0.0275]
-        run_type = "flat_space_to_naked_elliptic"
-        sim.amplitude_search(l=l, Amp_range = Amp_range , run_type = run_type)
+        l = 0.5
+        Amp = 1e-4
+        mass_range = [0.3,2]
+        tol = 1e-2
+        run_type = "black_hole_mass_search"
+        print("run_type = ", run_type)
+        sim.A = Amp
+        sim.record = run_params + "/record_{}.dat".format(l)
+        sim.mass_search(l=l, mass_range = mass_range , tol = tol)
     else:
         for j in range(len(input_data)):
             launch_sim(input_data[j])
 
 else:
     if sim.search == True:
-        #
-        # data_search = [ [0.1,0.05,0.15], [0.2,0.07,0.2],
-        # [0.3,0.07,0.2], [0.4,0.1,0.2],
-        # [0.5,0.1,0.2],[0.6,0.1,0.2],
-        # [0.7,0.1,0.2], [0.8,0.1,0.2],
-        # [0.9,0.1,0.2],[1,0.15,0.2]]
-
+        run_type = "black_hole_mass_search"
+        sim.Amp = 0.
         tol = 1e-2
-
-        #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
-
-        run_type = "naked_elliptic_to_blackhole"
+        data_search = [[0.5       , 1.17 , 1.25  ],
+        [0.6       , 1.3 , 1.5],
+        [0.7       , 1.4 , 1.7],
+        [0.8       , 1.6, 2.  ],
+        [0.9       , 2.1, 2.3],
+        [1.        , 2.3  , 2.5]]
 
         def launch_search(arr):
             l = arr[0]
-            Amp_range = [arr[1],arr[2]]
+            mass_range = [arr[1],arr[2]]
             sim.record = run_params + "/record_{}.dat".format(l)
-            sim.amplitude_search(l=l, Amp_range = Amp_range , run_type = run_type, tol = tol)
+            dx = sim.cl/sim.nx
+            sim.exc_i = int((0.5/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+            sim.mass_search(l=l, mass_range = mass_range , tol = tol)
 
         #--------------------------------------------------------------------------
         if __name__ == '__main__':
@@ -123,15 +140,15 @@ else:
                 pool_nums = 6
             else :
                 pool_nums = len(data_search)
-            # pool_nums = len(data_search)
 
+            # pool_nums = len(data_search)
 
 
             print("pool_nums = ", pool_nums)
 
             t_start = time.time()
 
-            print("Searching amplitude...")
+            print("Searching mass...")
             print("run_type = {}".format(run_type))
             print("tol = ", tol)
 
@@ -176,9 +193,6 @@ else:
 
             t_start = time.time()
             print("Starting multiprocessing pool..")
-            print("nx = ",sim.nx)
-            print("nt = ", sim.nt)
-            print("save_steps = ", sim.save_steps)
             pool = Pool(pool_nums)
             result = pool.map_async(launch_sim, input_data)
             pool.close()
@@ -186,7 +200,7 @@ else:
             while True:
                 if not result.ready():
                     print('We\'re not done yet, %s tasks to go!' % result._number_left)
-                    time.sleep(20)
+                    time.sleep(5)
                 else:
                     break
 
@@ -196,7 +210,7 @@ else:
             print("Finished process. \nTime = ",t_end-t_start," s")
             print("Data saved at:{}".format(sim.out_dir))
 
-            with open(run_params + "/run_params.dat", "w" ) as f:
+            with open(run_params + "/run_params.dat", "a" ) as f:
                 f.write("Number of pools = {}\n".format(pool_nums))
                 f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
                 f.write("Data saved at:{} \n".format(sim.out_dir))

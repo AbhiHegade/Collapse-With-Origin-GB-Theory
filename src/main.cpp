@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
   Write_data write(path);
 
   //Generate grid with nx, nt, l and exci
-  Grid_data grid(sp.nx, sp.nt,sp.l,sp.exc_i);
+  Grid_data grid(sp.nx, sp.nt,sp.l,sp.exc_i, sp.cl);
   int save_steps = sp.save_steps;
 
   //Write grid to file
