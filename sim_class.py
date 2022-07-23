@@ -293,52 +293,52 @@ class Sim:
             self.write_record("A_low = {}; M_init = {}; collapse".format(A_low, M_low))
             self.write_record("A_high = {}; M_init = {}; bh".format(A_high, M_high))
 #===============================================================================
-def mass_search(self, l, mass_range, tol = 1e-3):
-    assert (l>0), "l must be greater than zero."
-    M_low = mass_range[0]
-    M_high = mass_range[1]
-    run_type = "black_hole_mass_search"
-    with open(self.record, 'w') as f:
-        f.write('Bisection search\n')
-        f.write('run_type = {}\n'.format(run_type))
-        f.write('A = {}; rl = {}; ru = {}\n'.format(self.A,self.rl,self.ru))
-        f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
-        f.write('l = {}\n'.format(l))
-        f.write('tol = {}\n'.format(tol))
-        f.write('M_low = {}; \nM_high = {};\n'.format(M_low,M_high))
-    while((M_high - M_low)>tol):
-        val = (M_high + M_low)/2
-        self.l = l
-        self.initial_mass = val
-        self.launch()
-        # time.sleep(60)
-        done = False
-        while not done:
-            time.sleep(30)
-            with open(self.output_dir + "/output.out") as f:
-                for line in f:
-                    if line.startswith("NaN"):
-                        self.write_record("NaN; Mass = {}".format(val))
-                        M_low = val
-                        done = True
+    def mass_search(self, l, mass_range, tol = 1e-3):
+        assert (l>0), "l must be greater than zero."
+        M_low = mass_range[0]
+        M_high = mass_range[1]
+        run_type = "black_hole_mass_search"
+        with open(self.record, 'w') as f:
+            f.write('Bisection search\n')
+            f.write('run_type = {}\n'.format(run_type))
+            f.write('A = {}; rl = {}; ru = {}\n'.format(self.A,self.rl,self.ru))
+            f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
+            f.write('l = {}\n'.format(l))
+            f.write('tol = {}\n'.format(tol))
+            f.write('M_low = {}; \nM_high = {};\n'.format(M_low,M_high))
+        while((M_high - M_low)>tol):
+            val = (M_high + M_low)/2
+            self.l = l
+            self.initial_mass = val
+            self.launch()
+            # time.sleep(60)
+            done = False
+            while not done:
+                time.sleep(30)
+                with open(self.output_dir + "/output.out") as f:
+                    for line in f:
+                        if line.startswith("NaN"):
+                            self.write_record("NaN; Mass = {}".format(val))
+                            M_low = val
+                            done = True
 
-                    elif line.startswith("naked"):
-                        self.write_record("naked_elliptic_region; Mass = {}".format(val))
-                        M_low = val
-                        done = True
+                        elif line.startswith("naked"):
+                            self.write_record("naked_elliptic_region; Mass = {}".format(val))
+                            M_low = val
+                            done = True
 
-                    elif line.startswith("exit_code_1"):
-                        self.write_record("bh; Mass = {}".format(val))
-                        M_high = val
-                        done = True
+                        elif line.startswith("exit_code_1"):
+                            self.write_record("bh; Mass = {}".format(val))
+                            M_high = val
+                            done = True
 
-                    elif line.startswith("exit_code_0"):
-                        self.write_record("Problem with run with run flat space formed; Mass = {}".format(val))
-                        M_low = val
-                        done = True
+                        elif line.startswith("exit_code_0"):
+                            self.write_record("Problem with run with run flat space formed; Mass = {}".format(val))
+                            M_low = val
+                            done = True
 
 
 
-    self.write_record("Run finished.")
-    self.write_record("M_low = {}; naked_elliptic_region".format(M_low))
-    self.write_record("M_high = {}; bh".format(M_high))
+        self.write_record("Run finished.")
+        self.write_record("M_low = {}; naked_elliptic_region".format(M_low))
+        self.write_record("M_high = {}; bh".format(M_high))
