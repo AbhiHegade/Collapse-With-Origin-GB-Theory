@@ -18,18 +18,7 @@ if theory == "shift_symm":
 else:
     out_path = home_path+ "/output/Phase-Space/Gaussian"
 #===============================================================================
-input_data  = [[0.5, 1.17],
- [0.5, 1.25],
- [0.6, 1.3],
- [0.6, 1.5],
- [0.7, 1.4],
- [0.7, 1.7],
- [0.8, 1.6],
- [0.8, 2.0],
- [0.9, 2.1],
- [0.9, 2.3],
- [1.0, 2.3],
- [1.0, 2.5]]
+input_data  = [[0.5, 2.]]
 
 # for j in range(len(Ms)):
 #     for l in range(len(ls)):
@@ -42,7 +31,7 @@ sim.slurm = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 2000
-sim.nt = 4000
+sim.nt = 8000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
@@ -53,7 +42,7 @@ sim.A = 0.
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =False
+sim.search =True
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -118,12 +107,12 @@ else:
         run_type = "black_hole_mass_search"
         sim.Amp = 0.
         tol = 1e-2
-        data_search = [[0.5       , 1.17 , 1.25  ],
-        [0.6       , 1.3 , 1.5],
-        [0.7       , 1.4 , 1.7],
-        [0.8       , 1.6, 2.  ],
-        [0.9       , 2.1, 2.3],
-        [1.        , 2.3  , 2.5]]
+        data_search = [[0.5       , 1.3 , 2.  ],
+        [0.6       , 1.3 , 2],
+        [0.7       , 1.4 , 2],
+        [0.8       , 1.6, 2.5  ],
+        [0.9       , 2.1, 3],
+        [1.        , 2.3  , 3]]
 
         def launch_search(arr):
             l = arr[0]

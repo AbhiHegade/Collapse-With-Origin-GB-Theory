@@ -102,6 +102,7 @@ int main(int argc, char const *argv[]) {
   cout<<"Saving file at : "<<path<<endl;
   cout<<"nx = "<<grid.nx<<endl;
   cout<<"nt = "<<grid.nt<<endl;
+  cout<<"cl = "<<grid.cl<<endl;
   cout<<"t_save_steps = "<<save_steps<<endl;
   cout<<"dx = "<<grid.dx<<endl;
   cout<<"dt = "<<grid.dt<<endl;
@@ -130,10 +131,10 @@ int main(int argc, char const *argv[]) {
     int index = 0;
 
   diagnostics.find_abs_min(ns_check, min_elem, index, 0, start_index);
-  cout<<min_elem<<endl;
-  if(min_elem<1e-2){
-    cout<<"Data too strong leads to naked signularity."<<endl;
-    cout<<"NaN"<<endl;
+  if((min_elem<1e-2) && (index > 100)){
+    cout<<"Naked sing check val = "<<min_elem<<endl;
+    cout<<"Data too strong leads to naked singularity."<<endl;
+    cout<<"NaN at index = "<<index<<endl;
   }
   }
   //===========================================================================
