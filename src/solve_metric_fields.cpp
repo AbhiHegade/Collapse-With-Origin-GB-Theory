@@ -331,6 +331,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
     }
 
     s_v.v[nx-1] = 0.;
+    s_v.check_non_negative(grid.t_evolve);
     s_v.check_isfinite(grid.t_evolve);
     // s_v.check_non_negative(grid.t_evolve);
   }

@@ -41,13 +41,13 @@ void Initial_data::set_Minkowski(Grid_data grid, Field &n_v, Field &s_v, Field &
         double bump= exp(-1./(r_u-r))*exp(-1./(r-r_l));
 
         phi.v[i]= pow(r-r_l,2)*pow(r_u-r,2)*bump;
-        p_v.v[i]= 0;
         q_v.v[i]= (
         2*(r-r_l)*pow(r_u-r,2)
         -	2*pow(r-r_l,2)*(r_u-r)
         +	pow(r_u-r,2)
         -	pow(r-r_l,2)
         )*bump;
+        p_v.v[i]= q_v.v[i] + (phi.v[i]/r);
      } else {
         phi.v[i]= 0;
         p_v.v[i]= 0;
@@ -74,30 +74,6 @@ void Initial_data::set_Minkowski(Grid_data grid, Field &n_v, Field &s_v, Field &
 
   }
 }
-// void Initial_data::set_Minkowski(Grid_data grid, Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v){
-//   assert(fabs(M)<1e-16);
-//   assert(r_u>r_l);
-//   assert(grid.exc_i==0);
-//   double max_vN= 0;
-//   for (int i=grid.exc_i; i<grid.nx-1; ++i) {
-//      double r= grid.r[i];
-//      phi_v.v[i] = 0.01*exp(-pow((r - 8.),2.)/(2.*1.));
-//      q_v.v[i] = 0.01*exp(-pow((r - 8.),2.)/(2.*1.))*(-(r-8.));
-//      p_v.v[i] = 0.;
-//      n_v.v[i] = 1.;
-//      s_v.v[i] = 1e-20;
-//   }
-//   {
-//     int i = grid.nx-1;
-//     phi_v.v[i] = 0.;
-//     q_v.v[i] = 0.;
-//     p_v.v[i] = 0.;
-//     n_v.v[i] = 1.;
-//     s_v.v[i] = 1e-20;
-//
-//   }
-//   /* rescale so amp is actual maximum val */
-// }
 //==============================================================================
 void Initial_data::set_bh_bump(Grid_data grid,  Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi){
   // cout<<"Not implemented"<<endl;
@@ -115,13 +91,14 @@ void Initial_data::set_bh_bump(Grid_data grid,  Field &n_v, Field &s_v, Field &p
         double bump= exp(-1./(r_u-r))*exp(-1./(r-r_l));
 
         phi.v[i]= pow(r-r_l,2)*pow(r_u-r,2)*bump;
-        p_v.v[i]= 0.0;
+        // p_v.v[i]= 0.0;
         q_v.v[i]= (
         2*(r-r_l)*pow(r_u-r,2)
         -	2*pow(r-r_l,2)*(r_u-r)
         +	pow(r_u-r,2)
         -	pow(r-r_l,2)
         )*bump;
+        p_v.v[i]= q_v.v[i] + (phi.v[i]/r);
      } else {
         phi.v[i]= 0;
         p_v.v[i]= 0;

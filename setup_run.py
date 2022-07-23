@@ -9,27 +9,29 @@ import os
 theory = "shift_symm"
 # theory = "gaussian"
 
-Amps = np.array([0.1])
-ls = np.array([1e-1])
+Amps = np.array([0.31,0.323,0.33,0.34,0.35,0.36])
+ls = np.array([1.])
+
 
 if theory == "shift_symm":
     out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
 else:
     out_path = "./output/Phase-Space/Gaussian"
 #===============================================================================
-input_data = []
-
-for j in range(len(Amps)):
-    for l in range(len(ls)):
-        input_data.append([ls[l],Amps[j]])
+# input_data = []
+#
+# for j in range(len(Amps)):
+#     for l in range(len(ls)):
+#         input_data.append([ls[l],Amps[j]])
+input_data = [[1,1e-3],[0.1,1e-3],[1,1e-2], [1,0.19],[1,0.2]]
 
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 8000
-sim.nt = 8000
-sim.save_steps = int(sim.nt/1000)
+sim.nx = 4000
+sim.nt = 4000
+sim.save_steps = 100
 sim.initial_mass = 0
 sim.exc_i = 0
 sim.rl = 8.

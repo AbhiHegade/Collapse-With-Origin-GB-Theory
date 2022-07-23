@@ -19,7 +19,6 @@ public:
   const double r_l;
   void set_Minkowski(Grid_data grid,Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi);
   void set_bh_bump(Grid_data grid, Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi);
-
 };
 
 
