@@ -111,6 +111,7 @@ class Sim:
                 self.l = l
                 self.A = val
                 self.launch()
+                time.sleep(60)
                 done = False
                 counter = 0
                 while not done:
@@ -161,6 +162,7 @@ class Sim:
                 self.l = l
                 self.A = val
                 self.launch()
+                time.sleep(60)
                 done = False
                 counter = 0
                 while not done:
@@ -209,6 +211,7 @@ class Sim:
                 self.l = l
                 self.A = val
                 self.launch()
+                time.sleep(60)
                 done = False
                 counter = 0
                 while not done:
@@ -258,6 +261,7 @@ class Sim:
                 self.l = l
                 self.A = val
                 self.launch()
+                time.sleep(60)
                 done = False
                 counter = 0
                 while not done:

@@ -8,36 +8,36 @@ import os
 #===============================================================================
 theory = "shift_symm"
 # theory = "gaussian"
-
-Amps = np.array([0.31,0.323,0.33,0.34,0.35,0.36])
-ls = np.array([1.])
+home_path = "."
+#home_path = "/home/ah30/scratch/code-f-phi"
+Amps = np.array([0.1,0.2])
+ls = np.array([0.5,0.6,0.7,0.8,0.9])
 
 
 if theory == "shift_symm":
-    out_path = "./output/Phase-Space/Shift-Symmetric-Theory"
+    out_path = home_path+ "/output/Phase-Space/Shift-Symmetric-Theory"
 else:
-    out_path = "./output/Phase-Space/Gaussian"
+    out_path = home_path+ "/output/Phase-Space/Gaussian"
 #===============================================================================
-# input_data = []
-#
-# for j in range(len(Amps)):
-#     for l in range(len(ls)):
-#         input_data.append([ls[l],Amps[j]])
-input_data = [[1,1e-3],[0.1,1e-3],[1,1e-2], [1,0.19],[1,0.2]]
+input_data = []
+
+for j in range(len(Amps)):
+    for l in range(len(ls)):
+        input_data.append([ls[l],Amps[j]])
 
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.animscript = "./Animation-Script.ipynb"
-sim.nx = 4000
-sim.nt = 4000
-sim.save_steps = 100
+sim.animscript = home_path +"/Animation-Script.ipynb"
+sim.nx = 5000
+sim.nt = 8000
+sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =False
+sim.search =True
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -92,30 +92,14 @@ if sim.slurm == True:
 
 else:
     if sim.search == True:
-        # data_search = []
-        # ls = np.linspace(1,2,11)
         #
-        # for j in range(len(ls)):
-        #     data_search.append([ls[j],1e-3 ,2e-2])
-        #
-        # data_search = np.array(data_search)
-        # data_search = np.array([[0.1    , 0.01   , 0.08125],
-        #                        [0.2    , 0.01   , 0.08125],
-        #                        [0.3    , 0.01   , 0.08125],
-        #                        [0.4    , 0.01   , 0.08125],
-        #                        [0.5    , 0.01   , 0.08125],
-        #                        [0.6    , 0.01   , 0.08125],
-        #                        [0.7    , 0.01   , 0.08125],
-        #                        [0.8    , 0.01   , 0.08125],
-        #                        [0.9    , 0.01   , 0.08125]])
-        data_search = np.array([[0.1, 0.2, 0.26],
-                                [0.08,0.2, 0.26],
-                                [0.06,0.2, 0.26],
-                                [0.04,0.2, 0.26],
-                                [0.02,0.2, 0.26],
-                                [0.01,0.1, 0.2]])
+        # data_search = [ [0.1,0.05,0.15], [0.2,0.07,0.2],
+        # [0.3,0.07,0.2], [0.4,0.1,0.2],
+        # [0.5,0.1,0.2],[0.6,0.1,0.2],
+        # [0.7,0.1,0.2], [0.8,0.1,0.2],
+        # [0.9,0.1,0.2],[1,0.15,0.2]]
 
-        tol = 1e-3
+        tol = 1e-2
 
         #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
@@ -134,6 +118,7 @@ else:
                 pool_nums = 6
             else :
                 pool_nums = len(data_search)
+            # pool_nums = len(data_search)
 
 
 
@@ -186,6 +171,9 @@ else:
 
             t_start = time.time()
             print("Starting multiprocessing pool..")
+            print("nx = ",sim.nx)
+            print("nt = ", sim.nt)
+            print("save_steps = ", sim.save_steps)
             pool = Pool(pool_nums)
             result = pool.map_async(launch_sim, input_data)
             pool.close()
