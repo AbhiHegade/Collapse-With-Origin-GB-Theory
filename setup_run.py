@@ -9,9 +9,11 @@ import os
 theory = "shift_symm"
 # theory = "gaussian"
 home_path = "."
-#home_path = "/home/ah30/scratch/code-f-phi"
-Amps = np.array([0.0009])
-ls = np.array([1.])
+#home_path = "/home/ah30/scratch/code-f-phi-check/code-f-phi"
+# Amps = np.array([0.07500000000000001, 0.09375, 0.09843750000000001,0.1,0.2])
+# ls = np.array([0.1])
+Amps = np.array([0.15])
+ls = np.array([0.1])
 
 
 if theory == "shift_symm":
@@ -32,7 +34,7 @@ sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 5000
 sim.nt = 8000
-sim.save_steps = int(sim.nt/10)
+sim.save_steps = int(sim.nt/1000)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
     sim.exc_i = 0
@@ -98,11 +100,11 @@ if sim.slurm == True:
 else:
     if sim.search == True:
         #
-        # data_search = [ [0.1,0.05,0.15], [0.2,0.07,0.2],
-        # [0.3,0.07,0.2], [0.4,0.1,0.2],
-        # [0.5,0.1,0.2],[0.6,0.1,0.2],
-        # [0.7,0.1,0.2], [0.8,0.1,0.2],
-        # [0.9,0.1,0.2],[1,0.15,0.2]]
+        data_search = [ [0.1,0.05,0.15], [0.2,0.07,0.2],
+        [0.3,0.07,0.2], [0.4,0.1,0.2],
+        [0.5,0.1,0.2],[0.6,0.1,0.2],
+        [0.7,0.1,0.2], [0.8,0.1,0.2],
+        [0.9,0.1,0.2],[1,0.15,0.2]]
 
         tol = 1e-2
 
@@ -119,11 +121,11 @@ else:
         #--------------------------------------------------------------------------
         if __name__ == '__main__':
             print("theory = ",theory)
-            if len(data_search) >=6:
-                pool_nums = 6
-            else :
-                pool_nums = len(data_search)
-            # pool_nums = len(data_search)
+            # if len(data_search) >=6:
+            #     pool_nums = 6
+            # else :
+            #     pool_nums = len(data_search)
+            pool_nums = len(data_search)
 
 
 

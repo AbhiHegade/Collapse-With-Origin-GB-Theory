@@ -115,12 +115,13 @@ int main(int argc, char const *argv[]) {
   //============================================================================
   //Set initial data
   if(M<fabs(1e-16)){
-  initialdata.set_Minkowski(grid,  n, s, p, q, phi);
+  initialdata.set_Minkowski(grid, n, s, p, q, phi);
   }
   else{
     initialdata.set_bh_bump(grid,n,s,p,q,phi );
   }
   //Check if initial data is a naked singularity
+  {
   vector<double> ns_check(grid.nx,0);
   for(int j =grid.exc_i; j<grid.nx; j++){
     ns_check[j] = grid.r[j] - 8.*q.v[j]*beta_p(grid.l, phi.v[j]);
@@ -137,14 +138,17 @@ int main(int argc, char const *argv[]) {
     cout<<"NaN at index = "<<index<<endl;
   }
   }
+  }
   //===========================================================================
   write.write_initial_data(p,q,phi);
+  //===========================================================================
+  //===========================================================================
   //Check if apparent horizon is present in initial data (only relevant for black hole initial data).
   diagnostics.find_apparent_horizon(grid,s);
 
   //Solve for metric fields
   solve_metric.solve( grid, n, s , p ,q,phi);
-  //==========================================
+  
   int mass_extraction_radius = 3*(grid.nx/4);
   cout<<"Initial MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<endl;
   // std::exit(0);

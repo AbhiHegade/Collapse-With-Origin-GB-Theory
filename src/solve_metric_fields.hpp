@@ -24,6 +24,9 @@ private:
   double rhs_shift(double r,
     double ss, double P,
     double r_Der_P, double Q, double r_Der_Q, double Bep, double Bepp);
+  double drhs_shiftdshift(double r,
+      double ss, double P,
+      double r_Der_P, double Q, double r_Der_Q, double Bep, double Bepp);
   double rhs_lapse(double r,
     double nn,
     double ss,

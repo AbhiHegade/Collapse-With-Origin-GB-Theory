@@ -29,9 +29,12 @@ double Solve_metric_fields::rhs_shift(double r,
   double P, double r_Der_P,
   double Q, double r_Der_Q,
   double Bep, double Bepp){
+    if(fabs(P)<1e-6){
+      double ssr = ss/r;
+      return -ssr/2.;
+    }
+    else{
 
-
-    // if((fabs(P)>1e-8)||(fabs(Q)>1e-8)||(ss>1e-8)){
     double Qr = Q/r;
     double ssr = ss/r;
 
@@ -44,16 +47,29 @@ double Solve_metric_fields::rhs_shift(double r,
     ;
 
     return ans;
-  // }
-  // else{
-  //   return 1e-20;
-  // }
-
-
-
-
+  }
 }
-//==============================================================================
+//================================================================================
+double Solve_metric_fields::drhs_shiftdshift(double r,
+  double ss, double P, double r_Der_P, double Q, double r_Der_Q, double Bep, double Bepp)
+  {
+    if(fabs(P)<1e-6){
+      return -0.5/r;
+    }
+    else{
+    double Qr = Q/r;
+    double ssr = ss/r;
+    double ans = 0.;
+
+    ans = -2*pow(r,3)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,2) + 16*Bep*Qr*pow(r,3)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,2) - 24*Bep*Qr*pow(r,5)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,4) + pow(Qr,2)*pow(r,2)*pow(-r + 8*Bep*Qr*r,2)*(-pow(r,3) + 16*Bepp*pow(r,3)*pow(ssr,2)) + 4*Bep*pow(Qr,3)*pow(r,3)*pow(-r + 8*Bep*Qr*r,2)*(2*pow(r,2) - 32*Bepp*pow(r,2)*pow(ssr,2) + pow(r,4)*pow(ssr,2) + 48*Bepp*pow(r,4)*pow(ssr,4)) - 32*Bep*pow(r,4)*(-r + 8*Bep*Qr*r)*pow(ssr,3)*P - 32*Bepp*Qr*pow(r,6)*(-r + 8*Bep*Qr*r)*pow(ssr,3)*P - 64*pow(Bep,2)*Qr*pow(r,4)*(-r + 8*Bep*Qr*r)*pow(ssr,3)*(-4 + 5*pow(r,2)*pow(ssr,2))*P + 8*Bep*pow(Qr,2)*pow(r,4)*(-r + 8*Bep*Qr*r)*ssr*(-5*pow(r,2) + 96*Bepp*pow(r,2)*pow(ssr,2))*P + 64*pow(Bep,2)*pow(Qr,3)*pow(r,4)*(-r + 8*Bep*Qr*r)*ssr*(5*pow(r,2) - 64*Bepp*pow(r,2)*pow(ssr,2) + 40*Bepp*pow(r,4)*pow(ssr,4))*P - pow(r,5)*pow(P,2) + 24*Bep*Qr*pow(r,5)*pow(P,2) + 20*Bep*Qr*pow(r,7)*pow(ssr,2)*pow(P,2) - 128*pow(Bep,2)*pow(r,5)*pow(ssr,4)*pow(P,2) + 1024*pow(Bep,3)*Qr*pow(r,5)*pow(ssr,4)*pow(P,2) - 896*Bep*Bepp*Qr*pow(r,7)*pow(ssr,4)*pow(P,2) - 768*pow(Bep,3)*Qr*pow(r,7)*pow(ssr,6)*pow(P,2) + 192*pow(Bep,2)*pow(Qr,2)*pow(r,3)*(-pow(r,2) - 4*pow(r,4)*pow(ssr,2) + 80*Bepp*pow(r,4)*pow(ssr,4))*pow(P,2) + 128*pow(Bep,3)*pow(Qr,3)*pow(r,3)*(4*pow(r,2) + 38*pow(r,4)*pow(ssr,2) - 512*Bepp*pow(r,4)*pow(ssr,4) - 3*pow(r,6)*pow(ssr,4) + 48*Bepp*pow(r,6)*pow(ssr,6))*pow(P,2) + 40*Bep*pow(r,5)*ssr*pow(P,3) + 128*pow(Bep,2)*Qr*pow(r,3)*ssr*(-5*pow(r,2) - 3*pow(r,4)*pow(ssr,2) + 60*Bepp*pow(r,4)*pow(ssr,4))*pow(P,3) - 512*pow(Bep,3)*pow(Qr,2)*pow(r,3)*ssr*(-5*pow(r,2) - 9*pow(r,4)*pow(ssr,2) + 120*Bepp*pow(r,4)*pow(ssr,4))*pow(P,3) - 64*pow(Bep,2)*pow(r,2)*pow(ssr,2)*(7*pow(r,3) - 56*Bep*Qr*pow(r,3) - 30*Bep*Qr*pow(r,5)*pow(ssr,2) + 288*Bep*Bepp*Qr*pow(r,5)*pow(ssr,4))*pow(P,4) + 1536*pow(Bep,3)*pow(r,5)*pow(ssr,3)*pow(P,5) + r_Der_Q*(16*Bep*pow(r,3)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,2) - 128*pow(Bep,2)*Qr*pow(r,3)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,2) + 192*pow(Bep,2)*Qr*pow(r,5)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,4) + 256*pow(Bep,2)*pow(r,4)*(-r + 8*Bep*Qr*r)*pow(ssr,3)*P - 2048*pow(Bep,3)*Qr*pow(r,4)*(-r + 8*Bep*Qr*r)*pow(ssr,3)*P + 2560*pow(Bep,3)*Qr*pow(r,6)*(-r + 8*Bep*Qr*r)*pow(ssr,5)*P + 1024*pow(Bep,3)*pow(r,5)*pow(ssr,4)*pow(P,2) - 8192*pow(Bep,4)*Qr*pow(r,5)*pow(ssr,4)*pow(P,2) + 6144*pow(Bep,4)*Qr*pow(r,7)*pow(ssr,6)*pow(P,2)) + r_Der_P*(32*Bep*pow(r,4)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,3) - 256*pow(Bep,2)*Qr*pow(r,4)*pow(-r + 8*Bep*Qr*r,2)*pow(ssr,3) + 896*pow(Bep,2)*pow(r,5)*(-r + 8*Bep*Qr*r)*pow(ssr,4)*P - 7168*pow(Bep,3)*Qr*pow(r,5)*(-r + 8*Bep*Qr*r)*pow(ssr,4)*P + 7680*pow(Bep,3)*pow(r,6)*pow(ssr,5)*pow(P,2) - 61440*pow(Bep,4)*Qr*pow(r,6)*pow(ssr,5)*pow(P,2) - 18432*pow(Bep,4)*pow(r,6)*pow(ssr,6)*pow(P,3))
+    ;
+
+    ans /= 4*pow(r,2)*pow(ssr,2)*pow(pow(r,2) - 16*Bep*Qr*pow(r,2) + 64*pow(Bep,2)*pow(Qr,2)*pow(r,2) - 20*Bep*pow(r,2)*ssr*P + 160*pow(Bep,2)*Qr*pow(r,2)*ssr*P + 96*pow(Bep,2)*pow(r,2)*pow(ssr,2)*pow(P,2),2);
+
+    return ans;
+  }
+  }
+//=================================================================================
 double Solve_metric_fields::rhs_lapse(double r,
   double nn,
   double ss,
@@ -61,7 +77,11 @@ double Solve_metric_fields::rhs_lapse(double r,
   double Q, double r_Der_Q,
   double Bep, double Bepp)
   {
-    // if((fabs(P)>1e-12)||(fabs(Q)>1e-12)||(ss>1e-12)){
+    if(fabs(ss)<1e-8){
+    return 0.;
+    }
+
+    else{
     double Qr = Q/r;
     double ssr = ss/r;
 
@@ -74,10 +94,7 @@ double Solve_metric_fields::rhs_lapse(double r,
     ;
 
     return ans;
-  // }
-  // else{
-  //   return 1e-20;
-  // }
+  }
 
   }
 //==============================================================================
@@ -123,7 +140,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
           s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i];
         }
         else{
-          s_v.v[exc_i] = 1e-10;
+          s_v.v[exc_i] = 1e-8;
 
         }
 
@@ -138,197 +155,86 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
         double a3 = 48.*p_v.v[i]*Bep_i;
         double root = 0;
         // root = solve_cubic_eqn((dr[i]*dr[i]*dr[i])*a0, (dr[i]*dr[i])*a1,  a2*(dr[i]), a3, 1e-3);
-        s_v.v[i] = fabs((fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i] + (2./3.)*(pow(p_v.v[i], 3))*dr[i]*Bep_i + 2.*pow((2./3.) , 0.5)*p_v.v[i]*q1*dr[i]*Bep_i );
+        s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i] + fabs( (2./3.)*(pow(p_v.v[i], 3))*dr[i]*Bep_i + 2.*pow((2./3.) , 0.5)*p_v.v[i]*q1*dr[i]*Bep_i );
 
       }
       else{
-        s_v.v[exc_i] = 1e-10;
+        s_v.v[exc_i] = 1e-8;
       }
     }
     }
     {
-      int i = exc_i;
-      r_Der_P_i = 0.;
-      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i+1], dr[i+1]);
+        int i = exc_i;
+        double tol = 1e-12;
+        int max_steps = 10e3;
+        int counter = 0;
+        double err = 0.;
+        double guess = 0.;
+        double r_Der_P = (p_v.v[i+1])/(dr[i]);
+        double r_Der_P_ip1 = (p_v.v[i+2]-p_v.v[i])/(2.*dr[i]);
+        double r_Der_Q = 0.;
+        double r_Der_Q_ip1 = (q_v.v[i+2]-q_v.v[i])/(2.*dr[i]);
+        double Bep = beta_p(l, phi_v.v[i]);
+        double Bepp = beta_pp(l, phi_v.v[i]);
+        double Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+        double Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+        double rp = r_p_of_x(cl, x[i]);
+        double rp_ip1 = r_p_of_x(cl, x[i+1]);
 
-      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
-      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], -q_v.v[i+1], dr[i+1]);
+        guess = fabs(s_v.v[i] + dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp));
+        err = guess - s_v.v[i] - 0.5*(dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp) \
+        + dx*rp_ip1*rhs_shift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
 
-      // Bep_i = beta_p(l, phi_v.v[i]);
-      // Bep_ip1 = beta_p(l, phi_v.v[i+1]);
-      //
-      // Bepp_i = beta_pp(l, phi_v.v[i]);
-      // Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
-      Bep_i = beta_p(l, phi_v.v[i]);
-      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+        while((fabs(err)>tol) ){
+          double f = guess - s_v.v[i] - 0.5*(dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp) \
+          + dx*rp_ip1*rhs_shift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+          double fp = 1- 0.5*dx*rp_ip1*drhs_shiftdshift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
 
-      Bepp_i = beta_pp(l, phi_v.v[i]);
-      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+          guess = guess - (f/fp);
 
+          err = guess - s_v.v[i] - 0.5*(dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp) \
+          + dx*rp_ip1*rhs_shift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
 
-      // savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-      savg = interp_4_c(-s_v.v[i+2], -s_v.v[i+1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      pavg = interp_4_c(p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      qavg = interp_4_c(-q_v.v[i+2], -q_v.v[i+1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
-
-      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
-      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-
-      Bepavg = (Bep_i + Bep_ip1)/2.;
-      Beppavg = (Bepp_i + Bepp_ip1)/2.;
-
-      k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
-      double xhf = x[i] + dx/2.;
-      double rhf = r_of_x(cl, xhf);
-      k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-
-      k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-      xhf = x[i+1];
-      rhf = r_of_x(cl,xhf);
-      k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
-
-
-      s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
-
-      // if(s_v.v[i+1]<-1e-20){
-      //   cout<<"q = "<<q_v.v[i]<<"; p = "<<p_v.v[i]<<"; phi = "<<phi_v.v[i]<<endl;
-      // cout<<"k1 = "<<k1<<"; k2 = "<<k2<<"; k3 = "<<k3<<"; k4 = "<<k4<<"; extra = "<<+ k1/6. + k2/3. + k3/3. + k4/6.<<endl;
-      // cout<<"i = "<<i<<"; s_v.v[i] = "<<s_v.v[i]<<"; s_v.v[i+1] = "<<s_v.v[i+1]<<endl;
-      // }
-
+          counter +=1;
+        }
+        s_v.v[i+1] = fabs(guess);
     }
+    for(int i=exc_i + 1; i<nx-3; i++)
     {
-      int i = exc_i+1;
+      double tol = 1e-12;
+      int max_steps = 10e3;
+      int counter = 0;
+      double err = 0.;
+      double guess = 0.;
+      double r_Der_P = (p_v.v[i+1]-p_v.v[i-1])/(2.*dr[i]);
+      double r_Der_P_ip1 = (p_v.v[i+2]-p_v.v[i])/(2.*dr[i]);
+      double r_Der_Q = (q_v.v[i+1]-q_v.v[i-1])/(2.*dr[i]);
+      double r_Der_Q_ip1 = (q_v.v[i+2]-q_v.v[i])/(2.*dr[i]);
+      double Bep = beta_p(l, phi_v.v[i]);
+      double Bepp = beta_pp(l, phi_v.v[i]);
+      double Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+      double Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+      double rp = r_p_of_x(cl, x[i]);
+      double rp_ip1 = r_p_of_x(cl, x[i+1]);
 
-      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i], dr[i]);
-      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+      guess = fabs(s_v.v[i] + dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp));
+      err = guess - s_v.v[i] - 0.5*(dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp) \
+      + dx*rp_ip1*rhs_shift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
 
-      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], -q_v.v[i], dr[i]);
-      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+      while((fabs(err)>tol) ){
+        double f = guess - s_v.v[i] - 0.5*(dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp) \
+        + dx*rp_ip1*rhs_shift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+        double fp = 1- 0.5*dx*rp_ip1*drhs_shiftdshift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
 
-      Bep_i = beta_p(l, phi_v.v[i]);
-      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+        guess = guess - (f/fp);
 
-      Bepp_i = beta_pp(l, phi_v.v[i]);
-      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+        err = guess - s_v.v[i] - 0.5*(dx*rp*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp) \
+        + dx*rp_ip1*rhs_shift(r[i+1], guess, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
 
-
-      // savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-      savg = interp_4_c(-s_v.v[i+1], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      pavg = interp_4_c(p_v.v[i+1], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      qavg = interp_4_c(-q_v.v[i+1], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
-
-
-      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
-      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-
-      Bepavg = (Bep_i + Bep_ip1)/2.;
-      Beppavg = (Bepp_i + Bepp_ip1)/2.;
-
-      k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
-      double xhf = x[i] + dx/2.;
-      double rhf = r_of_x(cl, xhf);
-      k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-
-      k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-      xhf = x[i+1];
-      rhf = r_of_x(cl,xhf);
-      k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
-
-
-      s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
-    }
-
-    for(int i=exc_i+2; i<nx-3; i++){
-      r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
-      r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
-
-      r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
-      r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
-
-      Bep_i = beta_p(l, phi_v.v[i]);
-      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
-
-      Bepp_i = beta_pp(l, phi_v.v[i]);
-      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
-
-      // savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-      savg = interp_4_c(s_v.v[i-2], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      pavg = interp_4_c(p_v.v[i-2], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      qavg = interp_4_c(q_v.v[i-2], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
-
-      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
-      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-
-      Bepavg = (Bep_i + Bep_ip1)/2.;
-      Beppavg = (Bepp_i + Bepp_ip1)/2.;
-
-      k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
-      double xhf = x[i] + dx/2.;
-      double rhf = r_of_x(cl, xhf);
-      k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-
-      k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-      xhf = x[i+1];
-      rhf = r_of_x(cl,xhf);
-      k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
-
-
-      s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
-      // if(s_v.v[i+1]<-1e-20){
-      //   cout<<"q = "<<q_v.v[i]<<"; p = "<<p_v.v[i]<<"; phi = "<<phi_v.v[i]<<endl;
-      // cout<<"k1 = "<<k1<<"; k2 = "<<k2<<"; k3 = "<<k3<<"; k4 = "<<k4<<"; extra = "<<+ k1/6. + k2/3. + k3/3. + k4/6.<<endl;
-      // cout<<"i = "<<i<<"; s_v.v[i] = "<<s_v.v[i]<<"; s_v.v[i+1] = "<<s_v.v[i+1]<<endl;
-      // }
-    }
-
-    {
-      int i = nx-3;
-
-      r_Der_P_i = Dx_ptc_4th(0., p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
-      r_Der_P_ip1 = Dx_ptm1_4th(0., p_v.v[i+1], p_v.v[i], p_v.v[i-1], p_v.v[i-2], dr[i+1]);
-
-      r_Der_Q_i = Dx_ptc_4th(0., q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
-      r_Der_Q_ip1 = Dx_ptm1_4th(0., q_v.v[i+1], q_v.v[i], q_v.v[i-1], q_v.v[i-2], dr[i+1]);
-
-      Bep_i = beta_p(l, phi_v.v[i]);
-      Bep_ip1 = beta_p(l, phi_v.v[i+1]);
-
-      Bepp_i = beta_pp(l, phi_v.v[i]);
-      Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
-
-      // savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-      savg = interp_4_c(s_v.v[i-2], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      pavg = interp_4_c(p_v.v[i-2], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      qavg = interp_4_c(q_v.v[i-2], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
-
-      derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
-      derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
-
-      Bepavg = (Bep_i + Bep_ip1)/2.;
-      Beppavg = (Bepp_i + Bepp_ip1)/2.;
-
-      k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
-      double xhf = x[i] + dx/2.;
-      double rhf = r_of_x(cl, xhf);
-      k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-
-      k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
-      xhf = x[i+1];
-      rhf = r_of_x(cl,xhf);
-      k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
-
-
-      s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
-    }
+        counter +=1;
+      }
+      s_v.v[i+1] = fabs(guess);
+      }
 
     s_v.v[nx-1] = 0.;
     s_v.check_non_negative(grid.t_evolve);
@@ -359,9 +265,6 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       Bepp_i = beta_pp(l, phi_v.v[i]);
       Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
 
-      // savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
       pavg = interp_4_p0( p_v.v[i], p_v.v[i+1], p_v.v[i+2],p_v.v[i+3], p_v.v[i+4]);
       qavg = interp_4_p0(q_v.v[i], q_v.v[i+1], q_v.v[i+2],q_v.v[i+3],q_v.v[i+4]);
       savg = interp_4_p0(s_v.v[i], s_v.v[i+1], s_v.v[i+2],s_v.v[i+3],s_v.v[i+4]);
@@ -811,6 +714,194 @@ void Solve_metric_fields::solve(const Grid_data grid,Field &n_v,Field &s_v, cons
   solve_lapse(grid, n_v,s_v, p_v, q_v, phi_v);
 }
 //==============================================================================
+//OLD Text ss RK4
+// {
+//   int i = exc_i;
+//   r_Der_P_i = 0.;
+//   r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i+1], dr[i+1]);
+//
+//   r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
+//   r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], -q_v.v[i+1], dr[i+1]);
+//
+//   // Bep_i = beta_p(l, phi_v.v[i]);
+//   // Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+//   //
+//   // Bepp_i = beta_pp(l, phi_v.v[i]);
+//   // Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+//   Bep_i = beta_p(l, phi_v.v[i]);
+//   Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+//
+//   Bepp_i = beta_pp(l, phi_v.v[i]);
+//   Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+//
+//
+//   // savg = (s_v.v[i] + s_v.v[i+1])/2.;
+//   // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+//   // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+//   savg = interp_4_c(-s_v.v[i+2], -s_v.v[i+1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
+//   pavg = interp_4_c(p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
+//   qavg = interp_4_c(-q_v.v[i+2], -q_v.v[i+1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+//
+//   derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+//   derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+//
+//   Bepavg = (Bep_i + Bep_ip1)/2.;
+//   Beppavg = (Bepp_i + Bepp_ip1)/2.;
+//
+//   k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+//   double xhf = x[i] + dx/2.;
+//   double rhf = r_of_x(cl, xhf);
+//   k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+//
+//   k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+//   xhf = x[i+1];
+//   rhf = r_of_x(cl,xhf);
+//   k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+//
+//   s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
+//
+//   if(fabs(s_v.v[i+1])<1e-2){
+//     s_v.v[i+1] = fabs(s_v.v[i+1]);
+//   }
+//
+// }
+//{
+// int i = exc_i+1;
+//
+// r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i], dr[i]);
+// r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+//
+// r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], -q_v.v[i], dr[i]);
+// r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+//
+// Bep_i = beta_p(l, phi_v.v[i]);
+// Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+//
+// Bepp_i = beta_pp(l, phi_v.v[i]);
+// Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+//
+//
+// // savg = (s_v.v[i] + s_v.v[i+1])/2.;
+// // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+// // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+// savg = interp_4_c(-s_v.v[i+1], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
+// pavg = interp_4_c(p_v.v[i+1], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
+// qavg = interp_4_c(-q_v.v[i+1], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+//
+//
+// derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+// derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+//
+// Bepavg = (Bep_i + Bep_ip1)/2.;
+// Beppavg = (Bepp_i + Bepp_ip1)/2.;
+//
+// k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+// double xhf = x[i] + dx/2.;
+// double rhf = r_of_x(cl, xhf);
+// k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+//
+// k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+// xhf = x[i+1];
+// rhf = r_of_x(cl,xhf);
+// k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+//
+//
+// s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+//
+// if(fabs(s_v.v[i+1])<1e-2){
+//   s_v.v[i+1] = fabs(s_v.v[i+1]);
+// }
+//}
+
+// for(int i=exc_i+2; i<nx-3; i++){
+//   r_Der_P_i = Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+//   r_Der_P_ip1 = Dx_ptc_4th(p_v.v[i+3], p_v.v[i+2], p_v.v[i], p_v.v[i-1], dr[i+1]);
+//
+//   r_Der_Q_i = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+//   r_Der_Q_ip1 = Dx_ptc_4th(q_v.v[i+3], q_v.v[i+2], q_v.v[i], q_v.v[i-1], dr[i+1]);
+//
+//   Bep_i = beta_p(l, phi_v.v[i]);
+//   Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+//
+//   Bepp_i = beta_pp(l, phi_v.v[i]);
+//   Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+//
+//   // savg = (s_v.v[i] + s_v.v[i+1])/2.;
+//   // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+//   // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+//   savg = interp_4_c(s_v.v[i-2], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
+//   pavg = interp_4_c(p_v.v[i-2], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
+//   qavg = interp_4_c(q_v.v[i-2], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+//
+//   derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+//   derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+//
+//   Bepavg = (Bep_i + Bep_ip1)/2.;
+//   Beppavg = (Bepp_i + Bepp_ip1)/2.;
+//
+//   k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+//   double xhf = x[i] + dx/2.;
+//   double rhf = r_of_x(cl, xhf);
+//   k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+//
+//   k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+//   xhf = x[i+1];
+//   rhf = r_of_x(cl,xhf);
+//   k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+//
+//
+//   s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
+// if(fabs(s_v.v[i+1])<1e-2){
+//   s_v.v[i+1] = fabs(s_v.v[i+1]);
+// }
+// if(s_v.v[i+1]<-1e-20){
+//   cout<<"q = "<<q_v.v[i]<<"; p = "<<p_v.v[i]<<"; phi = "<<phi_v.v[i]<<endl;
+// cout<<"k1 = "<<k1<<"; k2 = "<<k2<<"; k3 = "<<k3<<"; k4 = "<<k4<<"; extra = "<<+ k1/6. + k2/3. + k3/3. + k4/6.<<endl;
+// cout<<"i = "<<i<<"; s_v.v[i] = "<<s_v.v[i]<<"; s_v.v[i+1] = "<<s_v.v[i+1]<<endl;
+// }
+
+//{
+//   int i = nx-3;
+//
+//   r_Der_P_i = Dx_ptc_4th(0., p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
+//   r_Der_P_ip1 = Dx_ptm1_4th(0., p_v.v[i+1], p_v.v[i], p_v.v[i-1], p_v.v[i-2], dr[i+1]);
+//
+//   r_Der_Q_i = Dx_ptc_4th(0., q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
+//   r_Der_Q_ip1 = Dx_ptm1_4th(0., q_v.v[i+1], q_v.v[i], q_v.v[i-1], q_v.v[i-2], dr[i+1]);
+//
+//   Bep_i = beta_p(l, phi_v.v[i]);
+//   Bep_ip1 = beta_p(l, phi_v.v[i+1]);
+//
+//   Bepp_i = beta_pp(l, phi_v.v[i]);
+//   Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
+//
+//   // savg = (s_v.v[i] + s_v.v[i+1])/2.;
+//   // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+//   // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+//   savg = interp_4_c(s_v.v[i-2], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
+//   pavg = interp_4_c(p_v.v[i-2], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
+//   qavg = interp_4_c(q_v.v[i-2], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+//
+//   derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
+//   derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
+//
+//   Bepavg = (Bep_i + Bep_ip1)/2.;
+//   Beppavg = (Bepp_i + Bepp_ip1)/2.;
+//
+//   k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+//   double xhf = x[i] + dx/2.;
+//   double rhf = r_of_x(cl, xhf);
+//   k2 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k1, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+//
+//   k3 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + 0.5*k2, pavg, derPavg, qavg, derQavg, Bepavg, Beppavg);
+//   xhf = x[i+1];
+//   rhf = r_of_x(cl,xhf);
+//   k4 = dx*r_p_of_x(cl, xhf)*rhs_shift(rhf, s_v.v[i] + k3, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+//
+//
+//   s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
+// }
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
