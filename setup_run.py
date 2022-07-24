@@ -10,8 +10,8 @@ theory = "shift_symm"
 # theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi"
-Amps = np.array([0.1,0.2])
-ls = np.array([0.5,0.6,0.7,0.8,0.9])
+Amps = np.array([0.0009])
+ls = np.array([1.])
 
 
 if theory == "shift_symm":
@@ -42,7 +42,7 @@ sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)

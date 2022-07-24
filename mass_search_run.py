@@ -18,7 +18,7 @@ if theory == "shift_symm":
 else:
     out_path = home_path+ "/output/Phase-Space/Gaussian"
 #===============================================================================
-input_data  = [[0.5, 2.]]
+input_data  = [[0.1,0.19]]
 
 # for j in range(len(Ms)):
 #     for l in range(len(ls)):
@@ -30,8 +30,8 @@ sim = Sim()
 sim.slurm = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 2000
-sim.nt = 8000
+sim.nx = 8000
+sim.nt = 12000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
@@ -83,7 +83,8 @@ def launch_sim(vals):
     sim.l = l_val
     sim.initial_mass = Mass_val
     dx = sim.cl/sim.nx
-    sim.exc_i = int((0.5/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+    ratio = 0.5
+    sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
     sim.launch()
 
 if sim.slurm == True:
@@ -107,18 +108,19 @@ else:
         run_type = "black_hole_mass_search"
         sim.Amp = 0.
         tol = 1e-2
-        data_search = [[0.5       , 1.3 , 2.  ],
-        [0.6       , 1.3 , 2],
-        [0.7       , 1.4 , 2],
-        [0.8       , 1.6, 2.5 ],
-        [0.9       , 2.1, 3],
-        [1.        , 2.3  , 3]]
+        data_search = [
+        [0.1  , 0.19 , 0.9  ],
+        [0.2  , 0.2 , 0.9],
+        [0.3  , 0.7 , 0.9],
+        [0.4  , 0.9, 1. ],
+        [0.5  , 1.2, 1.5]]
 
         def launch_search(arr):
             l = arr[0]
             mass_range = [arr[1],arr[2]]
             sim.record = run_params + "/record_{}.dat".format(l)
             dx = sim.cl/sim.nx
+            ratio = 0.5
             sim.exc_i = int((0.5/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
             sim.mass_search(l=l, mass_range = mass_range , tol = tol)
 
