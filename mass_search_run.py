@@ -18,7 +18,7 @@ if theory == "shift_symm":
 else:
     out_path = home_path+ "/output/Phase-Space/Gaussian"
 #===============================================================================
-input_data  = [[0.1,0.19]]
+input_data  = [[0.1,(0.19 + 0.545)/2]]
 
 # for j in range(len(Ms)):
 #     for l in range(len(ls)):
@@ -109,19 +109,16 @@ else:
         sim.Amp = 0.
         tol = 1e-2
         data_search = [
-        [0.1  , 0.19 , 0.9  ],
-        [0.2  , 0.2 , 0.9],
-        [0.3  , 0.7 , 0.9],
-        [0.4  , 0.9, 1. ],
-        [0.5  , 1.2, 1.5]]
+        [0.1  , 0.19 , 0.545],
+        [0.2  , 0.2 , 0.55]]
 
         def launch_search(arr):
             l = arr[0]
             mass_range = [arr[1],arr[2]]
             sim.record = run_params + "/record_{}.dat".format(l)
-            dx = sim.cl/sim.nx
-            ratio = 0.5
-            sim.exc_i = int((0.5/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+            # dx = sim.cl/sim.nx
+            # ratio = 0.5
+            # sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
             sim.mass_search(l=l, mass_range = mass_range , tol = tol)
 
         #--------------------------------------------------------------------------

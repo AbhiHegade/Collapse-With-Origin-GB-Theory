@@ -310,6 +310,9 @@ class Sim:
             val = (M_high + M_low)/2
             self.l = l
             self.initial_mass = val
+            dx = self.cl/self.nx
+            ratio = 0.5
+            self.exc_i = int((ratio/dx)*((4*self.cl*self.initial_mass)/(self.cl + 4*self.initial_mass)))
             self.launch()
             # time.sleep(60)
             done = False
