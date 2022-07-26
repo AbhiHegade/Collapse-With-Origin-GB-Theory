@@ -7,13 +7,14 @@ from datetime import datetime
 import os
 #===============================================================================
 theory = "shift_symm"
-# theory = "gaussian"
+#theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi-check/code-f-phi"
 # Amps = np.array([0.07500000000000001, 0.09375, 0.09843750000000001,0.1,0.2])
 # ls = np.array([0.1])
-Amps = np.array([0.15])
-ls = np.array([0.1])
+Amps = np.array([0.12])
+#ls = np.array([0.3])
+ls = np.array([1.])
 
 
 if theory == "shift_symm":
@@ -23,18 +24,21 @@ else:
 #===============================================================================
 input_data = []
 
-for j in range(len(Amps)):
-    for l in range(len(ls)):
-        input_data.append([ls[l],Amps[j]])
+# for j in range(len(Amps)):
+#     for l in range(len(ls)):
+#         input_data.append([ls[l],Amps[j]])
+input_data  = [[0.3,0.1],[0.3,0.2], [0.3,0.25],[0.3,0.3],
+    [1.,0.1],[1.,0.2], [1.,0.3],[1.,0.35]]
+#input_data  = [[1.,0.03],[1.,0.001], [1.,0.0015],[1.,0.0009]]
 
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 5000
-sim.nt = 8000
-sim.save_steps = int(sim.nt/1000)
+sim.nx = 10000
+sim.nt = 10000
+sim.save_steps = 5
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
     sim.exc_i = 0
@@ -100,11 +104,18 @@ if sim.slurm == True:
 else:
     if sim.search == True:
         #
-        data_search = [ [0.1,0.05,0.15], [0.2,0.07,0.2],
-        [0.3,0.07,0.2], [0.4,0.1,0.2],
-        [0.5,0.1,0.2],[0.6,0.1,0.2],
-        [0.7,0.1,0.2], [0.8,0.1,0.2],
-        [0.9,0.1,0.2],[1,0.15,0.2]]
+        # data_search = [[0.1,0.01,0.07], [0.2,0.01,0.07],
+        # [0.3,0.009,0.07], [0.4,0.008,0.05],
+        # [0.5,0.001,0.05],[0.6,0.001,0.05],
+        # [0.7,0.001,0.05], [0.8,0.001,0.05],
+        # [0.9,0.001,0.05],[1,0.001,0.05]]
+
+        data_search = [[1,0.18,0.2],
+        [0.9,0.16,0.2],
+        [0.8,0.1, 0.2],
+        [0.7,0.1,0.2],
+        [0.6,0.1,0.2],
+        [0.5,0.1,0.2]]
 
         tol = 1e-2
 
@@ -178,6 +189,7 @@ else:
 
             t_start = time.time()
             print("Starting multiprocessing pool..")
+            print("Data saved at:{}".format(sim.out_dir))
             print("nx = ",sim.nx)
             print("nt = ", sim.nt)
             print("save_steps = ", sim.save_steps)

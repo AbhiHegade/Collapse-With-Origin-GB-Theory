@@ -6,11 +6,11 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-theory = "shift_symm"
-# theory = "gaussian"
+#theory = "shift_symm"
+theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/Mass-var"
-Ms = np.array([2.4,2.5,2.6])
+Ms = np.array([0.7,0.8])
 ls = np.array([1.])
 
 if theory == "shift_symm":
@@ -18,31 +18,32 @@ if theory == "shift_symm":
 else:
     out_path = home_path+ "/output/Phase-Space/Gaussian"
 #===============================================================================
-input_data  = [[0.1,(0.19 + 0.545)/2]]
+# input_data  = [[0.1,(0.19 + 0.545)/2]]
+input_data = []
 
-# for j in range(len(Ms)):
-#     for l in range(len(ls)):
-#         assert (ls[l]>0), "l must be greater than zero."
-#         input_data.append([ls[l],Ms[j]])
+for j in range(len(Ms)):
+    for l in range(len(ls)):
+        assert (ls[l]>0), "l must be greater than zero."
+        input_data.append([ls[l],Ms[j]])
 
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 8000
-sim.nt = 12000
-sim.save_steps = int(sim.nt/10)
+sim.nx = 2000
+sim.nt = 2000
+sim.save_steps = int(sim.nt/100)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.A = 0.
+sim.A = 1e-2
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -184,6 +185,7 @@ else:
 
 
             print("pool_nums = ", pool_nums)
+            print("Data saved at:{}".format(sim.out_dir))
 
             t_start = time.time()
             print("Starting multiprocessing pool..")

@@ -40,7 +40,7 @@ Grid_data::Grid_data( const int nx,const int nt, const double l, int exc_i  ,con
   // x[nx-1] = cl;
   // r[nx-1] = 1e100;
   // dr[nx-1] = r[nx-1]-r[nx-2];
-    x[0] = (1e-4>dx/4.) ?  1e-4:dx/4 ;
+    x[0] = (1e-3>dx) ?  1e-3:dx ;
     r[0] = r_of_x(cl,x[0]);
     dr[0] = r_p_of_x(cl,x[0])*dx;
   for(int j = 1; j<nx-1; j++){
