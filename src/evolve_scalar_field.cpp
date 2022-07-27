@@ -48,10 +48,15 @@ double Evolve_scalar_field::rhs_p(double r,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
   double Q, double r_Der_Q,
-  double Bep, double Bepp){
+  double Bep, double Bepp)
+  {
 
     double Qr = Q/r;
     double ssr = ss/r;
+    if(fabs(ss)<1e-6){
+      return Qr*r*r_Der_nn + 2*Qr*nn + r_Der_Q*nn;
+    }
+    else{
     double num = 0.;
     double denom = 0.;
     {
@@ -104,6 +109,7 @@ double Evolve_scalar_field::rhs_p(double r,
     }
 
     return num/denom;
+  }
 }
 //==============================================================================
 double Evolve_scalar_field::rhs_s_free(double r,
@@ -111,7 +117,8 @@ double Evolve_scalar_field::rhs_s_free(double r,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
   double Q, double r_Der_Q,
-  double Bep, double Bepp){
+  double Bep, double Bepp)
+  {
 
   double Qr = Q/r;
   double ssr = ss/r;
@@ -246,8 +253,11 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
       Bepp = beta_pp(l, phi_v.v[i]);
 
       //Written this way because of expansion around zero and appearance of second derivatives.
-      dpdt[i] = (-8*Bep*rr_Der_nn*pow(r_Der_ss,2)*nn + 128*pow(Bep,2)*rr_Der_nn*r_Der_Q*pow(r_Der_ss,2)*nn - 512*pow(Bep,3)*rr_Der_nn*pow(r_Der_Q,2)*pow(r_Der_ss,2)*nn + 3*r_Der_Q*pow(nn,2) - 48*Bep*pow(r_Der_Q,2)*pow(nn,2) + 192*pow(Bep,2)*pow(r_Der_Q,3)*pow(nn,2) - 32*pow(Bep,2)*rr_Der_P*pow(r_Der_ss,3)*pow(nn,2) + 256*pow(Bep,3)*rr_Der_P*r_Der_Q*pow(r_Der_ss,3)*pow(nn,2) - 12*Bep*pow(r_Der_ss,4)*pow(nn,2) + 64*pow(Bep,2)*r_Der_Q*pow(r_Der_ss,4)*pow(nn,2) + 256*pow(Bep,3)*pow(r_Der_Q,2)*pow(r_Der_ss,4)*pow(nn,2) + 128*pow(Bep,2)*rr_Der_nn*pow(r_Der_ss,3)*nn*P - 1024*pow(Bep,3)*rr_Der_nn*r_Der_Q*pow(r_Der_ss,3)*nn*P + 3*r_Der_ss*pow(nn,2)*P - 100*Bep*r_Der_Q*r_Der_ss*pow(nn,2)*P + 608*pow(Bep,2)*pow(r_Der_Q,2)*r_Der_ss*pow(nn,2)*P - 32*Bep*Bepp*r_Der_Q*pow(r_Der_ss,3)*pow(nn,2)*P + 256*pow(Bep,2)*Bepp*pow(r_Der_Q,2)*pow(r_Der_ss,3)*pow(nn,2)*P + 256*pow(Bep,3)*rr_Der_P*pow(r_Der_ss,4)*pow(nn,2)*P + 96*pow(Bep,2)*pow(r_Der_ss,5)*pow(nn,2)*P + 256*pow(Bep,3)*r_Der_Q*pow(r_Der_ss,5)*pow(nn,2)*P - 512*pow(Bep,3)*rr_Der_nn*pow(r_Der_ss,4)*nn*pow(P,2) - 54*Bep*pow(r_Der_ss,2)*pow(nn,2)*pow(P,2) + 656*pow(Bep,2)*r_Der_Q*pow(r_Der_ss,2)*pow(nn,2)*pow(P,2) - 96*Bep*Bepp*pow(r_Der_ss,4)*pow(nn,2)*pow(P,2) + 1024*pow(Bep,2)*Bepp*r_Der_Q*pow(r_Der_ss,4)*pow(nn,2)*pow(P,2) + 240*pow(Bep,2)*pow(r_Der_ss,3)*pow(nn,2)*pow(P,3) + 768*pow(Bep,2)*Bepp*pow(r_Der_ss,5)*pow(nn,2)*pow(P,3))/(nn*(1 - 16*Bep*r_Der_Q + 64*pow(Bep,2)*pow(r_Der_Q,2) + 96*pow(Bep,2)*pow(r_Der_ss,4) - 768*pow(Bep,3)*r_Der_Q*pow(r_Der_ss,4) - 16*Bep*r_Der_ss*P + 128*pow(Bep,2)*r_Der_Q*r_Der_ss*P - 768*pow(Bep,3)*pow(r_Der_ss,5)*P + 64*pow(Bep,2)*pow(r_Der_ss,2)*pow(P,2)));
+      dpdt[i] = nn*(-pow(r_Der_P,3) + 16*Bep*pow(r_Der_P,3)*r_Der_Q - 64*pow(Bep,2)*pow(r_Der_P,3)*pow(r_Der_Q,2) + 20*Bep*pow(r_Der_P,4)*r_Der_ss - 12*r_Der_Q*r_Der_ss - 160*pow(Bep,2)*pow(r_Der_P,4)*r_Der_Q*r_Der_ss + 288*Bep*pow(r_Der_Q,2)*r_Der_ss - 2304*pow(Bep,2)*pow(r_Der_Q,3)*r_Der_ss + 6144*pow(Bep,3)*pow(r_Der_Q,4)*r_Der_ss - 6*r_Der_P*pow(r_Der_ss,2) - 80*pow(Bep,2)*pow(r_Der_P,5)*pow(r_Der_ss,2) + 480*Bep*r_Der_P*r_Der_Q*pow(r_Der_ss,2) - 6528*pow(Bep,2)*r_Der_P*pow(r_Der_Q,2)*pow(r_Der_ss,2) + 24576*pow(Bep,3)*r_Der_P*pow(r_Der_Q,3)*pow(r_Der_ss,2) + 208*Bep*pow(r_Der_P,2)*pow(r_Der_ss,3) + 128*Bep*Bepp*pow(r_Der_P,4)*pow(r_Der_ss,3) - 6272*pow(Bep,2)*pow(r_Der_P,2)*r_Der_Q*pow(r_Der_ss,3) - 1024*pow(Bep,2)*Bepp*pow(r_Der_P,4)*r_Der_Q*pow(r_Der_ss,3) + 36864*pow(Bep,3)*pow(r_Der_P,2)*pow(r_Der_Q,2)*pow(r_Der_ss,3) - 2208*pow(Bep,2)*pow(r_Der_P,3)*pow(r_Der_ss,4) - 768*pow(Bep,2)*Bepp*pow(r_Der_P,5)*pow(r_Der_ss,4) + 26112*pow(Bep,3)*pow(r_Der_P,3)*r_Der_Q*pow(r_Der_ss,4) - 48*Bep*pow(r_Der_ss,5) - 384*Bep*Bepp*pow(r_Der_P,2)*pow(r_Der_ss,5) + 7680*pow(Bep,3)*pow(r_Der_P,4)*pow(r_Der_ss,5) + 768*pow(Bep,2)*r_Der_Q*pow(r_Der_ss,5) + 6144*pow(Bep,2)*Bepp*pow(r_Der_P,2)*r_Der_Q*pow(r_Der_ss,5) - 3072*pow(Bep,3)*pow(r_Der_Q,2)*pow(r_Der_ss,5) - 24576*pow(Bep,3)*Bepp*pow(r_Der_P,2)*pow(r_Der_Q,2)*pow(r_Der_ss,5) + 384*pow(Bep,2)*r_Der_P*pow(r_Der_ss,6) + 3072*pow(Bep,2)*Bepp*pow(r_Der_P,3)*pow(r_Der_ss,6) - 3072*pow(Bep,3)*r_Der_P*r_Der_Q*pow(r_Der_ss,6) - 24576*pow(Bep,3)*Bepp*pow(r_Der_P,3)*r_Der_Q*pow(r_Der_ss,6));
 
+      dpdt[i] /= 4*r_Der_ss*(-1 + 24*Bep*r_Der_Q - 192*pow(Bep,2)*pow(r_Der_Q,2) + 512*pow(Bep,3)*pow(r_Der_Q,3) + 28*Bep*r_Der_P*r_Der_ss - 448*pow(Bep,2)*r_Der_P*r_Der_Q*r_Der_ss + 1792*pow(Bep,3)*r_Der_P*pow(r_Der_Q,2)*r_Der_ss - 288*pow(Bep,2)*pow(r_Der_P,2)*pow(r_Der_ss,2) + 2304*pow(Bep,3)*pow(r_Der_P,2)*r_Der_Q*pow(r_Der_ss,2) + 960*pow(Bep,3)*pow(r_Der_P,3)*pow(r_Der_ss,3) + 96*pow(Bep,2)*pow(r_Der_ss,4) - 1536*pow(Bep,3)*r_Der_Q*pow(r_Der_ss,4) + 6144*pow(Bep,4)*pow(r_Der_Q,2)*pow(r_Der_ss,4) - 768*pow(Bep,3)*r_Der_P*pow(r_Der_ss,5) + 6144*pow(Bep,4)*r_Der_P*r_Der_Q*pow(r_Der_ss,5));
+
+      // dqdt[i] = r[i]*(2.*rr_Der_nn*p_v.v[i] + 2.*n_v.v[i]*(rr_Der_P + r_Der_Q*r_Der_ss ));
       dqdt[i] = 0.;
 
       dphidt[i] = n_v.v[i]*p_v.v[i];

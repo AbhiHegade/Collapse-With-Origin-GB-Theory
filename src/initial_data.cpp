@@ -47,7 +47,8 @@ void Initial_data::set_Minkowski(Grid_data grid, Field &n_v, Field &s_v, Field &
         +	pow(r_u-r,2)
         -	pow(r-r_l,2)
         )*bump;
-        p_v.v[i]= q_v.v[i] + (phi.v[i]/r);
+        //p_v.v[i]= q_v.v[i] + (phi.v[i]/r);
+        p_v.v[i] = 0.;
      } else {
         phi.v[i]= 0;
         p_v.v[i]= 0;
@@ -91,7 +92,6 @@ void Initial_data::set_bh_bump(Grid_data grid,  Field &n_v, Field &s_v, Field &p
         double bump= exp(-1./(r_u-r))*exp(-1./(r-r_l));
 
         phi.v[i]= pow(r-r_l,2)*pow(r_u-r,2)*bump;
-        // p_v.v[i]= 0.0;
         q_v.v[i]= (
         2*(r-r_l)*pow(r_u-r,2)
         -	2*pow(r-r_l,2)*(r_u-r)
@@ -99,6 +99,7 @@ void Initial_data::set_bh_bump(Grid_data grid,  Field &n_v, Field &s_v, Field &p
         -	pow(r-r_l,2)
         )*bump;
         p_v.v[i]= q_v.v[i] + (phi.v[i]/r);
+        // p_v.v[i]= 0.0;
      } else {
         phi.v[i]= 0;
         p_v.v[i]= 0;

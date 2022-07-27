@@ -27,8 +27,8 @@ input_data = []
 # for j in range(len(Amps)):
 #     for l in range(len(ls)):
 #         input_data.append([ls[l],Amps[j]])
-input_data  = [[0.3,0.1],[0.3,0.2], [0.3,0.25],[0.3,0.3],
-    [1.,0.1],[1.,0.2], [1.,0.3],[1.,0.35]]
+input_data = [[0.1,0.065],[0.3,0.035]]
+# input_data = [[0.5,0.018], [0.6,0.014], [0.7, 0.01], [0.4,0.024]]
 #input_data  = [[1.,0.03],[1.,0.001], [1.,0.0015],[1.,0.0009]]
 
 current_time = datetime.now()
@@ -36,9 +36,9 @@ sim = Sim()
 sim.slurm = False
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 10000
-sim.nt = 10000
-sim.save_steps = 5
+sim.nx = 8000
+sim.nt = 8000
+sim.save_steps = int(sim.nt/100)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
     sim.exc_i = 0
@@ -110,18 +110,19 @@ else:
         # [0.7,0.001,0.05], [0.8,0.001,0.05],
         # [0.9,0.001,0.05],[1,0.001,0.05]]
 
-        data_search = [[1,0.18,0.2],
+        data_search = [[1.,0.01,0.05],
         [0.9,0.16,0.2],
         [0.8,0.1, 0.2],
         [0.7,0.1,0.2],
-        [0.6,0.1,0.2],
-        [0.5,0.1,0.2]]
+        [0.6,0.002,0.2],
+        [0.5,0.005,0.01],
+        [0.4,0.007,0.02],[0.3,0.003,0.02],[0.2,0.01,0.05],[0.1,0.01,0.05]]
 
         tol = 1e-2
 
         #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
-        run_type = "naked_elliptic_to_blackhole"
+        run_type = "flat_space_to_naked_elliptic"
 
         def launch_search(arr):
             l = arr[0]

@@ -44,15 +44,15 @@ double Solve_metric_fields::rhs_shift(double r,
     s1 = -4*r_Der_Q*(-Bep + 8*pow(Bep,2)*Qr)*ssr + ((-1 + 8*Bep*Qr - 10*Bep*pow(r,2)*pow(P,2)*Qr + 8*Bepp*pow(r,2)*pow(Qr,2) - 64*Bep*Bepp*pow(r,2)*pow(Qr,3) + 2*Bep*pow(r,4)*pow(Qr,3))*ssr)/2.;
     s2 = -32*pow(Bep,2)*r_Der_Q*P*pow(ssr,2) - 4*Bep*r*r_Der_P*(-1 + 8*Bep*Qr)*pow(ssr,2) - 4*(-(Bep*P) - Bepp*pow(r,2)*P*Qr + 16*Bep*Bepp*pow(r,2)*P*pow(Qr,2))*pow(ssr,2);
     s3 = -48*pow(Bep,2)*r*r_Der_P*P*pow(ssr,3) + 16*pow(Bep,2)*pow(r,2)*r_Der_Q*Qr*pow(ssr,3) + 2*Bep*r*(-(r*Qr) - 24*Bepp*r*pow(P,2)*Qr + 8*Bepp*pow(r,3)*pow(Qr,3))*pow(ssr,3);
-    return (sm1/U + s0/U + s1/U + s2/U + s3/U) ;
 
+    return (sm1/U + s0/U + s1/U + s2/U + s3/U) ;
 
 }
 //================================================================================
 double Solve_metric_fields::drhs_shiftdshift(double r,
   double ss, double P, double r_Der_P, double Q, double r_Der_Q, double Bep, double Bepp)
   {
-    if(fabs(P)<1e-6){
+    if(fabs(Q)<1e-6){
       return -0.5/r;
     }
     else{
@@ -76,6 +76,10 @@ double Solve_metric_fields::rhs_lapse(double r,
   double Q, double r_Der_Q,
   double Bep, double Bepp)
   {
+    if(fabs(ss)<1e-6){
+      return 0.;
+    }
+    else{
     double ssr = ss/r;
     double Qr = Q/r;
     double U = 0.;
@@ -91,6 +95,8 @@ double Solve_metric_fields::rhs_lapse(double r,
     s2 = 48*pow(Bep,2)*r_Der_P*nn*P*pow(ssr,2) - 16*pow(Bep,2)*r*r_Der_Q*nn*Qr*pow(ssr,2) - 2*Bep*nn*(-(r*Qr) - 24*Bepp*r*pow(P,2)*Qr + 8*Bepp*pow(r,3)*pow(Qr,3))*pow(ssr,2);
 
     return (sm1/U + s0/U + s1/U + s2/U);
+
+  }
 
   }
 //==============================================================================
@@ -136,7 +142,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
           s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i];
         }
         else{
-          s_v.v[exc_i] = 1e-5*dr[i];
+          s_v.v[exc_i] = 1e-10;
 
         }
 
@@ -150,12 +156,12 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
         double a2 = (-6. + 48.*q1*Bep_i);
         double a3 = 48.*p_v.v[i]*Bep_i;
         double root = 0;
-        // root = solve_cubic_eqn((dr[i]*dr[i]*dr[i])*a0, (dr[i]*dr[i])*a1,  a2*(dr[i]), a3, 1e-3);
+        // root = solve_cubic_eqn((dr[i]*dr[i]*dr[i])*a0, (dr[i]*dr[i])*a1,  a2*(dr[i]), a3, (fabs(p_v.v[i])/pow(6.,0.5))*dr[i]);
         s_v.v[i] = (fabs(p_v.v[i])/(pow(6.,0.5)))*dr[i] + fabs( (2./3.)*(pow(p_v.v[i], 3))*dr[i]*Bep_i + 2.*pow((2./3.) , 0.5)*p_v.v[i]*q1*dr[i]*Bep_i );
-
+        // s_v.v[i] = fabs(root);
       }
       else{
-        s_v.v[exc_i] = 1e-5*dr[i];
+        s_v.v[exc_i] = 1e-10;
       }
     }
     }
@@ -174,12 +180,12 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
 
 
-      savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-      // savg = interp_4_c(-s_v.v[i+2], -s_v.v[i+1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      // pavg = interp_4_c(p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      // qavg = interp_4_c(-q_v.v[i+2], -q_v.v[i+1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+      // savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+      savg = interp_4_c(-s_v.v[i+2], -s_v.v[i+1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
+      pavg = interp_4_c(p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
+      qavg = interp_4_c(-q_v.v[i+2], -q_v.v[i+1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
@@ -265,12 +271,12 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       Bepp_i = beta_pp(l, phi_v.v[i]);
       Bepp_ip1 = beta_pp(l, phi_v.v[i+1]);
 
-      savg = (s_v.v[i] + s_v.v[i+1])/2.;
-      pavg = (p_v.v[i] + p_v.v[i+1])/2.;
-      qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-      // savg = interp_4_c(s_v.v[i-2], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      // pavg = interp_4_c(p_v.v[i-2], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      // qavg = interp_4_c(q_v.v[i-2], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+      // savg = (s_v.v[i] + s_v.v[i+1])/2.;
+      // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
+      // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
+      savg = interp_4_c(s_v.v[i-2], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
+      pavg = interp_4_c(p_v.v[i-2], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
+      qavg = interp_4_c(q_v.v[i-2], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
@@ -663,9 +669,9 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
     }
     n_v.v[nx-1] = n_v.v[nx-2] = n_v.v[nx-3];
+    n_v.check_isfinite(grid.t_evolve);
     n_v.rescale();
 
-    n_v.check_isfinite(grid.t_evolve);
   }
   else{
 
@@ -795,9 +801,10 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
     }
     n_v.v[nx-1] = n_v.v[nx-2]=n_v.v[nx-3];
+    n_v.check_isfinite(grid.t_evolve);
     n_v.rescale();
 
-    n_v.check_isfinite(grid.t_evolve);
+
 
   }
 
