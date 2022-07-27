@@ -89,13 +89,14 @@ class Sim:
             self.write_sim_params()
             self.copy_anim_script()
             subprocess.call('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)
-            with open("{}/output.out".format(self.output_dir),'r') as f:
-                for line in f:
-                    pass
-                run_status = line
-            with open("{}/Run_params/run_params.dat".format(self.out_dir), 'a') as f:
-                f.write("l = {}; A = {}; status ={}\n ".format(self.l,self.A,run_status))
-            
+            if self.write_runs:
+                with open("{}/output.out".format(self.output_dir),'r') as f:
+                    for line in f:
+                        pass
+                    run_status = line
+                with open("{}/Run_params/run_params.dat".format(self.out_dir), 'a') as f:
+                    f.write("l = {}; A = {}; status ={}".format(self.l,self.A,run_status))
+
 
         # subprocess.Popen('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)
 #===============================================================================
@@ -107,6 +108,7 @@ class Sim:
         M_high = self.compute_initial_mass(l,A_high)
         with open(self.record, 'w') as f:
             f.write('Bisection search\n')
+            f.write('tol = {}\n'.format(tol))
             f.write('run_type = {}\n'.format(run_type))
             f.write('rl = {}; ru = {}\n'.format(self.rl,self.ru))
             f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
