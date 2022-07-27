@@ -10,7 +10,7 @@ class Sim:
     def make_output_dir(self):
         current_time = datetime.now()
         self.output_dir = self.out_dir + "/" + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)+"_"+str(current_time.second)
-        self.output_dir = self.output_dir = self.output_dir+"_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_l_" + "{:.2e}".format(self.l)
+        self.output_dir = self.output_dir+"_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_l_" + "{:.2e}".format(self.l)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
         # self.record_dir = self.out_dir + "/Record_params"
@@ -89,6 +89,14 @@ class Sim:
             self.write_sim_params()
             self.copy_anim_script()
             subprocess.call('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)
+            with open("{}/output.out".format(self.output_dir),'r') as f:
+                for line in f:
+                    pass
+                run_status = line
+            with open("{}/Run_params/run_params.dat".format(self.out_dir), 'a') as f:
+                f.write("l = {}; A = {}; status ={}\n ".format(self.l,self.A,run_status))
+            
+
         # subprocess.Popen('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)
 #===============================================================================
     def amplitude_search(self, l, Amp_range, run_type, tol = 1e-3):

@@ -31,7 +31,7 @@ double beta_p(const double l, const double phi){
 
 double beta_pp(const double l, const double phi){
   double exp1 = exp(-mu*phi*phi);
-  return pow(l,2)*(exp1 - 2.*mu*phi*phi*exp1);
+  return pow(l,2)*exp1*(1. - 2.*mu*phi*phi);
     // return 0.;
 }
 

@@ -6,8 +6,8 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-theory = "shift_symm"
-#theory = "gaussian"
+#theory = "shift_symm"
+theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi"
 # Amps = np.array([0.07500000000000001, 0.09375, 0.09843750000000001,0.1,0.2])
@@ -27,17 +27,27 @@ input_data = []
 # for j in range(len(Amps)):
 #     for l in range(len(ls)):
 #         input_data.append([ls[l],Amps[j]])
-input_data = [[1.,0.15]]
+input_data = [[1.0, 0.01],
+[0.9, 0.01],
+[0.8, 0.01],
+[0.7, 0.02],
+[0.6, 0.02],
+[0.5, 0.03],
+[0.4, 0.05],
+[0.3, 0.07],
+[0.2, 0.08],
+[0.1, 0.08]]
+
 # input_data = [[0.5,0.018], [0.6,0.014], [0.7, 0.01], [0.4,0.024]]
 #input_data  = [[1.,0.03],[1.,0.001], [1.,0.0015],[1.,0.0009]]
-
+input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 8000
-sim.nt = 8000
+sim.nx = 6000
+sim.nt = 6000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -48,7 +58,7 @@ sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -73,8 +83,8 @@ if sim.search == False:
         f.write("save_steps = {} \n".format(sim.save_steps))
 
 
-    np.savetxt(run_params + "/ls.dat" , ls)
-    np.savetxt(run_params + "/Amps.dat", Amps)
+    np.savetxt(run_params + "/ls.dat" , input_data[:,0])
+    np.savetxt(run_params + "/Amps.dat", input_data[:,1])
 else:
 #===================================================
     with open(run_params + "/run_params.dat", "w" ) as f:
@@ -103,14 +113,6 @@ if sim.slurm == True:
 
 else:
     if sim.search == True:
-        #
-        # data_search = [[0.1,0.01,0.07], [0.2,0.01,0.07],
-        # [0.3,0.009,0.07], [0.4,0.008,0.05],
-        # [0.5,0.001,0.05],[0.6,0.001,0.05],
-        # [0.7,0.001,0.05], [0.8,0.001,0.05],
-        # [0.9,0.001,0.05],[1,0.001,0.05]]
-        #----------------------------------------------------------------
-        # DATA FOR FLAT-SPACE-TO-NAKED-ELLIPTIC-SHIFT-SYMM-INGOING
         #---------------------------------------------------------
         # data_search = [[1.,0.0009,0.01],
         # [0.9,0.001,0.01],
@@ -120,22 +122,7 @@ else:
         # [0.5,0.007,0.03],
         # [0.4,0.007,0.05],[0.3,0.01,0.07],[0.2,0.01,0.08],[0.1,0.01,0.08]]
         #tol = 5e-4 for l>0.4, and tol = 1e-3 for l<0.4.
-        #----------------------------------------------------------------
-        # DATA FOR NAKED-ELLIPTIC-TO-BH-SHIFT-SYMM-INGOING
-        #----------------------------------------------------------------
-        # data_search = [[0.1, 0.1, 0.2],
-                         # [0.2, 0.1, 0.2],
-                         # [0.3, 0.1, 0.2],
-                         # [0.4, 0.1, 0.2],
-                         # [0.5, 0.1, 0.2],
-                         # [0.6, 0.1, 0.2],
-                         # [0.7, 0.1, 0.2],
-                         # [0.8, 0.1, 0.2],
-                         # [0.9, 0.1, 0.2],
-                         # [1.0, 0.1, 0.2]]
-        #tol = 1e-2
-        #Keep this run in mind for mass loss l = 1., A = 0.15
-        #----------------------------------------------------------------
+        #---------------------------------------------------------
         data_search = [[0.7, 0.2, 0.35],
                          [0.8, 0.2, 0.35],
                          [0.9, 0.2, 0.35],
