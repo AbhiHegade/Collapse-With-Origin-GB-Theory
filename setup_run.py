@@ -122,6 +122,7 @@ else:
         #tol = 5e-4 for l>0.4, and tol = 1e-3 for l<0.4.
         #----------------------------------------------------------------
         # DATA FOR NAKED-ELLIPTIC-TO-BH-SHIFT-SYMM-INGOING
+        #----------------------------------------------------------------
         # data_search = [[0.1, 0.1, 0.2],
                          # [0.2, 0.1, 0.2],
                          # [0.3, 0.1, 0.2],
@@ -135,21 +136,15 @@ else:
         #tol = 1e-2
         #Keep this run in mind for mass loss l = 1., A = 0.15
         #----------------------------------------------------------------
-        data_search = [[0.1, 0.1, 0.2],
-                         [0.2, 0.1, 0.2],
-                         [0.3, 0.1, 0.2],
-                         [0.4, 0.1, 0.2],
-                         [0.5, 0.1, 0.2],
-                         [0.6, 0.1, 0.2],
-                         [0.7, 0.1, 0.2],
-                         [0.8, 0.1, 0.2],
-                         [0.9, 0.1, 0.2],
-                         [1.0, 0.1, 0.2]]
+        data_search = [[0.7, 0.2, 0.35],
+                         [0.8, 0.2, 0.35],
+                         [0.9, 0.2, 0.35],
+                         [1.0, 0.2, 0.35]]
         tol = 1e-2
 
         #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
-        run_type = "naked_elliptic_to_blackhole"
+        run_type = "collapse_to_blackhole"
 
         def launch_search(arr):
             l = arr[0]

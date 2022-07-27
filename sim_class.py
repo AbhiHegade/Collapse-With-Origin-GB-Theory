@@ -262,11 +262,11 @@ class Sim:
                 self.l = l
                 self.A = val
                 self.launch()
-                time.sleep(60)
+                # time.sleep(60)
                 done = False
                 counter = 0
                 while not done:
-                    time.sleep(30)
+                    time.sleep(3)
                     with open(self.output_dir + "/output.out") as f:
                         for line in f:
                             if counter ==0:

@@ -4,6 +4,8 @@ using std::vector;
 #include<iostream>
 
 #include "compute_potentials.hpp"
+
+#define mu 3.
 //==============================================================================
 double r_of_x(double l,double x){
   return (0.5)*(l*x)/(l - x);
@@ -16,18 +18,21 @@ double r_p_of_x(double l,double x){
 //==============================================================================
 
 double beta(const double l, const double phi){
-  // return - pow(l,2)*(exp(-6.*phi*phi))/12.;
-  return pow(l,2)*phi;
+  double num = (1 - exp(-mu*phi*phi));
+  double denom = 2.*mu;
+  return (num/denom)*pow(l,2);
+  // return pow(l,2)*phi;
 }
 
 double beta_p(const double l, const double phi){
-  // return pow(l,2)*phi*exp(-6.*phi*phi);
-   return pow(l,2);
+  return pow(l,2)*phi*exp(-mu*phi*phi);
+   // return pow(l,2);
 }
 
 double beta_pp(const double l, const double phi){
-  // return pow(l,2)*exp(-6.*phi*phi) -12.*phi*pow(l,2)*exp(-6.*phi*phi);
-    return 0.;
+  double exp1 = exp(-mu*phi*phi);
+  return pow(l,2)*(exp1 - 2.*mu*phi*phi*exp1);
+    // return 0.;
 }
 
 void beta_gen(const double l, const std::vector<double> &phi_v, std::vector<double> &beta_v1,
