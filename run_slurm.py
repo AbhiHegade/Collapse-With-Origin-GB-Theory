@@ -22,6 +22,8 @@ with open(dir_name + "/run_py.slurm", 'w') as f:
     f.write("#SBATCH --output={}/output.out\n".format(dir_name))
     f.write("#SBATCH --error={}/err.err\n".format(dir_name))
     f.write("conda activate esgb\n")
-    f.write("{}/setup_run.py".format(home_dir))
+    f.write("{}/setup_run.py".format(dir_name))
 
+subprocess.call("cp {}/setup_run.py {}".format(home_dir,dir_name),shell = True)
+subprocess.call("cp {}/sim_class.py {}".format(home_dir,dir_name),shell = True)
 subprocess.call("sbatch {}".format(dir_name + "/run_py.slurm"),shell = True)

@@ -47,8 +47,8 @@ void Initial_data::set_Minkowski(Grid_data grid, Field &n_v, Field &s_v, Field &
         +	pow(r_u-r,2)
         -	pow(r-r_l,2)
         )*bump;
-        //p_v.v[i]= q_v.v[i] + (phi.v[i]/r);
-        p_v.v[i] = 0.;
+        p_v.v[i]= q_v.v[i] + (phi.v[i]/r);
+        // p_v.v[i] = 0.;
      } else {
         phi.v[i]= 0;
         p_v.v[i]= 0;
