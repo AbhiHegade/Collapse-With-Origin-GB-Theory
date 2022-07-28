@@ -95,7 +95,7 @@ class Sim:
                         pass
                     run_status = line
                 with open("{}/Run_params/run_params.dat".format(self.out_dir), 'a') as f:
-                    f.write("l = {}; A = {}; status ={}".format(self.l,self.A,run_status))
+                    f.write("l = {}; A = {}; M_init = {}; status ={}".format(self.l,self.A,self.initial_mass,run_status))
 
 
         # subprocess.Popen('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)
@@ -122,7 +122,7 @@ class Sim:
                 self.l = l
                 self.A = val
                 self.launch()
-                time.sleep(60)
+                # time.sleep(60)
                 done = False
                 counter = 0
                 while not done:
@@ -137,13 +137,13 @@ class Sim:
                                     counter +=1
                             else:
                                 if line.startswith("NaN"):
-                                    self.write_record("NaN; Amp = {}; M_init = {}".format(val,M_init))
+                                    self.write_record("NaN; Amp = {}; M_init = {}; status = {}".format(val,M_init,line))
                                     A_high = val
                                     M_high = M_init
                                     done = True
 
                                 elif line.startswith("naked"):
-                                    self.write_record("naked_elliptic_region; Amp = {}; M_init = {}".format(val,M_init))
+                                    self.write_record("naked_elliptic_region; Amp = {}; M_init = {}; status = {}".format(val,M_init,line))
                                     A_high = val
                                     M_high = M_init
                                     done = True
@@ -156,7 +156,7 @@ class Sim:
                                     done = True
 
                                 elif line.startswith("exit_code_1"):
-                                    self.write_record("Problem with run, black hole formed.")
+                                    self.write_record("Problem with run, black hole formed; Amp = {}; M_init = {}; status = {}".format(val,M_init,line))
                                     A_high = val
                                     M_high = M_init
                                     done = True
