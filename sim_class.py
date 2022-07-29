@@ -311,6 +311,7 @@ class Sim:
         with open(self.record, 'w') as f:
             f.write('Bisection search\n')
             f.write('run_type = {}\n'.format(run_type))
+            f.write('tol = {}\n'.format(tol))
             f.write('A = {}; rl = {}; ru = {}\n'.format(self.A,self.rl,self.ru))
             f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
             f.write('l = {}\n'.format(l))
@@ -324,7 +325,7 @@ class Sim:
             ratio = 0.5
             self.exc_i = int((ratio/dx)*((4*self.cl*self.initial_mass)/(self.cl + 4*self.initial_mass)))
             self.launch()
-            # time.sleep(60)
+            time.sleep(60)
             done = False
             while not done:
                 time.sleep(30)

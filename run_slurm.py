@@ -22,6 +22,7 @@ with open(dir_name + "/run_py.slurm", 'w') as f:
     f.write("#SBATCH --mem=1200MB		# memory in MB\n")
     f.write("#SBATCH --output={}/output.out\n".format(dir_name))
     f.write("#SBATCH --error={}/err.err\n".format(dir_name))
+    f.write("module load gcc/7.2.0\n")
     f.write("conda activate esgb\n")
     f.write("{}/{}".format(dir_name,fname))
 
