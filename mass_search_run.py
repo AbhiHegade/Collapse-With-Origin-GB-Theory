@@ -8,10 +8,10 @@ import os
 #===============================================================================
 #theory = "shift_symm"
 theory = "gaussian"
-#home_path = "."
-home_path = "/home/ah30/scratch/code-f-phi"
-Ms = np.array([0.9,0.8,1.])
-ls = np.array([1.])
+home_path = "."
+#home_path = "/home/ah30/scratch/code-f-phi"
+Ms = np.linspace(0.1,0.3,100)
+ls = np.array([0.5])
 
 if theory == "shift_symm":
     out_path = home_path+ "/output/Phase-Space/Shift-Symmetric-Theory"
@@ -19,19 +19,19 @@ else:
     out_path = home_path+ "/output/Phase-Space/Gaussian"
 #===============================================================================
 
-#input_data = []
+input_data = []
 
-# for j in range(len(Ms)):
-#     for l in range(len(ls)):
-#         assert (ls[l]>0), "l must be greater than zero."
-#         input_data.append([ls[l],Ms[j]])
+for j in range(len(Ms)):
+    for l in range(len(ls)):
+        assert (ls[l]>0), "l must be greater than zero."
+        input_data.append([ls[l],Ms[j]])
 
-input_data  = [[1,0.98],[1,1.15]]
+# input_data  = [[0.5,0.],[1,1.15]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.write_runs = False
+sim.write_runs = True
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 4000
@@ -46,7 +46,7 @@ sim.A = 1e-2
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)

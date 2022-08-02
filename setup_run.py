@@ -27,7 +27,7 @@ input_data = []
 # for j in range(len(Amps)):
 #     for l in range(len(ls)):
 #         input_data.append([ls[l],Amps[j]])
-input_data = [[0.9,0.16]]
+input_data = [[0.3,0.05],[0.3,0.06],[0,0.08],[0.,0.09],[0.,0.1]]
 
 # input_data = [[0.5,0.018], [0.6,0.014], [0.7, 0.01], [0.4,0.024]]
 #input_data  = [[1.,0.03],[1.,0.001], [1.,0.0015],[1.,0.0009]]
@@ -35,12 +35,12 @@ input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.write_runs = False
+sim.write_runs = True
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 4000
-sim.nt = 8000
-sim.save_steps = int(sim.nt/1000)
+sim.nt = 4000
+sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
     sim.exc_i = 0
