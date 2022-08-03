@@ -10,8 +10,8 @@ import os
 theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi"
-Ms = np.linspace(0.1,0.3,10)
-ls = np.array([0.5])
+# Ms = np.linspace(0.1,0.3,10)
+# ls = np.array([0.5])
 
 if theory == "shift_symm":
     out_path = home_path+ "/output/Phase-Space/Shift-Symmetric-Theory"
@@ -21,12 +21,12 @@ else:
 
 input_data = []
 
-for j in range(len(Ms)):
-    for l in range(len(ls)):
-        assert (ls[l]>0), "l must be greater than zero."
-        input_data.append([ls[l],Ms[j]])
+# for j in range(len(Ms)):
+#     for l in range(len(ls)):
+#         assert (ls[l]>0), "l must be greater than zero."
+#         input_data.append([ls[l],Ms[j]])
 
-# input_data  = [[0.5,0.],[1,1.15]]
+input_data  = [[0.3,0.05],[0.3,0.1],[0.3,0.12],[0.3,0.15]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -34,8 +34,8 @@ sim.slurm = False
 sim.write_runs = True
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 4000
-sim.nt = 10000
+sim.nx = 2000
+sim.nt = 80000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):

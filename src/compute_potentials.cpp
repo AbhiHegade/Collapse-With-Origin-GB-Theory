@@ -5,7 +5,7 @@ using std::vector;
 
 #include "compute_potentials.hpp"
 
-#define mu 20.
+#define mu 300.
 //==============================================================================
 double r_of_x(double l,double x){
   return (0.5)*(l*x)/(l - x);
