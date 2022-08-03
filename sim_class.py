@@ -10,13 +10,9 @@ class Sim:
     def make_output_dir(self):
         current_time = datetime.now()
         self.output_dir = self.out_dir + "/" + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)+"_"+str(current_time.second)
-        self.output_dir = self.output_dir+"_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_l_" + "{:.2e}".format(self.l)
+        self.output_dir = self.output_dir+"_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_ls_" + "{:.2e}".format(self.ls) + "_lexp_" + "{:.2e}".format(self.lexp) + "_mu_" + "{:.2e}".format(self.mu)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-        # self.record_dir = self.out_dir + "/Record_params"
-        # if not os.path.exists(self.record_dir):
-        #     os.makedirs(self.record_dir)
-        # self.record = self.record_dir + "/record.dat"
 #===============================================================================
     def write_sim_params(self):
         with open(self.output_dir+'/sim_params.txt','w') as f:
@@ -53,15 +49,15 @@ class Sim:
         with open(self.record, 'a') as f:
             f.write(line + "\n")
 #===============================================================================
-
-#===============================================================================
-    def compute_initial_mass(self,l,A):
+    def compute_initial_mass(self,A,ls,lexp,mu):
         val = self.collapse_and_bh
-        self.l = l
         self.A = A
+        self.ls = ls
+        self.lexp = lexp
+        self.mu = mu
         self.collapse_and_bh = 0
         self.launch()
-        time.sleep(20)
+        time.sleep(2)
         done = False
         while not done:
             time.sleep(2)
@@ -95,31 +91,35 @@ class Sim:
                         pass
                     run_status = line
                 with open("{}/Run_params/run_params.dat".format(self.out_dir), 'a') as f:
-                    f.write("l = {}; A = {}; M_init = {}; status ={}".format(self.l,self.A,self.initial_mass,run_status))
+                    f.write("A = {}; ls = {}; lexp = {}; mu = {}; M_init = {}; status ={}".format(self.A,self.ls,self.lexp,self.mu,self.initial_mass,run_status))
 
 
         # subprocess.Popen('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)
 #===============================================================================
-    def amplitude_search(self, l, Amp_range, run_type, tol = 1e-3):
+    def amplitude_search(self, ls,lexp,mu,Amp_range, run_type, tol = 1e-3):
         A_low = Amp_range[0]
         A_high = Amp_range[1]
         M_init = 0
-        M_low = self.compute_initial_mass(l,A_low)
-        M_high = self.compute_initial_mass(l,A_high)
+        M_low = self.compute_initial_mass(A_low,ls,lexp,mu)
+        M_high = self.compute_initial_mass(A_high,ls,lexp,mu)
         with open(self.record, 'w') as f:
             f.write('Bisection search\n')
             f.write('tol = {}\n'.format(tol))
             f.write('run_type = {}\n'.format(run_type))
             f.write('rl = {}; ru = {}\n'.format(self.rl,self.ru))
             f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
-            f.write('l = {}\n'.format(l))
+            f.write('ls = {}\n'.format(ls))
+            f.write('lexp = {}\n'.format(lexp))
+            f.write('mu = {}\n'.format(mu))
             f.write('A_low = {}; M_init = {}\nA_high = {}; M_init = {}\n'.format(Amp_range[0],M_low, Amp_range[1],M_high))
 
         if run_type == "flat_space_to_naked_elliptic":
 
             while((A_high - A_low)>tol):
                 val = (A_high + A_low)/2
-                self.l = l
+                self.ls = ls
+                self.lexp = lexp
+                self.mu = mu
                 self.A = val
                 self.launch()
                 # time.sleep(60)
@@ -170,7 +170,9 @@ class Sim:
 
             while((A_high - A_low)>tol):
                 val = (A_high + A_low)/2
-                self.l = l
+                self.ls = ls
+                self.lexp = lexp
+                self.mu = mu
                 self.A = val
                 self.launch()
                 time.sleep(60)
@@ -216,10 +218,14 @@ class Sim:
 
         elif run_type == "flat_space_fs_to_blackhole":
 
-            assert l== 0, "l must be 0."
+            assert ls== 0, "ls must be 0."
+            assert lexp== 0, "lexp must be 0."
+            assert mu== 0, "mu must be 0."
             while((A_high - A_low)>tol):
                 val = (A_high + A_low)/2
-                self.l = l
+                self.ls = ls
+                self.lexp = lexp
+                self.mu = mu
                 self.A = val
                 self.launch()
                 time.sleep(60)
@@ -269,7 +275,9 @@ class Sim:
             self.collapse_and_bh = 0
             while((A_high - A_low)>tol):
                 val = (A_high + A_low)/2
-                self.l = l
+                self.ls = ls
+                self.lexp = lexp
+                self.mu = mu
                 self.A = val
                 self.launch()
                 # time.sleep(60)
@@ -303,8 +311,8 @@ class Sim:
             self.write_record("A_low = {}; M_init = {}; collapse".format(A_low, M_low))
             self.write_record("A_high = {}; M_init = {}; bh".format(A_high, M_high))
 #===============================================================================
-    def mass_search(self, l, mass_range, tol = 1e-3):
-        assert (l>0), "l must be greater than zero."
+    def mass_search(self, ls,lexp,mu, mass_range, tol = 1e-3):
+        # assert (ls>0), "ls must be greater than zero."
         M_low = mass_range[0]
         M_high = mass_range[1]
         run_type = "black_hole_mass_search"
@@ -314,18 +322,22 @@ class Sim:
             f.write('tol = {}\n'.format(tol))
             f.write('A = {}; rl = {}; ru = {}\n'.format(self.A,self.rl,self.ru))
             f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
-            f.write('l = {}\n'.format(l))
+            f.write('ls = {}\n'.format(ls))
+            f.write('lexp = {}\n'.format(lexp))
+            f.write('mu = {}\n'.format(mu))
             f.write('tol = {}\n'.format(tol))
             f.write('M_low = {}; \nM_high = {};\n'.format(M_low,M_high))
         while((M_high - M_low)>tol):
             val = (M_high + M_low)/2
-            self.l = l
+            self.ls = ls
+            self.lexp = lexp
+            self.mu = mu
             self.initial_mass = val
             dx = self.cl/self.nx
             ratio = 0.5
             self.exc_i = int((ratio/dx)*((4*self.cl*self.initial_mass)/(self.cl + 4*self.initial_mass)))
             self.launch()
-            time.sleep(60)
+            time.sleep(2)
             done = False
             while not done:
                 time.sleep(30)

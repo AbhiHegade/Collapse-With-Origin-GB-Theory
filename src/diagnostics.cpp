@@ -189,7 +189,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
     vector<double> r = grid.r;
     int nx = grid.nx;
     vector<double> dr = grid.dr;
-    double l = grid.l;
+    double ls = grid.ls, lexp = grid.lexp, mu = grid.mu;
     double ingoing_c=0., outgoing_c=0.;
     if(grid.exc_i==0){
    /*---------------------------------------------------------------------------*/
@@ -197,8 +197,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
       {
         int i = grid.exc_i;
 
-        double Bep=  beta_p(l, phi_v.v[i]);
-        double Bepp= beta_pp(l, phi_v.v[i]);
+        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
         double r_Der_nn=0. ;
         double r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], -s_v.v[i+1], -s_v.v[i+2], dr[i]);
@@ -225,8 +225,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
 
         int i = grid.exc_i+1;
 
-        double Bep=  beta_p(l, phi_v.v[i]);
-        double Bepp= beta_pp(l, phi_v.v[i]);
+        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
         double r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i], dr[i]);
         double r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], -s_v.v[i], dr[i]);
@@ -254,8 +254,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
    /*---------------------------------------------------------------------------*/
    /* interior */
       for (int i=grid.exc_i + 2; i<nx-2; ++i) {
-        double Bep=  beta_p(l, phi_v.v[i]);
-        double Bepp= beta_pp(l, phi_v.v[i]);
+        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
         double r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i-2], dr[i]);
         double r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], s_v.v[i-2], dr[i]);
@@ -286,8 +286,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
       {
         int i = grid.exc_i;
 
-        double Bep=  beta_p(l, phi_v.v[i]);
-        double Bepp= beta_pp(l, phi_v.v[i]);
+        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
         double r_Der_nn= Dx_ptp0_4th(n_v.v[i+4], n_v.v[i+3], n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
         double r_Der_ss= Dx_ptp0_4th(s_v.v[i+4], s_v.v[i+3], s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
@@ -311,8 +311,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
       {
         int i = grid.exc_i + 1;
 
-        double Bep=  beta_p(l, phi_v.v[i]);
-        double Bepp= beta_pp(l, phi_v.v[i]);
+        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
         double r_Der_nn= Dx_ptp1_4th(n_v.v[i+3], n_v.v[i+2], n_v.v[i+1], n_v.v[i], n_v.v[i-1], dr[i]);
         double r_Der_ss= Dx_ptp1_4th(s_v.v[i+3], s_v.v[i+2], s_v.v[i+1], s_v.v[i], s_v.v[i-1], dr[i]);
@@ -337,8 +337,8 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
    /* interior */
       for (int i=grid.exc_i + 2; i<nx-2; ++i) {
 
-        double Bep=  beta_p(l, phi_v.v[i]);
-        double Bepp= beta_pp(l, phi_v.v[i]);
+        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
         double r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i-2], dr[i]);
         double r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], s_v.v[i-2], dr[i]);
@@ -369,20 +369,10 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         else{
           grid.exc_i = new_exc_i;
       }
-      // if(outgoing[grid.exc_i + 1]>0){
-      //   cout<<"positive characterisitics inside the horizon, inconsistent. ";
-      //   cout<<"Out Value = "<<outgoing[grid.exc_i + 5]<< ", In value"<<ingoing[grid.exc_i + 5]<<", Position at i = "<<grid.exc_i <<", r = "<<r[(grid.exc_i )]<<" , t = "<<grid.t_evolve<<endl;
-      //   cout<<"Value at AH = "<<outgoing[grid.ah_index]<<endl;
-      //   // std::exit(0);
-      // }
       if (grid.exc_i > grid.ah_index){
         cout<<"naked_elliptic_region outside horizon."<<endl;
         std::exit(0);
       }
-    // if (grid.exc_i >= grid.ah_index){
-    //     cout<<"naked_elliptic_region outside horizon."<<endl;
-    //     std::exit(0);
-    //   }
   }
 
       return;
@@ -415,7 +405,7 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
     vector<double> dr = grid.dr;
     vector<double> r = grid.r;
     double dt = grid.dt;
-    double l = grid.l;
+    double ls = grid.ls, lexp = grid.lexp, mu = grid.mu;
     int nx = grid.nx;
     double r_Der_nn = 0.,r_Der_ss=0., r_Der_P=0., r_Der_Q=0., Bep=0., Bepp = 0., t_Der_ss=0., t_Der_P = 0.;
 
@@ -431,9 +421,9 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
         r_Der_P= 0.;
         r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], -q_v[i+1], -q_v[i+2], dr[i]);
 
-        Bep = beta_p(l, phi_v[i]);
+        Bep = beta_p(ls,lexp,mu,phi_v[i]);
 
-        Bepp = beta_pp(l, phi_v[i]);
+        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -451,9 +441,9 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
         r_Der_P= Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i], dr[i]);
         r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], -q_v[i], dr[i]);
 
-        Bep = beta_p(l, phi_v[i]);
+        Bep = beta_p(ls,lexp,mu,phi_v[i]);
 
-        Bepp = beta_pp(l, phi_v[i]);
+        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -471,9 +461,9 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
         r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], q_v[i-2], dr[i]);
 
 
-        Bep = beta_p(l, phi_v[i]);
+        Bep = beta_p(ls,lexp,mu,phi_v[i]);
 
-        Bepp = beta_pp(l, phi_v[i]);
+        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -498,9 +488,9 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
         r_Der_P= Dx_ptp0_4th(p_v[i+4], p_v[i+3], p_v[i+2], p_v[i+1], p_v[i], dr[i]);
         r_Der_Q= Dx_ptp0_4th(q_v[i+4], q_v[i+3], q_v[i+2], q_v[i+1], q_v[i], dr[i]);
 
-        Bep = beta_p(l, phi_v[i]);
+        Bep = beta_p(ls,lexp,mu,phi_v[i]);
 
-        Bepp = beta_pp(l, phi_v[i]);
+        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -518,9 +508,9 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
         r_Der_P= Dx_ptp1_4th(p_v[i+3], p_v[i+2], p_v[i+1], p_v[i], p_v[i-1], dr[i]);
         r_Der_Q= Dx_ptp1_4th(q_v[i+3], q_v[i+2], q_v[i+1], q_v[i], q_v[i-1], dr[i]);
 
-        Bep = beta_p(l, phi_v[i]);
+        Bep = beta_p(ls,lexp,mu,phi_v[i]);
 
-        Bepp = beta_pp(l, phi_v[i]);
+        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -537,9 +527,9 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
         r_Der_P= Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i-2], dr[i]);
         r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], q_v[i-2], dr[i]);
 
-        Bep = beta_p(l, phi_v[i]);
+        Bep = beta_p(ls,lexp,mu,phi_v[i]);
 
-        Bepp = beta_pp(l, phi_v[i]);
+        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -576,7 +566,8 @@ const vector<double> &n_v,
 const vector<double> &s_v,
 const vector<double> &s_v_np1,
 const vector<double> &n_v_np1,
-vector<double> &gb){
+vector<double> &gb)
+{
 
   vector<double> dr = grid.dr;
   vector<double> r = grid.r;

@@ -11,7 +11,9 @@ public:
    int save_steps;
    int collapse_and_bh;
    int exc_i;
-   double l;
+   double ls;
+   double lexp;
+   double mu;
    double M;
    double A;
    double rl;

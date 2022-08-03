@@ -7,33 +7,27 @@ from datetime import datetime
 import os
 #===============================================================================
 #theory = "shift_symm"
-theory = "gaussian"
+#theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi"
-# Amps = np.array([0.07500000000000001, 0.09375, 0.09843750000000001,0.1,0.2])
-# ls = np.array([0.1])
 Amps = np.array([0.12])
-#ls = np.array([0.3])
 ls = np.array([1.])
+lexp = np.array([0.])
+mu = np.array([0.])
 
-
-if theory == "shift_symm":
-    out_path = home_path+ "/output/Phase-Space/Shift-Symmetric-Theory"
-else:
-    out_path = home_path+ "/output/Phase-Space/Gaussian"
+out_path = home_path+ "/output/Phase-Space/Runs_all"
 #===============================================================================
 input_data = []
 
 # for j in range(len(Amps)):
 #     for l in range(len(ls)):
 #         input_data.append([ls[l],Amps[j]])
-input_data = [[1,0.12],[0.9,0.12]]
-# input_data = [[0.5,0.018], [0.6,0.014], [0.7, 0.01], [0.4,0.024]]
-#input_data  = [[1.,0.03],[1.,0.001], [1.,0.0015],[1.,0.0009]]
+input_data = [[0.0009,1.,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
+sim.cluster = False
 sim.write_runs = True
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
@@ -59,8 +53,6 @@ else:
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
 
-
-
 #===============================================================================
 run_params = sim.out_dir + "/Run_params"
 if not os.path.exists(run_params):
@@ -73,147 +65,134 @@ if sim.search == False:
         f.write("nt = {} \n".format(sim.nt))
         f.write("save_steps = {} \n".format(sim.save_steps))
 
-
-    np.savetxt(run_params + "/ls.dat" , input_data[:,0])
-    np.savetxt(run_params + "/Amps.dat", input_data[:,1])
+    np.savetxt(run_params + "/Amps.dat", input_data[:,0])
+    np.savetxt(run_params + "/ls.dat" , input_data[:,1])
+    np.savetxt(run_params + "/lexp.dat" , input_data[:,2])
+    np.savetxt(run_params + "/mu.dat" , input_data[:,3])
 else:
-#===================================================
     with open(run_params + "/run_params.dat", "w" ) as f:
         f.write("nx = {} \n".format(sim.nx))
         f.write("nt = {} \n".format(sim.nt))
         f.write("save_steps = {} \n".format(sim.save_steps))
 
-#===================================================
+#===============================================================================
 def launch_sim(vals):
-    l_val = vals[0]
-    Amp = vals[1]
-    sim.l = l_val
+    Amp = vals[0]
+    l_s = vals[1]
+    l_exp = vals[2]
+    mu_s = vals[3]
+    sim.ls = l_s
+    sim.lexp = l_exp
+    sim.mu = mu_s
     sim.A = Amp
     sim.launch()
+#===============================================================================
+if sim.search == True:
+    data_search =  [[1.,0.01,0.04],
+       [0.9,0.01,0.04],
+       [0.8,0.01,0.06],
+       [0.7,0.01,0.06],
+       [0.6,0.01,0.06],
+       [0.5,0.01,0.06],
+       [0.4,0.01,0.1],
+       [0.3,0.01,0.1]]
+    tol = 1e-3
 
-if sim.slurm == True:
-    sim.memory = '30'
-    if sim.search == True:
-        l = 0.1
-        Amp_range = [0.025,0.0275]
-        run_type = "flat_space_to_naked_elliptic"
-        sim.amplitude_search(l=l, Amp_range = Amp_range , run_type = run_type)
-    else:
-        for j in range(len(input_data)):
-            launch_sim(input_data[j])
+    #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
-else:
-    if sim.search == True:
-        cluster = False
-        data_search =  [[1.,0.01,0.04],
-           [0.9,0.01,0.04],
-           [0.8,0.01,0.06],
-           [0.7,0.01,0.06],
-           [0.6,0.01,0.06],
-           [0.5,0.01,0.06],
-           [0.4,0.01,0.1],
-           [0.3,0.01,0.1]]
-        tol = 1e-3
+    run_type = "flat_space_to_naked_elliptic"
 
-        #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
+    def launch_search(arr):
+        ls = arr[0]
+        lexp = arr[1]
+        mu = arr[2]
+        Amp_range = [arr[3],arr[4]]
+        sim.record = run_params + "/record_{}.dat".format(l)
+        sim.amplitude_search(ls=ls,lexp = lexp,mu=mu, Amp_range = Amp_range , run_type = run_type, tol = tol)
 
-        run_type = "flat_space_to_naked_elliptic"
-
-        def launch_search(arr):
-            l = arr[0]
-            Amp_range = [arr[1],arr[2]]
-            sim.record = run_params + "/record_{}.dat".format(l)
-            sim.amplitude_search(l=l, Amp_range = Amp_range , run_type = run_type, tol = tol)
-
-        #--------------------------------------------------------------------------
-        if __name__ == '__main__':
-            print("theory = ",theory)
-            if cluster:
-                pool_nums = len(data_search)
-            else:
-                if len(data_search) >=6:
-                    pool_nums = 6
-                else :
-                    pool_nums = len(data_search)
-
-
-
-            print("pool_nums = ", pool_nums)
-
-            t_start = time.time()
-
-            print("Searching amplitude...")
-            print("run_type = {}".format(run_type))
-            print("tol = ", tol)
-
-            print(data_search)
-
-            print("Data saved at:{}".format(sim.out_dir))
-
-            print("Starting multiprocessing pool..")
-
-            pool = Pool(pool_nums)
-
-            result = pool.map_async(launch_search, data_search)
-
-            pool.close()
-            while True:
-                if not result.ready():
-                    print('We\'re not done yet, %s tasks to go!' % result._number_left)
-                    time.sleep(60)
-                else:
-                    break
-
-            pool.join()
-
-            t_end = time.time()
-
-            print("Finished process. \nTime = ",t_end-t_start," s")
-
-            with open(run_params + "/run_params.dat", "a" ) as f:
-                f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
-                f.write("Data saved at:{} \n".format(sim.out_dir))
-    else:
-
-
-        if __name__ == '__main__':
-            if len(input_data) >=6:
+    #--------------------------------------------------------------------------
+    if __name__ == '__main__':
+        print("theory = ",theory)
+        if sim.cluster:
+            pool_nums = len(data_search)
+        else:
+            if len(data_search) >=6:
                 pool_nums = 6
             else :
-                pool_nums = len(input_data)
+                pool_nums = len(data_search)
 
 
-            print("pool_nums = ", pool_nums)
 
-            t_start = time.time()
-            print("Starting multiprocessing pool..")
-            print("Data saved at:{}".format(sim.out_dir))
-            print("nx = ",sim.nx)
-            print("nt = ", sim.nt)
-            print("save_steps = ", sim.save_steps)
-            pool = Pool(pool_nums)
-            result = pool.map_async(launch_sim, input_data)
-            pool.close()
+        print("pool_nums = ", pool_nums)
 
-            while True:
-                if not result.ready():
-                    print('We\'re not done yet, %s tasks to go!' % result._number_left)
-                    time.sleep(20)
-                else:
-                    break
+        t_start = time.time()
 
-            pool.join()
+        print("Searching amplitude...")
+        print("run_type = {}".format(run_type))
+        print("tol = ", tol)
 
-            t_end = time.time()
-            print("Finished process. \nTime = ",t_end-t_start," s")
-            print("Data saved at:{}".format(sim.out_dir))
+        print(data_search)
 
-            with open(run_params + "/run_params.dat", "a" ) as f:
-                f.write("Number of pools = {}\n".format(pool_nums))
-                f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
-                f.write("Data saved at:{} \n".format(sim.out_dir))
+        print("Data saved at:{}".format(sim.out_dir))
 
-        # print("Ending caffeinate...")
-        # subprocess.call("killall caffeinate" , shell = True)
-        # print("Done. Exit.")
+        print("Starting multiprocessing pool..")
+
+        pool = Pool(pool_nums)
+
+        result = pool.map_async(launch_search, data_search)
+
+        pool.close()
+        while True:
+            if not result.ready():
+                print('We\'re not done yet, %s tasks to go!' % result._number_left)
+                time.sleep(60)
+            else:
+                break
+
+        pool.join()
+
+        t_end = time.time()
+
+        print("Finished process. \nTime = ",t_end-t_start," s")
+
+        with open(run_params + "/run_params.dat", "a" ) as f:
+            f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
+            f.write("Data saved at:{} \n".format(sim.out_dir))
+else:
+    if __name__ == '__main__':
+        if len(input_data) >=6:
+            pool_nums = 6
+        else :
+            pool_nums = len(input_data)
+
+
+        print("pool_nums = ", pool_nums)
+
+        t_start = time.time()
+        print("Starting multiprocessing pool..")
+        print("Data saved at:{}".format(sim.out_dir))
+        print("nx = ",sim.nx)
+        print("nt = ", sim.nt)
+        print("save_steps = ", sim.save_steps)
+        pool = Pool(pool_nums)
+        result = pool.map_async(launch_sim, input_data)
+        pool.close()
+
+        while True:
+            if not result.ready():
+                print('We\'re not done yet, %s tasks to go!' % result._number_left)
+                time.sleep(20)
+            else:
+                break
+
+        pool.join()
+
+        t_end = time.time()
+        print("Finished process. \nTime = ",t_end-t_start," s")
+        print("Data saved at:{}".format(sim.out_dir))
+
+        with open(run_params + "/run_params.dat", "a" ) as f:
+            f.write("Number of pools = {}\n".format(pool_nums))
+            f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
+            f.write("Data saved at:{} \n".format(sim.out_dir))
 #===============================================================================

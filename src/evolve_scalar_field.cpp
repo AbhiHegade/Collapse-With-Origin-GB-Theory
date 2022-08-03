@@ -29,7 +29,8 @@ double Evolve_scalar_field::rhs_phi(double r,
   double nn, double r_Der_nn,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
-  double Q, double r_Der_Q){
+  double Q, double r_Der_Q)
+{
   return nn*(P + ss*Q);
 }
 //==============================================================================
@@ -37,7 +38,8 @@ double Evolve_scalar_field::rhs_q(double r,
   double nn, double r_Der_nn,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
-  double Q, double r_Der_Q){
+  double Q, double r_Der_Q)
+{
 
   return r_Der_P*nn + r_Der_ss*nn*Q + r_Der_Q*nn*ss + r_Der_nn*(P + Q*ss);
   // return r_Der_P*nn;
@@ -49,7 +51,7 @@ double Evolve_scalar_field::rhs_p(double r,
   double P, double r_Der_P,
   double Q, double r_Der_Q,
   double Bep, double Bepp)
-  {
+{
 
     double Qr = Q/r;
     double ssr = ss/r;
@@ -118,7 +120,7 @@ double Evolve_scalar_field::rhs_s_free(double r,
   double P, double r_Der_P,
   double Q, double r_Der_Q,
   double Bep, double Bepp)
-  {
+{
 
   double Qr = Q/r;
   double ssr = ss/r;
@@ -225,7 +227,7 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
   vector<double> r = grid.r;
   int nx = grid.nx;
   vector<double> dr = grid.dr;
-  double l = grid.l;
+  double ls = grid.ls, lexp = grid.lexp, mu = grid.mu;
 
   double r_Der_nn=0., r_Der_ss = 0., r_Der_P = 0., r_Der_Q = 0.;
   double Bep = 0., Bepp = 0.;
@@ -249,8 +251,8 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
       r_Der_Q = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
 
 
-      Bep = beta_p(l, phi_v.v[i]);
-      Bepp = beta_pp(l, phi_v.v[i]);
+      Bep = beta_p(ls,lexp,mu, phi_v.v[i]);
+      Bepp = beta_pp(ls,lexp,mu, phi_v.v[i]);
 
       //Written this way because of expansion around zero and appearance of second derivatives.
       dpdt[i] = nn*(-pow(r_Der_P,3) + 16*Bep*pow(r_Der_P,3)*r_Der_Q - 64*pow(Bep,2)*pow(r_Der_P,3)*pow(r_Der_Q,2) + 20*Bep*pow(r_Der_P,4)*r_Der_ss - 12*r_Der_Q*r_Der_ss - 160*pow(Bep,2)*pow(r_Der_P,4)*r_Der_Q*r_Der_ss + 288*Bep*pow(r_Der_Q,2)*r_Der_ss - 2304*pow(Bep,2)*pow(r_Der_Q,3)*r_Der_ss + 6144*pow(Bep,3)*pow(r_Der_Q,4)*r_Der_ss - 6*r_Der_P*pow(r_Der_ss,2) - 80*pow(Bep,2)*pow(r_Der_P,5)*pow(r_Der_ss,2) + 480*Bep*r_Der_P*r_Der_Q*pow(r_Der_ss,2) - 6528*pow(Bep,2)*r_Der_P*pow(r_Der_Q,2)*pow(r_Der_ss,2) + 24576*pow(Bep,3)*r_Der_P*pow(r_Der_Q,3)*pow(r_Der_ss,2) + 208*Bep*pow(r_Der_P,2)*pow(r_Der_ss,3) + 128*Bep*Bepp*pow(r_Der_P,4)*pow(r_Der_ss,3) - 6272*pow(Bep,2)*pow(r_Der_P,2)*r_Der_Q*pow(r_Der_ss,3) - 1024*pow(Bep,2)*Bepp*pow(r_Der_P,4)*r_Der_Q*pow(r_Der_ss,3) + 36864*pow(Bep,3)*pow(r_Der_P,2)*pow(r_Der_Q,2)*pow(r_Der_ss,3) - 2208*pow(Bep,2)*pow(r_Der_P,3)*pow(r_Der_ss,4) - 768*pow(Bep,2)*Bepp*pow(r_Der_P,5)*pow(r_Der_ss,4) + 26112*pow(Bep,3)*pow(r_Der_P,3)*r_Der_Q*pow(r_Der_ss,4) - 48*Bep*pow(r_Der_ss,5) - 384*Bep*Bepp*pow(r_Der_P,2)*pow(r_Der_ss,5) + 7680*pow(Bep,3)*pow(r_Der_P,4)*pow(r_Der_ss,5) + 768*pow(Bep,2)*r_Der_Q*pow(r_Der_ss,5) + 6144*pow(Bep,2)*Bepp*pow(r_Der_P,2)*r_Der_Q*pow(r_Der_ss,5) - 3072*pow(Bep,3)*pow(r_Der_Q,2)*pow(r_Der_ss,5) - 24576*pow(Bep,3)*Bepp*pow(r_Der_P,2)*pow(r_Der_Q,2)*pow(r_Der_ss,5) + 384*pow(Bep,2)*r_Der_P*pow(r_Der_ss,6) + 3072*pow(Bep,2)*Bepp*pow(r_Der_P,3)*pow(r_Der_ss,6) - 3072*pow(Bep,3)*r_Der_P*r_Der_Q*pow(r_Der_ss,6) - 24576*pow(Bep,3)*Bepp*pow(r_Der_P,3)*r_Der_Q*pow(r_Der_ss,6));
@@ -262,14 +264,14 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
 
       dphidt[i] = n_v.v[i]*p_v.v[i];
      }
-     {
+  {
        int i = grid.exc_i + 1;
        r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i], dr[i]);
        r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], -s_v.v[i], dr[i]);
        r_Der_P= Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i], dr[i]);
        r_Der_Q= Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], -q_v.v[i], dr[i]);
-       Bep = beta_p(l,phi_v.v[i]);
-       Bepp = beta_pp(l,phi_v.v[i]);
+       Bep = beta_p(ls,lexp,mu, phi_v.v[i]);
+       Bepp = beta_pp(ls,lexp,mu, phi_v.v[i]);
 
        dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
        dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
@@ -284,8 +286,8 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
     r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], s_v.v[i-2], dr[i]);
     r_Der_P= Dx_ptc_4th(p_v.v[i+2], p_v.v[i+1], p_v.v[i-1], p_v.v[i-2], dr[i]);
     r_Der_Q= Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], q_v.v[i-1], q_v.v[i-2], dr[i]);
-    Bep = beta_p(l,phi_v.v[i]);
-    Bepp = beta_pp(l,phi_v.v[i]);
+    Bep = beta_p(ls,lexp,mu, phi_v.v[i]);
+    Bepp = beta_pp(ls,lexp,mu, phi_v.v[i]);
 
     dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
     dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
@@ -300,8 +302,8 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
     r_Der_ss= Dx_ptm1_4th(s_v.v[i+1], s_v.v[i], s_v.v[i-1], s_v.v[i-2],s_v.v[i-3], dr[i]);
     r_Der_P= Dx_ptm1_4th(p_v.v[i+1], p_v.v[i], p_v.v[i-1], p_v.v[i-2],p_v.v[i-3], dr[i]);
     r_Der_Q= Dx_ptm1_4th(q_v.v[i+1], q_v.v[i], q_v.v[i-1], q_v.v[i-2],q_v.v[i-3], dr[i]);
-    Bep = beta_p(l,phi_v.v[i]);
-    Bepp = beta_pp(l,phi_v.v[i]);
+    Bep = beta_p(ls,lexp,mu, phi_v.v[i]);
+    Bepp = beta_pp(ls,lexp,mu, phi_v.v[i]);
 
     dpdt[i] = rhs_p(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q, Bep, Bepp);
     dqdt[i] = rhs_q(r[i], n_v.v[i], r_Der_nn, s_v.v[i], r_Der_ss, p_v.v[i], r_Der_P, q_v.v[i], r_Der_Q);
@@ -337,15 +339,15 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
   vector<double> r = grid.r;
   int nx = grid.nx;
   vector<double> dr = grid.dr;
-  double l = grid.l;
+  double ls = grid.ls, lexp = grid.lexp, mu = grid.mu;
 
 
 
   {
     int i = grid.exc_i;
 
-    double Bep=  beta_p(l, phi_v.v[i]);
-    double Bepp= beta_pp(l, phi_v.v[i]);
+    double Bep=  beta_p(ls,lexp,mu, phi_v.v[i]);
+    double Bepp= beta_pp(ls,lexp,mu, phi_v.v[i]);
 
     double r_Der_nn= Dx_ptp0_4th(n_v.v[i+4], n_v.v[i+3], n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
     double r_Der_ss= Dx_ptp0_4th(s_v.v[i+4], s_v.v[i+3], s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
@@ -362,8 +364,8 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
   {
     int i = grid.exc_i + 1;
 
-    double Bep=  beta_p(l, phi_v.v[i]);
-    double Bepp= beta_pp(l, phi_v.v[i]);
+    double Bep=  beta_p(ls,lexp,mu, phi_v.v[i]);
+    double Bepp= beta_pp(ls,lexp,mu, phi_v.v[i]);
 
     double r_Der_nn= Dx_ptp1_4th(n_v.v[i+3], n_v.v[i+2], n_v.v[i+1], n_v.v[i], n_v.v[i-1], dr[i]);
     double r_Der_ss= Dx_ptp1_4th(s_v.v[i+3], s_v.v[i+2], s_v.v[i+1], s_v.v[i], s_v.v[i-1], dr[i]);
@@ -378,8 +380,8 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
 
 
   for(int i = grid.exc_i + 2; i<nx-2; i++){
-    double Bep=  beta_p(l, phi_v.v[i]);
-    double Bepp= beta_pp(l, phi_v.v[i]);
+    double Bep=  beta_p(ls,lexp,mu, phi_v.v[i]);
+    double Bepp= beta_pp(ls,lexp,mu, phi_v.v[i]);
 
     double r_Der_nn= Dx_ptc_4th(n_v.v[i+2], n_v.v[i+1], n_v.v[i-1], n_v.v[i-2], dr[i]);
     double r_Der_ss= Dx_ptc_4th(s_v.v[i+2], s_v.v[i+1], s_v.v[i-1], s_v.v[i-2], dr[i]);
@@ -394,8 +396,8 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
   }
   {
     int i = nx-2;
-    double Bep=  beta_p(l, phi_v.v[i]);
-    double Bepp= beta_pp(l, phi_v.v[i]);
+    double Bep=  beta_p(ls,lexp,mu, phi_v.v[i]);
+    double Bepp= beta_pp(ls,lexp,mu, phi_v.v[i]);
 
     double r_Der_nn= Dx_ptm1_4th(n_v.v[i+1], n_v.v[i], n_v.v[i-1], n_v.v[i-2],n_v.v[i-3], dr[i]);
     double r_Der_ss= Dx_ptm1_4th(s_v.v[i+1], s_v.v[i], s_v.v[i-1], s_v.v[i-2],s_v.v[i-3], dr[i]);

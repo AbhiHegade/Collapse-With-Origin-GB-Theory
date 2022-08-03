@@ -4,8 +4,6 @@ using std::vector;
 #include<iostream>
 
 #include "compute_potentials.hpp"
-
-#define mu 300.
 //==============================================================================
 double r_of_x(double l,double x){
   return (0.5)*(l*x)/(l - x);
@@ -17,32 +15,32 @@ double r_p_of_x(double l,double x){
 }
 //==============================================================================
 
-double beta(const double l, const double phi){
+double beta(const double ls, const double lexp, const double mu, const double phi){
   double num = (1 - exp(-mu*phi*phi));
   double denom = 2.*mu;
-  return (num/denom)*pow(l,2);
+  return (num/denom)*pow(lexp,2) + pow(ls,2)*phi ;
   // return pow(l,2)*phi;
 }
 
-double beta_p(const double l, const double phi){
-  return pow(l,2)*phi*exp(-mu*phi*phi);
+double beta_p(const double ls, const double lexp, const double mu, const double phi){
+  return pow(lexp,2)*phi*exp(-mu*phi*phi) + pow(ls,2);
    // return pow(l,2);
 }
 
-double beta_pp(const double l, const double phi){
+double beta_pp(const double ls, const double lexp, const double mu, const double phi){
   double exp1 = exp(-mu*phi*phi);
-  return pow(l,2)*exp1*(1. - 2.*mu*phi*phi);
+  return pow(lexp,2)*exp1*(1. - 2.*mu*phi*phi);
     // return 0.;
 }
 
-void beta_gen(const double l, const std::vector<double> &phi_v, std::vector<double> &beta_v1,
+void beta_gen(const double ls, const double lexp, const double mu, const std::vector<double> &phi_v, std::vector<double> &beta_v1,
 std::vector<double> &beta_p1,
 std::vector<double> &beta_pp1){
 
   for(int i = 0; i<phi_v.size(); i++){
-    beta_v1[i] = beta(l, phi_v[i]);
-    beta_p1[i] = beta_p(l, phi_v[i]);
-    beta_pp1[i] = beta_pp(l, phi_v[i]);
+    beta_v1[i] = beta(ls,lexp,mu,phi_v[i]);
+    beta_p1[i] = beta_p(ls,lexp,mu,phi_v[i]);
+    beta_pp1[i] = beta_pp(ls,lexp,mu,phi_v[i]);
   }
 }
 

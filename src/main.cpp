@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
   Write_data write(path);
 
   //Generate grid with nx, nt, l and exci
-  Grid_data grid(sp.nx, sp.nt,sp.l,sp.exc_i, sp.cl);
+  Grid_data grid(sp.nx, sp.nt,sp.ls,sp.lexp,sp.mu,sp.exc_i, sp.cl);
   int save_steps = sp.save_steps;
 
   //Write grid to file
@@ -106,7 +106,9 @@ int main(int argc, char const *argv[]) {
   cout<<"t_save_steps = "<<save_steps<<endl;
   cout<<"dx = "<<grid.dx<<endl;
   cout<<"dt = "<<grid.dt<<endl;
-  cout<<"GB coupling l = "<<grid.l<<endl;
+  cout<<"shiftsymm coupling ls = "<<grid.ls<<endl;
+  cout<<"exp coupling lexp = "<<grid.lexp<<endl;
+  cout<<"mu coupling mu = "<<grid.mu<<endl;
   cout<<"Scalar Field Amplitude = "<<initialdata.amp<<endl;
   cout<<"ru = "<<initialdata.r_u<<endl;
   cout<<"rl = "<<initialdata.r_l<<endl;
@@ -124,7 +126,7 @@ int main(int argc, char const *argv[]) {
   {
   vector<double> ns_check(grid.nx,0);
   for(int j =grid.exc_i; j<grid.nx; j++){
-    ns_check[j] = grid.r[j] - 8.*q.v[j]*beta_p(grid.l, phi.v[j]);
+    ns_check[j] = grid.r[j] - 8.*q.v[j]*beta_p(grid.ls,grid.lexp,grid.mu, phi.v[j]);
   }
   {
     double min_elem = 0.;
@@ -148,7 +150,7 @@ int main(int argc, char const *argv[]) {
 
   //Solve for metric fields
   solve_metric.solve( grid, n, s , p ,q,phi);
-  
+
   int mass_extraction_radius = 3*(grid.nx/4);
   cout<<"Initial MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<endl;
   // std::exit(0);

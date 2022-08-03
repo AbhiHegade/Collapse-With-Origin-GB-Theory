@@ -32,7 +32,9 @@ Sim_params::Sim_params(const string output_dir)
    nx = stoi(read_sim_params(output_dir,"nx"));
    nt= stoi(read_sim_params(output_dir,"nt"));
    save_steps= stoi(read_sim_params(output_dir,"save_steps"));
-   l= stod(read_sim_params(output_dir,"l"));
+   ls= stod(read_sim_params(output_dir,"ls"));
+   lexp= stod(read_sim_params(output_dir,"lexp"));
+   mu= stod(read_sim_params(output_dir,"mu"));
    M = stod(read_sim_params(output_dir, "initial_mass"));
    A = stod(read_sim_params(output_dir,"A"));
    rl= stod(read_sim_params(output_dir,"rl"));
