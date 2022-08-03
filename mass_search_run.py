@@ -10,7 +10,7 @@ import os
 theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi"
-Ms = np.linspace(0.1,0.3,100)
+Ms = np.linspace(0.1,0.3,10)
 ls = np.array([0.5])
 
 if theory == "shift_symm":
@@ -35,7 +35,7 @@ sim.write_runs = True
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 4000
-sim.nt = 160000
+sim.nt = 10000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):

@@ -27,8 +27,7 @@ input_data = []
 # for j in range(len(Amps)):
 #     for l in range(len(ls)):
 #         input_data.append([ls[l],Amps[j]])
-input_data = [[0.3,0.05],[0.3,0.06],[0,0.08],[0.,0.09],[0.,0.1]]
-
+input_data = [[1,0.12],[0.9,0.12]]
 # input_data = [[0.5,0.018], [0.6,0.014], [0.7, 0.01], [0.4,0.024]]
 #input_data  = [[1.,0.03],[1.,0.001], [1.,0.0015],[1.,0.0009]]
 input_data = np.array(input_data)
@@ -106,21 +105,19 @@ if sim.slurm == True:
 else:
     if sim.search == True:
         cluster = False
-        data_search = [[0.1, 0.2, 0.35],
-                     [0.2, 0.2, 0.35],
-                     [0.3, 0.2, 0.35],
-                     [0.4, 0.2, 0.35],
-                     [0.5, 0.2, 0.35],
-                     [0.6, 0.2, 0.35],
-                     [0.7, 0.2, 0.35],
-                     [0.8, 0.2, 0.35],
-                     [0.9, 0.2, 0.35],
-                     [1.0, 0.2, 0.35]]
+        data_search =  [[1.,0.01,0.04],
+           [0.9,0.01,0.04],
+           [0.8,0.01,0.06],
+           [0.7,0.01,0.06],
+           [0.6,0.01,0.06],
+           [0.5,0.01,0.06],
+           [0.4,0.01,0.1],
+           [0.3,0.01,0.1]]
         tol = 1e-3
 
         #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
-        run_type = "collapse_to_blackhole"
+        run_type = "flat_space_to_naked_elliptic"
 
         def launch_search(arr):
             l = arr[0]
