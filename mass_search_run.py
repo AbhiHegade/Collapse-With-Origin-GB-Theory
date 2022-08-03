@@ -6,17 +6,12 @@ import time
 from datetime import datetime
 import os
 #===============================================================================
-#theory = "shift_symm"
-theory = "gaussian"
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi"
 # Ms = np.linspace(0.1,0.3,10)
 # ls = np.array([0.5])
 
-if theory == "shift_symm":
-    out_path = home_path+ "/output/Phase-Space/Shift-Symmetric-Theory"
-else:
-    out_path = home_path+ "/output/Phase-Space/Gaussian"
+out_path = home_path+ "/output/Phase-Space/Runs_all"
 #===============================================================================
 
 input_data = []
@@ -26,16 +21,19 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [[0.3,0.05],[0.3,0.1],[0.3,0.12],[0.3,0.15]]
+input_data  = [
+[0.6,0,0.8,12],
+[0.7,0,0.9,12]
+]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.write_runs = True
+sim.write_runs = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 2000
-sim.nt = 80000
+sim.nx = 2500
+sim.nt = 25000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
@@ -46,7 +44,7 @@ sim.A = 1e-2
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =False
+sim.search =True
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -71,8 +69,10 @@ if sim.search == False:
         f.write("save_steps = {} \n".format(sim.save_steps))
 
 
-    np.savetxt(run_params + "/ls.dat" , input_data[:,0])
-    np.savetxt(run_params + "/masses.dat", input_data[:,1])
+    np.savetxt(run_params + "/masses.dat", input_data[:,0])
+    np.savetxt(run_params + "/ls.dat" , input_data[:,1])
+    np.savetxt(run_params + "/lexp.dat" , input_data[:,2])
+    np.savetxt(run_params + "/mu.dat" , input_data[:,3])
 else:
 #===================================================
     with open(run_params + "/run_params.dat", "w" ) as f:
@@ -82,9 +82,13 @@ else:
 
 #===================================================
 def launch_sim(vals):
-    l_val = vals[0]
-    Mass_val = vals[1]
-    sim.l = l_val
+    Mass_val = vals[0]
+    l_s = vals[1]
+    l_exp = vals[2]
+    mu_s = vals[3]
+    sim.ls = l_s
+    sim.lexp = l_exp
+    sim.mu = mu_s
     sim.initial_mass = Mass_val
     dx = sim.cl/sim.nx
     ratio = 0.5
@@ -110,29 +114,27 @@ if sim.slurm == True:
 else:
     if sim.search == True:
         run_type = "black_hole_mass_search"
-        sim.Amp = 0.
-        tol = 1e-3
-        cluster = True
-        data_search = [[0.3,0.31,0.34],
-              [0.4,0.43,0.46],
-              [0.5,0.53,0.57],
-              [0.6, 0.65,0.69],
-              [0.7, 0.78,0.82],
-              [0.8,0.87,0.90],
-              [0.9,0.9,1.1],
-              [1.,1.1, 1.15]]
+        sim.A = 1e-2
+        tol = 1e-2
+        cluster = False
+        mu = 12
+        ls = 0
+        data_search = [[0.3,0.1,0.6],
+              [0.4,0.2,0.68],
+              [0.5,0.3,0.79],
+              [0.6,0.4,0.91],
+              [0.7,0.5,1.1],
+              [0.8,0.6,1.2],
+              [0.9,0.7,1.3],
+              [1., 0.8, 1.4]]
         def launch_search(arr):
-            l = arr[0]
+            lexp = arr[0]
             mass_range = [arr[1],arr[2]]
-            sim.record = run_params + "/record_{}.dat".format(l)
-            # dx = sim.cl/sim.nx
-            # ratio = 0.5
-            # sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
-            sim.mass_search(l=l, mass_range = mass_range , tol = tol)
+            sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
+            sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
 
         #--------------------------------------------------------------------------
         if __name__ == '__main__':
-            print("theory = ",theory)
             if cluster:
                 pool_nums = len(data_search)
             else:
@@ -164,7 +166,7 @@ else:
             while True:
                 if not result.ready():
                     print('We\'re not done yet, %s tasks to go!' % result._number_left)
-                    time.sleep(60)
+                    time.sleep(2)
                 else:
                     break
 
@@ -178,8 +180,6 @@ else:
                 f.write("Finished process. \nTime = {} s\n".format(t_end- t_start))
                 f.write("Data saved at:{} \n".format(sim.out_dir))
     else:
-
-
         if __name__ == '__main__':
             if len(input_data) >=6:
                 pool_nums = 6

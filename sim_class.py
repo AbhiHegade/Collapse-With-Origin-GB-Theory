@@ -311,8 +311,7 @@ class Sim:
             self.write_record("A_low = {}; M_init = {}; collapse".format(A_low, M_low))
             self.write_record("A_high = {}; M_init = {}; bh".format(A_high, M_high))
 #===============================================================================
-    def mass_search(self, ls,lexp,mu, mass_range, tol = 1e-3):
-        # assert (ls>0), "ls must be greater than zero."
+    def mass_search(self, ls, lexp, mu, mass_range, tol = 1e-3):
         M_low = mass_range[0]
         M_high = mass_range[1]
         run_type = "black_hole_mass_search"

@@ -22,7 +22,7 @@ input_data = []
 # for j in range(len(Amps)):
 #     for l in range(len(ls)):
 #         input_data.append([ls[l],Amps[j]])
-input_data = [[0.0009,1.,0,0]]
+input_data = [[0.0009,0.,1.,12.]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -88,6 +88,8 @@ def launch_sim(vals):
     sim.launch()
 #===============================================================================
 if sim.search == True:
+    ls = 0
+    mu = 12
     data_search =  [[1.,0.01,0.04],
        [0.9,0.01,0.04],
        [0.8,0.01,0.06],
@@ -103,10 +105,8 @@ if sim.search == True:
     run_type = "flat_space_to_naked_elliptic"
 
     def launch_search(arr):
-        ls = arr[0]
-        lexp = arr[1]
-        mu = arr[2]
-        Amp_range = [arr[3],arr[4]]
+        lexp = arr[0]
+        Amp_range = [arr[1],arr[2]]
         sim.record = run_params + "/record_{}.dat".format(l)
         sim.amplitude_search(ls=ls,lexp = lexp,mu=mu, Amp_range = Amp_range , run_type = run_type, tol = tol)
 
