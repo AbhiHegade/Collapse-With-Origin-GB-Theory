@@ -22,7 +22,14 @@ input_data = []
 # for j in range(len(Amps)):
 #     for l in range(len(ls)):
 #         input_data.append([ls[l],Amps[j]])
-input_data = [[0.0009,0.,1.,12.]]
+input_data = [[0.1,0.,1.,12.],
+[0.1,0.,0.9,12.],
+[0.1,0.,0.8,12.],
+[0.1,0.,0.7,12.],
+[0.1,0.,0.6,12.],
+[0.1,0.,0.5,12.],
+[0.1,0.,0.4,12.],
+[0.1,0.,0.3,12.]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -31,8 +38,8 @@ sim.cluster = False
 sim.write_runs = True
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 4000
-sim.nt = 4000
+sim.nx = 8000
+sim.nt = 8000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -43,7 +50,7 @@ sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =False
+sim.search =True
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -90,29 +97,28 @@ def launch_sim(vals):
 if sim.search == True:
     ls = 0
     mu = 12
-    data_search =  [[1.,0.01,0.04],
-       [0.9,0.01,0.04],
-       [0.8,0.01,0.06],
-       [0.7,0.01,0.06],
-       [0.6,0.01,0.06],
-       [0.5,0.01,0.06],
-       [0.4,0.01,0.1],
-       [0.3,0.01,0.1]]
+    data_search = [[1.,0.1,0.2],
+    [0.9,0.1,0.2],
+    [0.8,0.1,0.2],
+    [0.7,0.1,0.2],
+    [0.6,0.1,0.2],
+    [0.5,0.1,0.2],
+    [0.4,0.1,0.2]]
     tol = 1e-3
 
     #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
-    run_type = "flat_space_to_naked_elliptic"
+    run_type = "naked_elliptic_to_blackhole"
 
     def launch_search(arr):
         lexp = arr[0]
         Amp_range = [arr[1],arr[2]]
-        sim.record = run_params + "/record_{}.dat".format(l)
+        sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
         sim.amplitude_search(ls=ls,lexp = lexp,mu=mu, Amp_range = Amp_range , run_type = run_type, tol = tol)
 
     #--------------------------------------------------------------------------
     if __name__ == '__main__':
-        print("theory = ",theory)
+        # print("theory = ",theory)
         if sim.cluster:
             pool_nums = len(data_search)
         else:
