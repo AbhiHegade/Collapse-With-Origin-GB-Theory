@@ -22,8 +22,7 @@ input_data = []
 #         input_data.append([ls[l],Ms[j]])
 
 input_data  = [
-[0.6,0,0.8,12],
-[0.7,0,0.9,12]
+[0.05,0,0.1,12]
 ]
 input_data = np.array(input_data)
 current_time = datetime.now()
@@ -32,7 +31,7 @@ sim.slurm = False
 sim.write_runs = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 2500
+sim.nx = 4000
 sim.nt = 25000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
@@ -119,14 +118,7 @@ else:
         cluster = False
         mu = 12
         ls = 0
-        data_search = [[0.3,0.1,0.6],
-              [0.4,0.2,0.68],
-              [0.5,0.3,0.79],
-              [0.6,0.4,0.91],
-              [0.7,0.5,1.1],
-              [0.8,0.6,1.2],
-              [0.9,0.7,1.3],
-              [1., 0.8, 1.4]]
+        data_search = [[0.2,0.12,0.225]]
         def launch_search(arr):
             lexp = arr[0]
             mass_range = [arr[1],arr[2]]
