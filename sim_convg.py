@@ -19,7 +19,7 @@ class Convg:
 
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-        if level = "h":
+        if level == "h":
             dir_copy_to = "/".join(self.output_dir.split("/")[:-1])
             subprocess.call('cp {} {}/'.format(self.animscript,dir_copy_to), shell=True)
 
