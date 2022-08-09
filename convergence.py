@@ -75,14 +75,14 @@ if(sim.initial_mass == 0):
 else:
     sim.exc_i = 3
 sim.animscript = home_path +"/Convergence-Analysis.ipynb"
-sim.nx = 8000
-sim.nt = 8000
+nx = 8000
+nt = 8000
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
 #===============================================================================
-sim.out_dir = out_path+"/Convg_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
+sim.out_dir = out_path+"/Convg_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,nx,nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 if not os.path.exists(sim.out_dir):
     os.makedirs(sim.out_dir)
 
@@ -98,16 +98,18 @@ def launch_sim(vals):
     sim.mu = mu_s
     sim.A = Amp
     if level == 4:
+        sim.nx = nx
+        sim.nt = nt
         sim.save_steps = int(sim.nt/1000)
         level_str = "4h"
     elif level == 2:
-        sim.nx = 2*sim.nx
-        sim.nt = 2*sim.nt
+        sim.nx = 2*nx
+        sim.nt = 2*nt
         sim.save_steps = int(sim.nt/1000)
         level_str = "2h"
     elif level ==1:
-        sim.nx = 4*sim.nx
-        sim.nt = 4*sim.nt
+        sim.nx = 4*nx
+        sim.nt = 4*nt
         sim.save_steps = int(sim.nt/1000)
         level_str = "h"
     sim.launch(level_str)
@@ -125,8 +127,8 @@ if __name__ == '__main__':
     print("Starting multiprocessing pool..")
     print("Convergence Run")
     print("Data saved at:{}".format(sim.out_dir))
-    print("nx = ",sim.nx)
-    print("nt = ", sim.nt)
+    print("nx = ",nx)
+    print("nt = ", nt)
     pool = Pool(pool_nums)
     result = pool.map_async(launch_sim, input_data)
     pool.close()
