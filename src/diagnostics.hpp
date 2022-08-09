@@ -32,6 +32,12 @@ public:
   const std::vector<double> &s_v_np1, const std::vector<double> &p_v_np1,
   std::vector<double> &residual);
   /*---------------------------------------------------------------------------*/
+  void compute_NCC(Grid_data &grid,
+  const std::vector<double> &n_v,
+  const std::vector<double> &s_v,
+  const std::vector<double> &s_v_np1,
+  std::vector<double> &ncc_in,
+  std::vector<double> &ncc_out);
   /*---------------------------------------------------------------------------*/
   void find_abs_min(const vector<double> &v, double &min_elem, int &index, const double ref_val, const int start_index);
 
@@ -71,7 +77,19 @@ private:
   double t_Der_ss,
   double tr_Der_ss);
 
+  double get_NCC_in(double nn,
+  double r_Der_nn,
+  double ss,
+  double t_Der_ss );
+
+  double get_NCC_out(double nn,
+  double r_Der_nn,
+  double ss,
+  double t_Der_ss);
+
   };
+
+
 
 
 

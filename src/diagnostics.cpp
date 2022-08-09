@@ -693,7 +693,120 @@ vector<double> &gb)
   }
 }
 //==============================================================================
+double Diagnostics::get_NCC_in(double nn, double r_Der_nn, double ss, double t_Der_ss)
+{
+  return t_Der_ss*nn + r_Der_nn*nn*pow(1 + ss,2);
+}
 //==============================================================================
+double Diagnostics::get_NCC_out(double nn, double r_Der_nn, double ss, double t_Der_ss)
+{
+  return t_Der_ss*nn + r_Der_nn*nn*pow(-1 + ss,2);
+}
 //==============================================================================
+void Diagnostics::compute_NCC(Grid_data &grid,
+  const std::vector<double> &n_v,
+  const std::vector<double> &s_v,
+  const std::vector<double> &s_v_np1,
+  std::vector<double> &ncc_in,
+  std::vector<double> &ncc_out)
+  {
+    vector<double> dr = grid.dr;
+    // vector<double> r = grid.r;
+    double dt = grid.dt;
+    int nx = grid.nx;
+    double r_Der_nn = 0., r_Der_ss = 0., t_Der_ss = 0.;
+
+    if(grid.exc_i==0){
+
+      {
+        int i = grid.exc_i;
+
+        r_Der_nn=0. ;
+        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], -s_v[i+1], -s_v[i+2], dr[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        ncc_in[i] = get_NCC_in(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+        ncc_out[i] = get_NCC_out(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+
+      }
+      {
+        int i = grid.exc_i + 1;
+
+        r_Der_nn= Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i], dr[i]);
+        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], -s_v[i], dr[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        ncc_in[i] = get_NCC_in(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+        ncc_out[i] = get_NCC_out(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+      }
+
+      for(int i = grid.exc_i+2; i<nx-2; i++){
+
+        r_Der_nn= Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i-2], dr[i]);
+        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], s_v[i-2], dr[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        ncc_in[i] = get_NCC_in(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+        ncc_out[i] = get_NCC_out(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+
+      }
+      ncc_in[nx-2] = 0.;
+      ncc_out[nx-2] = 0.;
+      ncc_in[nx-1] = 0.;
+      ncc_out[nx-1] = 0.;
+
+    }
+
+    else{
+
+      {
+        int i = grid.exc_i;
+
+        r_Der_nn= Dx_ptp0_4th(n_v[i+4], n_v[i+3], n_v[i+2], n_v[i+1], n_v[i], dr[i]);
+        r_Der_ss= Dx_ptp0_4th(s_v[i+4], s_v[i+3], s_v[i+2], s_v[i+1], s_v[i], dr[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        ncc_in[i] = get_NCC_in(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+        ncc_out[i] = get_NCC_out(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+
+      }
+      {
+        int i = grid.exc_i + 1;
+
+        r_Der_nn= Dx_ptp1_4th(n_v[i+3], n_v[i+2], n_v[i+1], n_v[i], n_v[i-1], dr[i]);
+        r_Der_ss= Dx_ptp1_4th(s_v[i+3], s_v[i+2], s_v[i+1], s_v[i], s_v[i-1], dr[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        ncc_in[i] = get_NCC_in(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+        ncc_out[i] = get_NCC_out(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+      }
+
+      for(int i = grid.exc_i+2; i<nx-2; i++){
+
+        r_Der_nn= Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i-2], dr[i]);
+        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], s_v[i-2], dr[i]);
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        ncc_in[i] = get_NCC_in(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+        ncc_out[i] = get_NCC_out(n_v[i], r_Der_nn, s_v[i], t_Der_ss);
+
+      }
+      ncc_in[nx-2] = 0.;
+      ncc_out[nx-2] = 0.;
+      ncc_in[nx-1] = 0.;
+      ncc_out[nx-1] = 0.;
+
+
+
+    }
+
+
+  }
 //==============================================================================
 //==============================================================================

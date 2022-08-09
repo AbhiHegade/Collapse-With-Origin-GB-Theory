@@ -50,7 +50,25 @@ def generate_convg_arr(arr):
         return_arr[j1+1] = np.array([Amp,ls,lexp,mu,2])
         return_arr[j1+2] = np.array([Amp,ls,lexp,mu,1])
     return return_arr
+def generate_convg_arr_mass(arr):
+    rnums = arr.shape[0]
+    return_arr = np.empty(shape = (3*rnums,5))
+    for j in range(len(arr)):
+        mass,ls,lexp,mu = arr[j]
+        j1 = 3*j
+        return_arr[j1] = np.array([mass,ls,lexp,mu,4])
+        return_arr[j1+1] = np.array([mass,ls,lexp,mu,2])
+        return_arr[j1+2] = np.array([mass,ls,lexp,mu,1])
+    return return_arr
 
+def get_arr(arr,r_type):
+    arr = np.array(arr)
+    if r_type == "normal":
+        arr = generate_convg_arr(arr)
+    elif r_type == "mass":
+        arr = generate_convg_arr_mass(arr)
+
+    return arr
 #===============================================================================
 home_path = "."
 #home_path = "/home/ah30/scratch/code-f-phi"
@@ -62,12 +80,18 @@ mu = np.array([0.])
 out_path = home_path+ "/output/Phase-Space/Convg"
 #===============================================================================
 input_data = []
-input_data = [[0.16,0.5,0,0],
-[0.02,0.5,0,0]]
-input_data = np.array(input_data)
-input_data = generate_convg_arr(input_data)
+# input_data = [[0.16,0.5,0,0],
+# [0.02,0.5,0,0]]
+# input_data = [
+# [0.01,0.5,0,0]]
+input_data_mass = [[0.41,0.,0.5,3]]
+input_data_mass = get_arr(input_data_mass,"mass")
+# input_data = [[0.16,0.5,0,0],
+# [0.02,0.5,0,0]]
+# input_data = get_arr(input_data,"normal")
 current_time = datetime.now()
 sim = Convg()
+sim.mass_run = True
 sim.cl = 100.0
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -75,8 +99,8 @@ if(sim.initial_mass == 0):
 else:
     sim.exc_i = 3
 sim.animscript = home_path +"/Convergence-Analysis.ipynb"
-nx = 8000
-nt = 8000
+nx = 2000
+nt = 12000
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
@@ -113,35 +137,107 @@ def launch_sim(vals):
         sim.save_steps = int(sim.nt/1000)
         level_str = "h"
     sim.launch(level_str)
-
+#===============================================================================
+def launch_sim_mass(vals):
+    mass = vals[0]
+    l_s = vals[1]
+    l_exp = vals[2]
+    mu_s = vals[3]
+    level = vals[4]
+    sim.ls = l_s
+    sim.lexp = l_exp
+    sim.mu = mu_s
+    sim.A = 1e-3
+    if level == 4:
+        sim.nx = nx
+        sim.nt = nt
+        sim.save_steps = int(sim.nt/1000)
+        sim.initial_mass = mass
+        dx = sim.cl/sim.nx
+        ratio = 0.5
+        sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+        level_str = "4h"
+    elif level == 2:
+        sim.nx = 2*nx
+        sim.nt = 2*nt
+        sim.save_steps = int(sim.nt/1000)
+        sim.initial_mass = mass
+        dx = sim.cl/sim.nx
+        ratio = 0.5
+        sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+        level_str = "2h"
+    elif level ==1:
+        sim.nx = 4*nx
+        sim.nt = 4*nt
+        sim.save_steps = int(sim.nt/1000)
+        sim.initial_mass = mass
+        dx = sim.cl/sim.nx
+        ratio = 0.5
+        sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+        level_str = "h"
+    sim.launch(level_str)
+#===============================================================================
 if __name__ == '__main__':
-    if len(input_data) >=6:
-        pool_nums = 6
+    if sim.mass_run == True:
+        if len(input_data_mass) >=6:
+            pool_nums = 6
+        else :
+            pool_nums = len(input_data_mass)
+
+
+        print("pool_nums = ", pool_nums)
+
+        t_start = time.time()
+        print("Starting multiprocessing pool..")
+        print("Convergence Run")
+        print("Data saved at:{}".format(sim.out_dir))
+        print("nx = ",nx)
+        print("nt = ", nt)
+        pool = Pool(pool_nums)
+        result = pool.map_async(launch_sim_mass, input_data_mass)
+        pool.close()
+
+        while True:
+            if not result.ready():
+                print('We\'re not done yet, %s tasks to go!' % result._number_left)
+                time.sleep(20)
+            else:
+                break
+
+        pool.join()
+
+        t_end = time.time()
+        print("Finished process. \nTime = ",t_end-t_start," s")
+        print("Data saved at:{}".format(sim.out_dir))
+
     else :
-        pool_nums = len(input_data)
+        if len(input_data) >=6:
+            pool_nums = 6
+        else :
+            pool_nums = len(input_data)
 
 
-    print("pool_nums = ", pool_nums)
+        print("pool_nums = ", pool_nums)
 
-    t_start = time.time()
-    print("Starting multiprocessing pool..")
-    print("Convergence Run")
-    print("Data saved at:{}".format(sim.out_dir))
-    print("nx = ",nx)
-    print("nt = ", nt)
-    pool = Pool(pool_nums)
-    result = pool.map_async(launch_sim, input_data)
-    pool.close()
+        t_start = time.time()
+        print("Starting multiprocessing pool..")
+        print("Convergence Run")
+        print("Data saved at:{}".format(sim.out_dir))
+        print("nx = ",nx)
+        print("nt = ", nt)
+        pool = Pool(pool_nums)
+        result = pool.map_async(launch_sim, input_data)
+        pool.close()
 
-    while True:
-        if not result.ready():
-            print('We\'re not done yet, %s tasks to go!' % result._number_left)
-            time.sleep(20)
-        else:
-            break
+        while True:
+            if not result.ready():
+                print('We\'re not done yet, %s tasks to go!' % result._number_left)
+                time.sleep(20)
+            else:
+                break
 
-    pool.join()
+        pool.join()
 
-    t_end = time.time()
-    print("Finished process. \nTime = ",t_end-t_start," s")
-    print("Data saved at:{}".format(sim.out_dir))
+        t_end = time.time()
+        print("Finished process. \nTime = ",t_end-t_start," s")
+        print("Data saved at:{}".format(sim.out_dir))

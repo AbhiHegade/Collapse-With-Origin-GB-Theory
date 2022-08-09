@@ -92,6 +92,8 @@ int main(int argc, char const *argv[]) {
   vector<double> phi_nm1(grid.nx,0);
   vector<double> ingoing(grid.nx,0);
   vector<double> outgoing(grid.nx,0);
+  vector<double> ncc_in(grid.nx,0);
+  vector<double> ncc_out(grid.nx,0);
 
   //============================================================================
   /* Simulation Parameters */
@@ -189,6 +191,7 @@ int main(int argc, char const *argv[]) {
   diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, s.v, p.v,residual);
   diagnostics.find_apparent_horizon(grid,s);
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
+  diagnostics.compute_NCC(grid, n_nm1, s_nm1, s.v, ncc_in, ncc_out);
 
   i_e += 1;
 
@@ -200,6 +203,8 @@ int main(int argc, char const *argv[]) {
     n.v,
     gb);
     write.write_vec(gb, "gb");
+    write.write_vec(ncc_in, "ncc_in");
+    write.write_vec(ncc_out, "ncc_out");
     write.write_residual(residual);
     write.write_fields(n, s , p ,q, phi);
     write.write_characteristics(ingoing, outgoing);
