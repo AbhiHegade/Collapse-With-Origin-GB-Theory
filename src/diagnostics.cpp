@@ -54,7 +54,7 @@ void Diagnostics::find_outer_most_index(const vector<double> &v, int &elem, cons
 {
 
   double ref_val = 1.;
-  double tol = 1e-3;
+  double tol = 1e-2;
   int index_val = -1;
   int len = 3*(v.size())/4;
   for(int i = start_index; i<len; i++){
@@ -74,7 +74,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
   // cout<<"index = "<<index<<endl;
   if(index>=0){
     if(grid.exc_i>0){
-      int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
+      int indexby2 = ((9*index)/10 ==0 ) ? (index/2) : ((9*index)/10);
       int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
 
       if (index==0){
@@ -97,7 +97,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
     else{
       assert(grid.exc_i==0);
       assert(grid.ah_index ==0);
-      int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
+      int indexby2 = ((9*index)/10 ==0 ) ? (index/2) : ((9*index)/10);
       if (index==0){
           cout<<"Apparent Horizon at the origin."<<endl;
           std::exit(0);
@@ -392,14 +392,20 @@ double t_Der_ss, double t_Der_P)
 
   double Qr = Q/r;
   double ssr = ss/r;
-  return
-  -pow(ssr,2) + 8*Bep*r*r_Der_P*pow(ssr,3) - (8*Bep*pow(ssr,2)*t_Der_P)/nn - 8*Bepp*pow(ssr,2)*pow(P,2) + r_Der_ss*(-2*ssr + 16*Bep*Qr*ssr + 16*Bep*pow(ssr,2)*P) + t_Der_ss*(2/(r*nn) - (16*Bep*Qr)/(r*nn) - (16*Bep*ssr*P)/(r*nn)) + r_Der_nn*(2/(r*nn) - (16*Bep*Qr)/(r*nn) + (8*Bep*Qr*r*pow(ssr,2))/nn - (16*Bep*ssr*P)/(r*nn)) + (-(pow(Qr,2)*pow(r,2)) - pow(P,2))/2.
-  ;
+  double tm1 = (-2*r_Der_nn*(-1 + 8*Bep*Qr + 8*Bep*P*ssr))/(nn) - (2*t_Der_ss*(-1 + 8*Bep*Qr + 8*Bep*P*ssr))/(nn);
+  double t0 = -pow(ssr,2) - (8*Bep*t_Der_P*pow(ssr,2))/nn - (pow(P,2)*(1 + 16*Bepp*pow(ssr,2)))/2. + r_Der_ss*(2*(-1 + 8*Bep*Qr)*ssr + 16*Bep*P*pow(ssr,2));
+  double t1 = (8*Bep*r*r_Der_nn*Qr*pow(ssr,2))/nn + 8*Bep*r*r_Der_P*pow(ssr,3);
+  double t2 = -0.5*(pow(r,2)*pow(Qr,2));
+
+  return tm1/r + t0 + t1 + t2;
 }
 //==============================================================================
 void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n_v, const vector<double> &s_v,
-  const vector<double> &p_v, const vector<double> &q_v, const vector<double> &phi_v, const vector<double> &s_v_np1,
-  const vector<double> &p_v_np1, vector<double> &residual)
+  const vector<double> &p_v, const vector<double> &q_v, const vector<double> &phi_v,
+  const vector<double> &n_v_np1,
+  const vector<double> &s_v_np1,
+  const vector<double> &p_v_np1,
+  const vector<double> &q_v_np1,const vector<double> &phi_v_np1, vector<double> &residual)
   {
 
     vector<double> dr = grid.dr;
@@ -410,20 +416,21 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
     double r_Der_nn = 0.,r_Der_ss=0., r_Der_P=0., r_Der_Q=0., Bep=0., Bepp = 0., t_Der_ss=0., t_Der_P = 0.;
 
 
-
     if(grid.exc_i==0){
 
       {
         int i = grid.exc_i;
 
         r_Der_nn=0. ;
-        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], -s_v[i+1], -s_v[i+2], dr[i]);
+        r_Der_ss= (Dx_ptc_4th(s_v[i+2], s_v[i+1], -s_v[i+1], -s_v[i+2], dr[i])
+                    + Dx_ptc_4th(s_v_np1[i+2], s_v_np1[i+1], -s_v_np1[i+1], -s_v_np1[i+2], dr[i]))/2.;
         r_Der_P= 0.;
-        r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], -q_v[i+1], -q_v[i+2], dr[i]);
+        r_Der_Q= (Dx_ptc_4th(q_v[i+2], q_v[i+1], -q_v[i+1], -q_v[i+2], dr[i])
+                  + Dx_ptc_4th(q_v_np1[i+2], q_v_np1[i+1], -q_v_np1[i+1], -q_v_np1[i+2], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu,phi_v[i]);
+        Bep = (beta_p(ls,lexp,mu,phi_v[i]) + beta_p(ls,lexp,mu,phi_v_np1[i]))/2.;
 
-        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
+        Bepp = (beta_pp(ls,lexp,mu,phi_v[i])+ beta_pp(ls,lexp,mu,phi_v_np1[i]))/2.;
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -436,14 +443,18 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       {
         int i = grid.exc_i + 1;
 
-        r_Der_nn= Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i], dr[i]);
-        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], -s_v[i], dr[i]);
-        r_Der_P= Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i], dr[i]);
-        r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], -q_v[i], dr[i]);
+        r_Der_nn= (Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i], dr[i])
+                  + Dx_ptc_4th(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i-1], n_v_np1[i], dr[i]))/2.;
+        r_Der_ss= (Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], -s_v[i], dr[i])
+                  + Dx_ptc_4th(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i-1], -s_v_np1[i], dr[i]))/2.;
+        r_Der_P= (Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i], dr[i])
+                  +Dx_ptc_4th(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i-1], p_v_np1[i], dr[i]))/2. ;
+        r_Der_Q= (Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], -q_v[i], dr[i])
+                  + Dx_ptc_4th(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i-1], -q_v_np1[i], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu,phi_v[i]);
+        Bep = (beta_p(ls,lexp,mu,phi_v[i]) + beta_p(ls,lexp,mu,phi_v_np1[i]))/2.;
 
-        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
+        Bepp = (beta_pp(ls,lexp,mu,phi_v[i])+ beta_pp(ls,lexp,mu,phi_v_np1[i]))/2.;
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -455,15 +466,15 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
 
       for(int i = grid.exc_i+2; i<nx-2; i++){
 
-        r_Der_nn= Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i-2], dr[i]);
-        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], s_v[i-2], dr[i]);
-        r_Der_P= Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i-2], dr[i]);
-        r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], q_v[i-2], dr[i]);
+        r_Der_nn= (Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i-2], dr[i]) + Dx_ptc_4th(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i-1], n_v_np1[i-2], dr[i]))/2.;
+        r_Der_ss= (Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], s_v[i-2], dr[i]) + Dx_ptc_4th(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i-1], s_v_np1[i-2], dr[i]))/2.;
+        r_Der_P= (Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i-2], dr[i]) + Dx_ptc_4th(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i-1], p_v_np1[i-2], dr[i]) )/2.;
+        r_Der_Q= (Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], q_v[i-2], dr[i]) + Dx_ptc_4th(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i-1], q_v_np1[i-2], dr[i]))/2.;
 
 
-        Bep = beta_p(ls,lexp,mu,phi_v[i]);
+        Bep = (beta_p(ls,lexp,mu,phi_v[i]) + beta_p(ls,lexp,mu,phi_v_np1[i]))/2.;
 
-        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
+        Bepp = (beta_pp(ls,lexp,mu,phi_v[i])+ beta_pp(ls,lexp,mu,phi_v_np1[i]))/2.;
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -483,14 +494,14 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       {
         int i = grid.exc_i;
 
-        r_Der_nn= Dx_ptp0_4th(n_v[i+4], n_v[i+3], n_v[i+2], n_v[i+1], n_v[i], dr[i]);
-        r_Der_ss= Dx_ptp0_4th(s_v[i+4], s_v[i+3], s_v[i+2], s_v[i+1], s_v[i], dr[i]);
-        r_Der_P= Dx_ptp0_4th(p_v[i+4], p_v[i+3], p_v[i+2], p_v[i+1], p_v[i], dr[i]);
-        r_Der_Q= Dx_ptp0_4th(q_v[i+4], q_v[i+3], q_v[i+2], q_v[i+1], q_v[i], dr[i]);
+        r_Der_nn= (Dx_ptp0_4th(n_v[i+4], n_v[i+3], n_v[i+2], n_v[i+1], n_v[i], dr[i]) + Dx_ptp0_4th(n_v_np1[i+4], n_v_np1[i+3], n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2.;
+        r_Der_ss= (Dx_ptp0_4th(s_v[i+4], s_v[i+3], s_v[i+2], s_v[i+1], s_v[i], dr[i]) + Dx_ptp0_4th(s_v_np1[i+4], s_v_np1[i+3], s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
+        r_Der_P= (Dx_ptp0_4th(p_v[i+4], p_v[i+3], p_v[i+2], p_v[i+1], p_v[i], dr[i]) + Dx_ptp0_4th(p_v_np1[i+4], p_v_np1[i+3], p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], dr[i]))/2.;
+        r_Der_Q= (Dx_ptp0_4th(q_v[i+4], q_v[i+3], q_v[i+2], q_v[i+1], q_v[i], dr[i]) + Dx_ptp0_4th(q_v_np1[i+4], q_v_np1[i+3], q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu,phi_v[i]);
+        Bep = (beta_p(ls,lexp,mu,phi_v[i]) + beta_p(ls,lexp,mu,phi_v_np1[i]))/2.;
 
-        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
+        Bepp = (beta_pp(ls,lexp,mu,phi_v[i])+ beta_pp(ls,lexp,mu,phi_v_np1[i]))/2.;
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -503,14 +514,14 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       {
         int i = grid.exc_i + 1;
 
-        r_Der_nn= Dx_ptp1_4th(n_v[i+3], n_v[i+2], n_v[i+1], n_v[i], n_v[i-1], dr[i]);
-        r_Der_ss= Dx_ptp1_4th(s_v[i+3], s_v[i+2], s_v[i+1], s_v[i], s_v[i-1], dr[i]);
-        r_Der_P= Dx_ptp1_4th(p_v[i+3], p_v[i+2], p_v[i+1], p_v[i], p_v[i-1], dr[i]);
-        r_Der_Q= Dx_ptp1_4th(q_v[i+3], q_v[i+2], q_v[i+1], q_v[i], q_v[i-1], dr[i]);
+        r_Der_nn= (Dx_ptp1_4th(n_v[i+3], n_v[i+2], n_v[i+1], n_v[i], n_v[i-1], dr[i]) + Dx_ptp1_4th(n_v_np1[i+3], n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]))/2.;
+        r_Der_ss= (Dx_ptp1_4th(s_v[i+3], s_v[i+2], s_v[i+1], s_v[i], s_v[i-1], dr[i]) + Dx_ptp1_4th(s_v_np1[i+3], s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]))/2.;
+        r_Der_P= (Dx_ptp1_4th(p_v[i+3], p_v[i+2], p_v[i+1], p_v[i], p_v[i-1], dr[i]) + Dx_ptp1_4th(p_v_np1[i+3], p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], p_v_np1[i-1], dr[i]))/2.;
+        r_Der_Q= (Dx_ptp1_4th(q_v[i+3], q_v[i+2], q_v[i+1], q_v[i], q_v[i-1], dr[i]) + Dx_ptp1_4th(q_v_np1[i+3], q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], q_v_np1[i-1], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu,phi_v[i]);
+        Bep = (beta_p(ls,lexp,mu,phi_v[i]) + beta_p(ls,lexp,mu,phi_v_np1[i]))/2.;
 
-        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
+        Bepp = (beta_pp(ls,lexp,mu,phi_v[i])+ beta_pp(ls,lexp,mu,phi_v_np1[i]))/2.;
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
@@ -522,14 +533,15 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
 
       for(int i = grid.exc_i+2; i<nx-2; i++){
 
-        r_Der_nn= Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i-2], dr[i]);
-        r_Der_ss= Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], s_v[i-2], dr[i]);
-        r_Der_P= Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i-2], dr[i]);
-        r_Der_Q= Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], q_v[i-2], dr[i]);
+        r_Der_nn= (Dx_ptc_4th(n_v[i+2], n_v[i+1], n_v[i-1], n_v[i-2], dr[i]) + Dx_ptc_4th(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i-1], n_v_np1[i-2], dr[i]))/2.;
+        r_Der_ss= (Dx_ptc_4th(s_v[i+2], s_v[i+1], s_v[i-1], s_v[i-2], dr[i]) + Dx_ptc_4th(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i-1], s_v_np1[i-2], dr[i]))/2.;
+        r_Der_P= (Dx_ptc_4th(p_v[i+2], p_v[i+1], p_v[i-1], p_v[i-2], dr[i]) + Dx_ptc_4th(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i-1], p_v_np1[i-2], dr[i]) )/2.;
+        r_Der_Q= (Dx_ptc_4th(q_v[i+2], q_v[i+1], q_v[i-1], q_v[i-2], dr[i]) + Dx_ptc_4th(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i-1], q_v_np1[i-2], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu,phi_v[i]);
 
-        Bepp = beta_pp(ls,lexp,mu,phi_v[i]);
+        Bep = (beta_p(ls,lexp,mu,phi_v[i]) + beta_p(ls,lexp,mu,phi_v_np1[i]))/2.;
+
+        Bepp = (beta_pp(ls,lexp,mu,phi_v[i])+ beta_pp(ls,lexp,mu,phi_v_np1[i]))/2.;
 
         t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 

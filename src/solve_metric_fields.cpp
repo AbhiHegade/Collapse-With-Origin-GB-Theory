@@ -564,7 +564,6 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       // savg = (s_v.v[i] + s_v.v[i+1])/2.;
       // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
       // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-
       savg = interp_4_c(-s_v.v[i+2], -s_v.v[i+1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
       pavg = interp_4_c(p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
       qavg = interp_4_c(-q_v.v[i+2], -q_v.v[i+1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
@@ -606,10 +605,10 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       // savg = (s_v.v[i] + s_v.v[i+1])/2.;
       // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
       // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-
       savg = interp_4_c(-s_v.v[i+1], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
       pavg = interp_4_c(p_v.v[i+1], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
       qavg = interp_4_c(-q_v.v[i+1], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
@@ -645,11 +644,9 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       // savg = (s_v.v[i] + s_v.v[i+1])/2.;
       // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
       // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-
       savg = interp_4_c(s_v.v[i-2], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
       pavg = interp_4_c(p_v.v[i-2], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
       qavg = interp_4_c(q_v.v[i-2], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
-
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
@@ -670,6 +667,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
     }
     n_v.v[nx-1] = n_v.v[nx-2] = n_v.v[nx-3];
+    // n_v.check_non_negative(grid.t_evolve);
     n_v.check_isfinite(grid.t_evolve);
     n_v.rescale();
 
@@ -678,7 +676,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
 
     for(int i =0; i<exc_i; i++){
-      n_v.v[i] = 0.5;
+      n_v.v[i] = 1.;
 
     }
     {
@@ -802,6 +800,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       n_v.v[i+1] = n_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
     }
     n_v.v[nx-1] = n_v.v[nx-2]=n_v.v[nx-3];
+    // n_v.check_non_negative(grid.t_evolve);
     n_v.check_isfinite(grid.t_evolve);
     n_v.rescale();
 

@@ -189,7 +189,7 @@ int main(int argc, char const *argv[]) {
   evolve_scalar_field.evolve(grid, n, s, p, q, phi);
   grid.update_t();
   solve_metric.solve( grid, n, s , p ,q,phi);
-  diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, s.v, p.v,residual);
+  diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, n.v,s.v, p.v,q.v,phi.v,residual);
   diagnostics.find_apparent_horizon(grid,s);
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
   diagnostics.compute_NCC(grid, n_nm1, s_nm1, s.v, ncc_in, ncc_out);

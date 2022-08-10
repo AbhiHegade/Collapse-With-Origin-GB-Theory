@@ -22,17 +22,18 @@ input_data = []
 #         input_data.append([ls[l],Ms[j]])
 
 input_data  = [
-[0.05,0,0.1,12]
+[1.2625976562499996,0.5,0,0],
+[1.15,0.5,0,0]
 ]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.write_runs = False
+sim.write_runs = True
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 4000
-sim.nt = 25000
+sim.nx = 8000
+sim.nt = 12000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
@@ -43,7 +44,7 @@ sim.A = 1e-2
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)

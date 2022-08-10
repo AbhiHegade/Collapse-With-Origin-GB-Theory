@@ -21,7 +21,7 @@ class Convg:
             os.makedirs(self.output_dir)
         if level == "h":
             dir_copy_to = "/".join(self.output_dir.split("/")[:-1])
-            subprocess.call('cp {} {}/'.format(self.animscript,dir_copy_to), shell=True)
+            subprocess.call('cp {} {}/'.format(self.convgscript,dir_copy_to), shell=True)
 
     def make_output_file(self):
         self.output_file= self.output_dir+'/'+'output.out'
@@ -88,8 +88,8 @@ input_data = []
 # [0.02,0.5,0,0]]
 # input_data = [
 # [0.01,0.5,0,0]]
-# input_data_mass = [[2.,0.5,0,0], [0.45,0.,0.5,3]]
-# input_data_mass = [[3.,0.1,0,0],[3.,0.5,0,0]]
+# input_data_mass = [[1.2,0.5,0.,0.],[0.45,0.,0.5,3]]
+# # input_data_mass = [[3.,0.1,0,0],[3.,0.5,0,0]]
 # input_data_mass = get_arr(input_data_mass,"mass")
 input_data = [[0.16,0.5,0,0]]
 input_data = get_arr(input_data,"normal")
@@ -103,9 +103,10 @@ if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.animscript = home_path +"/Convergence-Analysis.ipynb"
+sim.convgscript = home_path +"/Convergence-Analysis.ipynb"
 nx = 4000
-nt = 4000
+nt = 8000
+ss_step = 1000
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
@@ -129,17 +130,17 @@ def launch_sim(vals):
     if level == 4:
         sim.nx = nx
         sim.nt = nt
-        sim.save_steps = int(sim.nt/100)
+        sim.save_steps = int(sim.nt/ss_step)
         level_str = "4h"
     elif level == 2:
         sim.nx = 2*nx
         sim.nt = 2*nt
-        sim.save_steps = int(sim.nt/100)
+        sim.save_steps = int(sim.nt/ss_step)
         level_str = "2h"
     elif level ==1:
         sim.nx = 4*nx
         sim.nt = 4*nt
-        sim.save_steps = int(sim.nt/100)
+        sim.save_steps = int(sim.nt/ss_step)
         level_str = "h"
     sim.launch(level_str)
 #===============================================================================
@@ -156,7 +157,7 @@ def launch_sim_mass(vals):
     if level == 4:
         sim.nx = nx
         sim.nt = nt
-        sim.save_steps = int(sim.nt/100)
+        sim.save_steps = int(sim.nt/ss_step)
         sim.initial_mass = mass
         dx = sim.cl/sim.nx
         ratio = 0.5
@@ -165,7 +166,7 @@ def launch_sim_mass(vals):
     elif level == 2:
         sim.nx = 2*nx
         sim.nt = 2*nt
-        sim.save_steps = int(sim.nt/100)
+        sim.save_steps = int(sim.nt/ss_step)
         sim.initial_mass = mass
         dx = sim.cl/sim.nx
         ratio = 0.5
@@ -174,7 +175,7 @@ def launch_sim_mass(vals):
     elif level ==1:
         sim.nx = 4*nx
         sim.nt = 4*nt
-        sim.save_steps = int(sim.nt/100)
+        sim.save_steps = int(sim.nt/ss_step)
         sim.initial_mass = mass
         dx = sim.cl/sim.nx
         ratio = 0.5

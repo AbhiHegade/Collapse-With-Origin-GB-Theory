@@ -55,7 +55,7 @@ double Evolve_scalar_field::rhs_p(double r,
 
     double Qr = Q/r;
     double ssr = ss/r;
-    if(fabs(ss)<1e-6){
+    if((fabs(ss)<1e-6)&& r<12.){
       return Qr*r*r_Der_nn + 2*Qr*nn + r_Der_Q*nn;
     }
     else{
@@ -333,7 +333,8 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
   double &dsdt,
   vector<double> &dpdt,
   vector<double> &dqdt,
-  vector<double> &dphidt){
+  vector<double> &dphidt)
+  {
 
   //Field ordering s_v, p_v,q_v,phi_v
   assert(grid.exc_i >0);
@@ -430,8 +431,6 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
   Solve_metric_fields solve_metric_fields;
 
   if(grid.exc_i>0){
-    // cout<<"Excision not implemented for evolution equations. Exit. "<<endl;
-    // std::exit(0);
     vector<double> r = grid.r;
     int nx = grid.nx;
     double dt = grid.dt;
@@ -547,7 +546,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
       }
       for(int i=0; i<exc_i; i++){
         p_v.v[i] = p_v.v[exc_i];
-        q_v.v[i] = s_v.v[exc_i];
+        q_v.v[i] = q_v.v[exc_i];
         phi_v.v[i] = phi_v.v[exc_i];
       }
       s_v.v[exc_i] += (1./6.)*sk1 + (1./3.)*sk2 + (1./3.)*sk3 + (1./6.)*sk4;

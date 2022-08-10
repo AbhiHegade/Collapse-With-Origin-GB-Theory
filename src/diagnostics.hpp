@@ -29,7 +29,10 @@ public:
   const std::vector<double> &s_v,
   const std::vector<double> &p_v, const std::vector<double>  &q_v,
   const std::vector<double> &phi_v,
+  const std::vector<double> &n_v_np1,
   const std::vector<double> &s_v_np1, const std::vector<double> &p_v_np1,
+  const std::vector<double> &q_v_np1,
+  const std::vector<double> &phi_v_np1,
   std::vector<double> &residual);
   /*---------------------------------------------------------------------------*/
   void compute_NCC(Grid_data &grid,
