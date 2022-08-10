@@ -54,7 +54,7 @@ void Diagnostics::find_outer_most_index(const vector<double> &v, int &elem, cons
 {
 
   double ref_val = 1.;
-  double tol = 1e-2;
+  double tol = 1e-3;
   int index_val = -1;
   int len = 3*(v.size())/4;
   for(int i = start_index; i<len; i++){
@@ -74,7 +74,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
   // cout<<"index = "<<index<<endl;
   if(index>=0){
     if(grid.exc_i>0){
-      int indexby2 = ((9*index)/10 ==0 ) ? (index/2) : ((9*index)/10);
+      int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
       int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
 
       if (index==0){
@@ -97,7 +97,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
     else{
       assert(grid.exc_i==0);
       assert(grid.ah_index ==0);
-      int indexby2 = ((9*index)/10 ==0 ) ? (index/2) : ((9*index)/10);
+      int indexby2 = ((3*index)/4 ==0 ) ? (index/2) : ((3*index)/4);
       if (index==0){
           cout<<"Apparent Horizon at the origin."<<endl;
           std::exit(0);

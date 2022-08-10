@@ -77,7 +77,7 @@ double Solve_metric_fields::rhs_lapse(double r,
   double Q, double r_Der_Q,
   double Bep, double Bepp)
   {
-    if(fabs(ss)<1e-6){
+    if((fabs(ss)<1e-6) && ( r<12.0) ){
       return 0.;
     }
     else{
@@ -366,7 +366,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       Bepp_i = beta_pp(ls,lexp,mu, phi_v.v[i]);
       Bepp_ip1 = beta_pp(ls,lexp,mu, phi_v.v[i+1]);
 
-      pavg = interp_4_p0( p_v.v[i], p_v.v[i+1], p_v.v[i+2],p_v.v[i+3], p_v.v[i+4]);
+      pavg = interp_4_p0(p_v.v[i], p_v.v[i+1], p_v.v[i+2],p_v.v[i+3], p_v.v[i+4]);
       qavg = interp_4_p0(q_v.v[i], q_v.v[i+1], q_v.v[i+2],q_v.v[i+3],q_v.v[i+4]);
       savg = interp_4_p0(s_v.v[i], s_v.v[i+1], s_v.v[i+2],s_v.v[i+3],s_v.v[i+4]);
 
@@ -677,7 +677,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
   else{
 
 
-    for(int i =0; i<exc_i+1; i++){
+    for(int i =0; i<exc_i; i++){
       n_v.v[i] = 0.5;
 
     }
@@ -698,9 +698,9 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       // savg = (s_v.v[i] + s_v.v[i+1])/2.;
       // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
       // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
-      savg = interp_4_c(-s_v.v[i+2], -s_v.v[i+1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      pavg = interp_4_c(p_v.v[i+2], p_v.v[i+1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      qavg = interp_4_c(-q_v.v[i+2], -q_v.v[i+1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+      pavg = interp_4_p0(p_v.v[i], p_v.v[i+1], p_v.v[i+2],p_v.v[i+3], p_v.v[i+4]);
+      qavg = interp_4_p0(q_v.v[i], q_v.v[i+1], q_v.v[i+2],q_v.v[i+3],q_v.v[i+4]);
+      savg = interp_4_p0(s_v.v[i], s_v.v[i+1], s_v.v[i+2],s_v.v[i+3],s_v.v[i+4]);
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;
@@ -739,9 +739,9 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       // pavg = (p_v.v[i] + p_v.v[i+1])/2.;
       // qavg = (q_v.v[i] + q_v.v[i+1])/2.;
 
-      savg = interp_4_c(-s_v.v[i+1], s_v.v[i-1], s_v.v[i], s_v.v[i+1], s_v.v[i+2]);
-      pavg = interp_4_c(p_v.v[i+1], p_v.v[i-1], p_v.v[i], p_v.v[i+1], p_v.v[i+2]);
-      qavg = interp_4_c(-q_v.v[i+1], q_v.v[i-1], q_v.v[i], q_v.v[i+1], q_v.v[i+2]);
+      pavg = interp_4_pm1( p_v.v[i-1], p_v.v[i], p_v.v[i+1],p_v.v[i+2], p_v.v[i+3]);
+      qavg = interp_4_pm1(q_v.v[i-1], q_v.v[i], q_v.v[i+1],q_v.v[i+2], q_v.v[i+3]);
+      savg = interp_4_pm1(s_v.v[i-1], s_v.v[i], s_v.v[i+1],s_v.v[i+2], s_v.v[i+3]);
 
       derPavg = (r_Der_P_i + r_Der_P_ip1 )/2.;
       derQavg = (r_Der_Q_i +  r_Der_Q_ip1)/2.;

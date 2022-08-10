@@ -124,6 +124,7 @@ int main(int argc, char const *argv[]) {
   else{
     initialdata.set_bh_bump(grid,n,s,p,q,phi );
   }
+  cout<<"Initial excision position (i,r) = ("<<grid.exc_i<<","<<grid.r[grid.exc_i]<<")"<<endl;
   //Check if initial data is a naked singularity
   {
   vector<double> ns_check(grid.nx,0);

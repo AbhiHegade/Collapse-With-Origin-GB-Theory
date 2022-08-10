@@ -220,7 +220,8 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
   const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v,
   vector<double> &dpdt,
   vector<double> &dqdt,
-  vector<double> &dphidt){
+  vector<double> &dphidt)
+  {
 
   //Field ordering p_v,q_v,phi_v
   assert(grid.exc_i ==0);

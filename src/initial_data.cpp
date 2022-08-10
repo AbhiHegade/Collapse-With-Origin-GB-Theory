@@ -107,8 +107,8 @@ void Initial_data::set_bh_bump(Grid_data grid,  Field &n_v, Field &s_v, Field &p
      }
      max_vN = (fabs(phi.v[i])>max_vN) ? fabs(phi.v[i]) : max_vN;
 
-     n_v.v[i]= 1.0;
-     s_v.v[i]= pow(2*M/r,0.5);
+     n_v.v[i]= 1.;
+     s_v.v[i]= pow(2.*M/r,0.5);
   }
   /* rescale so amp is actual maximum val */
   for (int i=0; i<grid.nx-1; ++i) {
