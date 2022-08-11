@@ -21,7 +21,7 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [[0.45,0.,0.5,3]
+input_data  = [[0.45,0.,0.5,3],[1.2,0.5,0.,0.]
 ]
 input_data = np.array(input_data)
 current_time = datetime.now()
@@ -38,7 +38,7 @@ if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.A = 1e-2
+sim.A = 1e-3
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
