@@ -206,9 +206,6 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
       s_v.v[i+1] = fabs(s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.);
 
-      if(fabs(s_v.v[i+1])<1e-2){
-        s_v.v[i+1] = fabs(s_v.v[i+1]);
-      }
 
     }
     {
@@ -344,6 +341,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       s_v.v[i+1] = s_v.v[i] + k1/6. + k2/3. + k3/3. + k4/6.;
       //cout<<"i = "<<i<<"; s_v.v[i+1] = "<<s_v.v[i+1]<<endl;
     }
+    s_v.v[nx-1] = 0.;
   }
 
 
@@ -523,7 +521,6 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
     }
 
     s_v.v[nx-1] = 0.;
-    s_v.check_isfinite(grid.t_evolve);
   }
 
   }
@@ -676,7 +673,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     }
     n_v.v[nx-1] = n_v.v[nx-2] = n_v.v[nx-3];
     // n_v.check_non_negative(grid.t_evolve);
-    n_v.check_isfinite(grid.t_evolve);
+    // n_v.check_isfinite(grid.t_evolve);
     n_v.rescale();
 
   }
@@ -684,7 +681,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
 
     for(int i =0; i<exc_i; i++){
-      n_v.v[i] = 1.;
+      n_v.v[i] = 0.5;
 
     }
     {
@@ -809,7 +806,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     }
     n_v.v[nx-1] = n_v.v[nx-2]=n_v.v[nx-3];
     // n_v.check_non_negative(grid.t_evolve);
-    n_v.check_isfinite(grid.t_evolve);
+    // n_v.check_isfinite(grid.t_evolve);
     n_v.rescale();
 
 
@@ -820,7 +817,9 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 //==============================================================================
 void Solve_metric_fields::solve(const Grid_data grid,Field &n_v,Field &s_v, const Field &p_v, const Field &q_v, const Field &phi_v){
   solve_shift(grid, s_v, p_v, q_v, phi_v);
+  s_v.check_isfinite(grid.t_evolve);
   solve_lapse(grid, n_v,s_v, p_v, q_v, phi_v);
+  n_v.check_isfinite(grid.t_evolve);
 }
 //==============================================================================
 //OLD Text ss RK4

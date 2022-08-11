@@ -21,9 +21,7 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [
-[1.2625976562499996,0.5,0,0],
-[1.15,0.5,0,0]
+input_data  = [[0.45,0.,0.5,3]
 ]
 input_data = np.array(input_data)
 current_time = datetime.now()
@@ -32,7 +30,7 @@ sim.slurm = False
 sim.write_runs = True
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 8000
+sim.nx = 4000
 sim.nt = 12000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1

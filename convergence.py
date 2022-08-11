@@ -88,10 +88,9 @@ input_data = []
 # [0.02,0.5,0,0]]
 # input_data = [
 # [0.01,0.5,0,0]]
-# input_data_mass = [[1.2,0.5,0.,0.],[0.45,0.,0.5,3]]
-# # input_data_mass = [[3.,0.1,0,0],[3.,0.5,0,0]]
+# input_data_mass = [[1.1,0.,0.,0.]]
 # input_data_mass = get_arr(input_data_mass,"mass")
-input_data = [[0.16,0.5,0,0]]
+input_data = [[0.18,0.,0.,0.]]
 input_data = get_arr(input_data,"normal")
 current_time = datetime.now()
 sim = Convg()
@@ -105,8 +104,8 @@ else:
     sim.exc_i = 3
 sim.convgscript = home_path +"/Convergence-Analysis.ipynb"
 nx = 4000
-nt = 8000
-ss_step = 1000
+nt = 4000
+ss_step = 100
 sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
@@ -153,7 +152,7 @@ def launch_sim_mass(vals):
     sim.ls = l_s
     sim.lexp = l_exp
     sim.mu = mu_s
-    sim.A = 1e-3
+    sim.A = 1e-2
     if level == 4:
         sim.nx = nx
         sim.nt = nt
