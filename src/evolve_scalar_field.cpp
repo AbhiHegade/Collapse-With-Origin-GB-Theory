@@ -55,7 +55,7 @@ double Evolve_scalar_field::rhs_p(double r,
 
     double Qr = Q/r;
     double ssr = ss/r;
-    if((fabs(ss)<1e-6)&& r<12.){
+    if((fabs(ss)<1e-6)&& r<10.){
       return Qr*r*r_Der_nn + 2*Qr*nn + r_Der_Q*nn;
     }
     else{
@@ -424,7 +424,6 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
   KO_filter(grid, "even" ,dphidt, phi_v.v);
 
 }
-
 //==============================================================================
 //==============================================================================
 void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v){
@@ -672,6 +671,444 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 
   }
 }
+//==============================================================================
+//==============================================================================
+//RK3 SSRPK2
+// void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v){
+//   Solve_metric_fields solve_metric_fields;
+//
+//   if(grid.exc_i>0){
+//     vector<double> r = grid.r;
+//     int nx = grid.nx;
+//     double dt = grid.dt;
+//     vector<double> dr = grid.dr;
+//     int exc_i = grid.exc_i;
+//
+//     vector<double> kp1(nx,0), kq1(nx,0), kphi1(nx,0);
+//     vector<double> kp2(nx,0), kq2(nx,0), kphi2(nx,0);
+//     vector<double> kp3(nx,0), kq3(nx,0), kphi3(nx,0);
+//     double sk1 = 0, sk2 = 0, sk3 = 0;
+//     vector<double> dpdt(nx,0), dqdt(nx,0), dphidt(nx,0);
+//     double dsdt;
+//
+//     generate_rhs_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dsdt, dpdt, dqdt, dphidt);
+//
+//     for(int i =exc_i; i<nx-1; i++){
+//       kp1[i] = dt*dpdt[i];
+//       kq1[i] = dt*dqdt[i];
+//       kphi1[i] = dt*dphidt[i];
+//
+//     }
+//     sk1 = dt*dsdt;
+//     {
+//       Field n_1("n_k1", "even", grid);
+//       Field s_1("s_k1", "odd", grid);
+//       Field p_1("p_k1", "even", grid);
+//       Field q_1("q_k1", "odd", grid);
+//       Field phi_1("phi_k1", "even", grid);
+//
+//       for(int i = exc_i; i<nx-1; i++){
+//         n_1.v[i] = n_v.v[i];
+//         s_1.v[i] = s_v.v[i] ;
+//         p_1.v[i] = p_v.v[i] + kp1[i];
+//         q_1.v[i] = q_v.v[i] + kq1[i];
+//         phi_1.v[i] = phi_v.v[i] + kphi1[i];
+//       }
+//       s_1.v[exc_i] = s_v.v[exc_i] + sk1;
+//       solve_metric_fields.solve(grid, n_1, s_1, p_1, q_1,phi_1);
+//       generate_rhs_excised(grid, n_1, s_1, p_1, q_1, phi_1, dsdt, dpdt, dqdt, dphidt);
+//
+//       for(int i =0; i<nx-1; i++){
+//         kp2[i] = dt*dpdt[i];
+//         kq2[i] = dt*dqdt[i];
+//         kphi2[i] = dt*dphidt[i];
+//
+//       }
+//       sk2 = dt*dsdt;
+//     }
+//
+//       {
+//         Field n_2("n_k2", "even", grid);
+//         Field s_2("s_k2", "odd", grid);
+//         Field p_2("p_k2", "even", grid);
+//         Field q_2("q_k2", "odd", grid);
+//         Field phi_2("phi_k2", "even", grid);
+//
+//         for(int i = exc_i; i<nx-1; i++){
+//           n_2.v[i] = n_v.v[i];
+//           s_2.v[i] = s_v.v[i] ;
+//           p_2.v[i] = p_v.v[i] + 0.25*kp1[i] + 0.25*kp2[i];
+//           q_2.v[i] = q_v.v[i] + 0.25*kq1[i] + 0.25*kq2[i];
+//           phi_2.v[i] = phi_v.v[i] + 0.25*kphi1[i] + 0.25*kphi2[i];
+//         }
+//         s_2.v[exc_i] = s_v.v[exc_i] + 0.25*sk1 + 0.25*sk2;
+//         solve_metric_fields.solve(grid, n_2, s_2, p_2, q_2,phi_2);
+//         generate_rhs_excised(grid, n_2, s_2, p_2, q_2, phi_2, dsdt, dpdt, dqdt, dphidt);
+//
+//         for(int i =exc_i; i<nx-1; i++){
+//           kp3[i] = dt*dpdt[i];
+//           kq3[i] = dt*dqdt[i];
+//           kphi3[i] = dt*dphidt[i];
+//
+//         }
+//         sk3 = dt*dsdt;
+//
+//
+//
+//       }
+//
+//       for(int i=exc_i; i<nx-1; i++){
+//         p_v.v[i] += (1./6.)*kp1[i] + (1./6.)*kp2[i] + (2./3.)*kp3[i] ;
+//         q_v.v[i] += (1./6.)*kq1[i] + (1./6.)*kq2[i] + (2./3.)*kq3[i] ;
+//         phi_v.v[i] += (1./6.)*kphi1[i] + (1./6.)*kphi2[i] + (2./3.)*kphi3[i] ;
+//       }
+//       for(int i=0; i<exc_i; i++){
+//         p_v.v[i] = p_v.v[exc_i];
+//         q_v.v[i] = q_v.v[exc_i];
+//         phi_v.v[i] = phi_v.v[exc_i];
+//       }
+//       s_v.v[exc_i] += (1./6.)*sk1 + (1./6.)*sk2 + (2./3.)*sk3 ;
+//
+//       p_v.check_isfinite(grid.t_evolve);
+//       q_v.check_isfinite(grid.t_evolve);
+//       phi_v.check_isfinite(grid.t_evolve);
+//
+//   }
+//   else{
+//     //RK4
+//     assert(grid.exc_i ==0);
+//     vector<double> r = grid.r;
+//     int nx = grid.nx;
+//     double dt = grid.dt;
+//     vector<double> dr = grid.dr;
+//
+//     vector<double> kp1(nx,0), kq1(nx,0), kphi1(nx,0);
+//     vector<double> kp2(nx,0), kq2(nx,0), kphi2(nx,0);
+//     vector<double> kp3(nx,0), kq3(nx,0), kphi3(nx,0);
+//     vector<double> dpdt(nx,0), dqdt(nx,0), dphidt(nx,0);
+//
+//     generate_rhs_non_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dpdt, dqdt, dphidt);
+//
+//     for(int i =0; i<nx-1; i++){
+//       kp1[i] = dt*dpdt[i];
+//       kq1[i] = dt*dqdt[i];
+//       kphi1[i] = dt*dphidt[i];
+//
+//     }
+//     {
+//       Field n_1("n_k1", "even", grid);
+//       Field s_1("s_k1", "odd", grid);
+//       Field p_1("p_k1", "even", grid);
+//       Field q_1("q_k1", "odd", grid);
+//       Field phi_1("phi_k1", "even", grid);
+//
+//       for(int i = 0; i<nx-1; i++){
+//         n_1.v[i] = n_v.v[i];
+//         s_1.v[i] = s_v.v[i];
+//         p_1.v[i] = p_v.v[i] + kp1[i];
+//         q_1.v[i] = q_v.v[i] + kq1[i];
+//         phi_1.v[i] = phi_v.v[i] + kphi1[i];
+//       }
+//       solve_metric_fields.solve(grid, n_1, s_1, p_1, q_1, phi_1);
+//       generate_rhs_non_excised(grid, n_1, s_1, p_1, q_1, phi_1, dpdt, dqdt, dphidt);
+//
+//       for(int i =0; i<nx-1; i++){
+//         kp2[i] = dt*dpdt[i];
+//         kq2[i] = dt*dqdt[i];
+//         kphi2[i] = dt*dphidt[i];
+//
+//       }
+//     }
+//
+//       {
+//         Field n_2("n_k2", "even", grid);
+//         Field s_2("s_k2", "odd", grid);
+//         Field p_2("p_k2", "even", grid);
+//         Field q_2("q_k2", "odd", grid);
+//         Field phi_2("phi_k2", "even", grid);
+//
+//         for(int i = 0; i<nx-1; i++){
+//           n_2.v[i] = n_v.v[i];
+//           s_2.v[i] = s_v.v[i];
+//           p_2.v[i] = p_v.v[i] + 0.25*kp1[i] + 0.25*kp2[i];
+//           q_2.v[i] = q_v.v[i] + 0.25*kq1[i] + 0.25*kq2[i];
+//           phi_2.v[i] = phi_v.v[i] + 0.25*kphi1[i] + 0.25*kphi2[i];
+//         }
+//         solve_metric_fields.solve(grid, n_2, s_2, p_2, q_2, phi_2);
+//         generate_rhs_non_excised(grid, n_2, s_2, p_2, q_2, phi_2, dpdt, dqdt, dphidt);
+//
+//         for(int i =0; i<nx-1; i++){
+//           kp3[i] = dt*dpdt[i];
+//           kq3[i] = dt*dqdt[i];
+//           kphi3[i] = dt*dphidt[i];
+//
+//         }
+//
+//
+//
+//       }
+//       for(int i=0; i<nx-1; i++){
+//         p_v.v[i] += (1./6.)*kp1[i] + (1./6.)*kp2[i] + (2./3.)*kp3[i] ;
+//         q_v.v[i] += (1./6.)*kq1[i] + (1./6.)*kq2[i] + (2./3.)*kq3[i] ;
+//         phi_v.v[i] += (1./6.)*kphi1[i] + (1./6.)*kphi2[i] + (2./3.)*kphi3[i] ;
+//       }
+//
+//       p_v.check_isfinite(grid.t_evolve);
+//       q_v.check_isfinite(grid.t_evolve);
+//       phi_v.check_isfinite(grid.t_evolve);
+//
+//
+//
+//
+//   }
+// }
+//==========================================================================================================================
+//==============================================================================
+// void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v){
+//   Solve_metric_fields solve_metric_fields;
+//
+//   if(grid.exc_i>0){
+//     vector<double> r = grid.r;
+//     int nx = grid.nx;
+//     double dt = grid.dt;
+//     vector<double> dr = grid.dr;
+//     int exc_i = grid.exc_i;
+//
+//     vector<double> kp1(nx,0), kq1(nx,0), kphi1(nx,0);
+//     vector<double> kp2(nx,0), kq2(nx,0), kphi2(nx,0);
+//     vector<double> kp3(nx,0), kq3(nx,0), kphi3(nx,0);
+//     vector<double> kp4(nx,0), kq4(nx,0), kphi4(nx,0);
+//     double sk1 = 0, sk2 = 0, sk3 = 0, sk4 = 0;
+//     vector<double> dpdt(nx,0), dqdt(nx,0), dphidt(nx,0);
+//     double dsdt;
+//
+//     generate_rhs_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dsdt, dpdt, dqdt, dphidt);
+//
+//     for(int i =exc_i; i<nx-1; i++){
+//       kp1[i] = dt*dpdt[i];
+//       kq1[i] = dt*dqdt[i];
+//       kphi1[i] = dt*dphidt[i];
+//
+//     }
+//     sk1 = dt*dsdt;
+//     {
+//       Field n_1("n_k1", "even", grid);
+//       Field s_1("s_k1", "odd", grid);
+//       Field p_1("p_k1", "even", grid);
+//       Field q_1("q_k1", "odd", grid);
+//       Field phi_1("phi_k1", "even", grid);
+//
+//       for(int i = exc_i; i<nx-1; i++){
+//         n_1.v[i] = n_v.v[i];
+//         s_1.v[i] = s_v.v[i] ;
+//         p_1.v[i] = p_v.v[i] + 0.5*kp1[i];
+//         q_1.v[i] = q_v.v[i] + 0.5*kq1[i];
+//         phi_1.v[i] = phi_v.v[i] + 0.5*kphi1[i];
+//       }
+//       s_1.v[exc_i] = s_v.v[exc_i] + 0.5*sk1;
+//       solve_metric_fields.solve(grid, n_1, s_1, p_1, q_1,phi_1);
+//       generate_rhs_excised(grid, n_1, s_1, p_1, q_1, phi_1, dsdt, dpdt, dqdt, dphidt);
+//
+//       for(int i =0; i<nx-1; i++){
+//         kp2[i] = dt*dpdt[i];
+//         kq2[i] = dt*dqdt[i];
+//         kphi2[i] = dt*dphidt[i];
+//
+//       }
+//       sk2 = dt*dsdt;
+//     }
+//
+//       {
+//         Field n_2("n_k2", "even", grid);
+//         Field s_2("s_k2", "odd", grid);
+//         Field p_2("p_k2", "even", grid);
+//         Field q_2("q_k2", "odd", grid);
+//         Field phi_2("phi_k2", "even", grid);
+//
+//         for(int i = exc_i; i<nx-1; i++){
+//           n_2.v[i] = n_v.v[i];
+//           s_2.v[i] = s_v.v[i] ;
+//           p_2.v[i] = p_v.v[i] + 0.5*kp2[i];
+//           q_2.v[i] = q_v.v[i] + 0.5*kq2[i];
+//           phi_2.v[i] = phi_v.v[i] + 0.5*kphi2[i];
+//         }
+//         s_2.v[exc_i] = s_v.v[exc_i] + 0.5*sk2;
+//         solve_metric_fields.solve(grid, n_2, s_2, p_2, q_2,phi_2);
+//         generate_rhs_excised(grid, n_2, s_2, p_2, q_2, phi_2, dsdt, dpdt, dqdt, dphidt);
+//
+//         for(int i =exc_i; i<nx-1; i++){
+//           kp3[i] = dt*dpdt[i];
+//           kq3[i] = dt*dqdt[i];
+//           kphi3[i] = dt*dphidt[i];
+//
+//         }
+//         sk3 = dt*dsdt;
+//
+//
+//
+//       }
+//       {
+//         Field n_3("n_k3", "even", grid);
+//         Field s_3("s_k3", "odd", grid);
+//         Field p_3("p_k3", "even", grid);
+//         Field q_3("q_k3", "odd", grid);
+//         Field phi_3("phi_k3", "even", grid);
+//
+//         for(int i = exc_i; i<nx-1; i++){
+//           n_3.v[i] = n_v.v[i];
+//           s_3.v[i] = s_v.v[i];
+//           p_3.v[i] = p_v.v[i] + kp3[i];
+//           q_3.v[i] = q_v.v[i] + kq3[i];
+//           phi_3.v[i] = phi_v.v[i] + kphi3[i];
+//         }
+//         s_3.v[exc_i] = s_v.v[exc_i] + sk3;
+//         solve_metric_fields.solve(grid, n_3, s_3, p_3, q_3,phi_3);
+//         generate_rhs_excised(grid, n_3, s_3, p_3, q_3, phi_3, dsdt, dpdt, dqdt, dphidt);
+//
+//         for(int i =exc_i; i<nx-1; i++){
+//           kp4[i] = dt*dpdt[i];
+//           kq4[i] = dt*dqdt[i];
+//           kphi4[i] = dt*dphidt[i];
+//
+//         }
+//         sk4 = dt*dsdt;
+//
+//
+//
+//       }
+//       for(int i=exc_i; i<nx-1; i++){
+//         p_v.v[i] += (1./6.)*kp1[i] + (1./3.)*kp2[i] + (1./3.)*kp3[i] + (1./6.)*kp4[i];
+//         q_v.v[i] += (1./6.)*kq1[i] + (1./3.)*kq2[i] + (1./3.)*kq3[i] + (1./6.)*kq4[i];
+//         phi_v.v[i] += (1./6.)*kphi1[i] + (1./3.)*kphi2[i] + (1./3.)*kphi3[i] + (1./6.)*kphi4[i];
+//       }
+//       for(int i=0; i<exc_i; i++){
+//         p_v.v[i] = p_v.v[exc_i];
+//         q_v.v[i] = q_v.v[exc_i];
+//         phi_v.v[i] = phi_v.v[exc_i];
+//       }
+//       s_v.v[exc_i] += (1./6.)*sk1 + (1./3.)*sk2 + (1./3.)*sk3 + (1./6.)*sk4;
+//
+//       p_v.check_isfinite(grid.t_evolve);
+//       q_v.check_isfinite(grid.t_evolve);
+//       phi_v.check_isfinite(grid.t_evolve);
+//
+//   }
+//   else{
+//     //RK4
+//     assert(grid.exc_i ==0);
+//     vector<double> r = grid.r;
+//     int nx = grid.nx;
+//     double dt = grid.dt;
+//     vector<double> dr = grid.dr;
+//
+//     vector<double> kp1(nx,0), kq1(nx,0), kphi1(nx,0);
+//     vector<double> kp2(nx,0), kq2(nx,0), kphi2(nx,0);
+//     vector<double> kp3(nx,0), kq3(nx,0), kphi3(nx,0);
+//     vector<double> kp4(nx,0), kq4(nx,0), kphi4(nx,0);
+//     vector<double> dpdt(nx,0), dqdt(nx,0), dphidt(nx,0);
+//
+//     generate_rhs_non_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dpdt, dqdt, dphidt);
+//
+//     for(int i =0; i<nx-1; i++){
+//       kp1[i] = dt*dpdt[i];
+//       kq1[i] = dt*dqdt[i];
+//       kphi1[i] = dt*dphidt[i];
+//
+//     }
+//     {
+//       Field n_1("n_k1", "even", grid);
+//       Field s_1("s_k1", "odd", grid);
+//       Field p_1("p_k1", "even", grid);
+//       Field q_1("q_k1", "odd", grid);
+//       Field phi_1("phi_k1", "even", grid);
+//
+//       for(int i = 0; i<nx-1; i++){
+//         n_1.v[i] = n_v.v[i];
+//         s_1.v[i] = s_v.v[i];
+//         p_1.v[i] = p_v.v[i] + 0.5*kp1[i];
+//         q_1.v[i] = q_v.v[i] + 0.5*kq1[i];
+//         phi_1.v[i] = phi_v.v[i] + 0.5*kphi1[i];
+//       }
+//       solve_metric_fields.solve(grid, n_1, s_1, p_1, q_1, phi_1);
+//       generate_rhs_non_excised(grid, n_1, s_1, p_1, q_1, phi_1, dpdt, dqdt, dphidt);
+//
+//       for(int i =0; i<nx-1; i++){
+//         kp2[i] = dt*dpdt[i];
+//         kq2[i] = dt*dqdt[i];
+//         kphi2[i] = dt*dphidt[i];
+//
+//       }
+//     }
+//
+//       {
+//         Field n_2("n_k2", "even", grid);
+//         Field s_2("s_k2", "odd", grid);
+//         Field p_2("p_k2", "even", grid);
+//         Field q_2("q_k2", "odd", grid);
+//         Field phi_2("phi_k2", "even", grid);
+//
+//         for(int i = 0; i<nx-1; i++){
+//           n_2.v[i] = n_v.v[i];
+//           s_2.v[i] = s_v.v[i];
+//           p_2.v[i] = p_v.v[i] + 0.5*kp2[i];
+//           q_2.v[i] = q_v.v[i] + 0.5*kq2[i];
+//           phi_2.v[i] = phi_v.v[i] + 0.5*kphi2[i];
+//         }
+//         solve_metric_fields.solve(grid, n_2, s_2, p_2, q_2, phi_2);
+//         generate_rhs_non_excised(grid, n_2, s_2, p_2, q_2, phi_2, dpdt, dqdt, dphidt);
+//
+//         for(int i =0; i<nx-1; i++){
+//           kp3[i] = dt*dpdt[i];
+//           kq3[i] = dt*dqdt[i];
+//           kphi3[i] = dt*dphidt[i];
+//
+//         }
+//
+//
+//
+//       }
+//       {
+//         Field n_3("n_k3", "even", grid);
+//         Field s_3("s_k3", "odd", grid);
+//         Field p_3("p_k3", "even", grid);
+//         Field q_3("q_k3", "odd", grid);
+//         Field phi_3("phi_k3", "even", grid);
+//
+//         for(int i = 0; i<nx-1; i++){
+//           n_3.v[i] = n_v.v[i];
+//           s_3.v[i] = s_v.v[i];
+//           p_3.v[i] = p_v.v[i] + kp3[i];
+//           q_3.v[i] = q_v.v[i] + kq3[i];
+//           phi_3.v[i] = phi_v.v[i] + kphi3[i];
+//         }
+//         solve_metric_fields.solve(grid, n_3, s_3, p_3, q_3, phi_3);
+//         generate_rhs_non_excised(grid, n_3, s_3, p_3, q_3, phi_3, dpdt, dqdt, dphidt);
+//
+//         for(int i =0; i<nx-1; i++){
+//           kp4[i] = dt*dpdt[i];
+//           kq4[i] = dt*dqdt[i];
+//           kphi4[i] = dt*dphidt[i];
+//
+//         }
+//
+//
+//
+//       }
+//       for(int i=0; i<nx-1; i++){
+//         p_v.v[i] += (1./6.)*kp1[i] + (1./3.)*kp2[i] + (1./3.)*kp3[i] + (1./6.)*kp4[i];
+//         q_v.v[i] += (1./6.)*kq1[i] + (1./3.)*kq2[i] + (1./3.)*kq3[i] + (1./6.)*kq4[i];
+//         phi_v.v[i] += (1./6.)*kphi1[i] + (1./3.)*kphi2[i] + (1./3.)*kphi3[i] + (1./6.)*kphi4[i];
+//       }
+//
+//       p_v.check_isfinite(grid.t_evolve);
+//       q_v.check_isfinite(grid.t_evolve);
+//       phi_v.check_isfinite(grid.t_evolve);
+//
+//
+//
+//
+//   }
+// }
 //==============================================================================
 // void Evolve_scalar_field::evolve_no_back_reaction(Field &n_v, Field &s_v, Field &p_v, Field &q_v, Field &phi_v){
 //   // Solve_metric_fields solve_metric_fields(grid);

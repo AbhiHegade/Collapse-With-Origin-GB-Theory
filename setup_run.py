@@ -41,8 +41,8 @@ sim.write_runs = True
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 4000
-sim.nt = 4
-sim.save_steps = 1
+sim.nt = 4000
+sim.save_steps = int(sim.nt/100)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
     sim.exc_i = 0
