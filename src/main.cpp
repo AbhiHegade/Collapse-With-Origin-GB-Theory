@@ -118,13 +118,13 @@ int main(int argc, char const *argv[]) {
 
   //============================================================================
   //Set initial data
-  // if(M<fabs(1e-16)){
-  // initialdata.set_Minkowski(grid, n, s, p, q, phi);
-  // }
-  // else{
-  //   initialdata.set_bh_bump(grid,n,s,p,q,phi );
-  // }
-  initialdata.set_Gaussian(grid, n, s, p, q, phi);
+  if(M<fabs(1e-16)){
+  initialdata.set_Minkowski(grid, n, s, p, q, phi);
+  }
+  else{
+    initialdata.set_bh_bump(grid,n,s,p,q,phi );
+  }
+  // initialdata.set_Gaussian(grid, n, s, p, q, phi);
   cout<<"Initial excision position (i,r) = ("<<grid.exc_i<<","<<grid.r[grid.exc_i]<<")"<<endl;
   //Check if initial data is a naked singularity
   {
