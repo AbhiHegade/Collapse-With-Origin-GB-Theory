@@ -38,18 +38,19 @@ public:
   void compute_NCC(Grid_data &grid,
   const std::vector<double> &n_v,
   const std::vector<double> &s_v,
+  const std::vector<double> &n_v_np1,
   const std::vector<double> &s_v_np1,
   std::vector<double> &ncc_in,
   std::vector<double> &ncc_out);
   /*---------------------------------------------------------------------------*/
   void find_abs_min(const vector<double> &v, double &min_elem, int &index, const double ref_val, const int start_index);
 
-  void compute_GB(Grid_data &grid,
-  const std::vector<double> &n_v,
-  const std::vector<double> &s_v,
-  const std::vector<double> &s_v_np1,
-  const std::vector<double> &n_v_np1,
-  std::vector<double> &gb);
+  // void compute_GB(Grid_data &grid,
+  // const std::vector<double> &n_v,
+  // const std::vector<double> &s_v,
+  // const std::vector<double> &s_v_np1,
+  // const std::vector<double> &n_v_np1,
+  // std::vector<double> &gb);
 
 private:
   void find_outer_most_index(const vector<double> &v,int &index, const int start_index);
@@ -68,17 +69,17 @@ private:
   double Bep, double Bepp,
   double t_Der_ss, double t_Der_P);
 
-  double get_GB_Val(double r,
-  double nn,
-  double r_Der_nn,
-  double rr_Der_nn,
-  double t_Der_nn,
-  double tr_Der_nn,
-  double ss,
-  double r_Der_ss,
-  double rr_Der_ss,
-  double t_Der_ss,
-  double tr_Der_ss);
+  // double get_GB_Val(double r,
+  // double nn,
+  // double r_Der_nn,
+  // double rr_Der_nn,
+  // double t_Der_nn,
+  // double tr_Der_nn,
+  // double ss,
+  // double r_Der_ss,
+  // double rr_Der_ss,
+  // double t_Der_ss,
+  // double tr_Der_ss);
 
   double get_NCC_in(double nn,
   double r_Der_nn,

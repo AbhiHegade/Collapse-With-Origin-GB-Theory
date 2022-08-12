@@ -150,7 +150,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
       else {
         if((fabs(p_v.v[i])>1e-6)){
-        double q1 = Dx_ptc_4th(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
+        double q1 = Dx_ptpc_2nd(q_v.v[i+1], -q_v.v[i+1], dr[i]);
         double a0 = pow(p_v.v[i],2.);
         double a1 = 0.;
         double a2 = (-6. + 48.*q1*Bep_i);
@@ -168,10 +168,10 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
     {
       int i = exc_i;
       r_Der_P_i = 0.;
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = q_v.v[i+1]/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], -q_v.v[i+1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -189,11 +189,11 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
     }
 
     for(int i=exc_i+1; i<nx-2; i++){
-      r_Der_P_i = (p_v.v[i+1]-p_v.v[i-1])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = (q_v.v[i+1]-q_v.v[i-1])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -218,11 +218,11 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
     }
     {
       int i = exc_i;
-      r_Der_P_i = (-3.*p_v.v[i]+ 4.*p_v.v[i+1] -p_v.v[i+2])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = (-3.*q_v.v[i]+ 4.*q_v.v[i+1] -q_v.v[i+2])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -238,11 +238,11 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       s_v.v[i+1] = fabs(s_v.v[i] + 0.5*(k1+k2));
     }
     for(int i = exc_i+1; i<nx-2; i++){
-      r_Der_P_i = (p_v.v[i+1]-p_v.v[i-1])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = (q_v.v[i+1]-q_v.v[i-1])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -287,10 +287,10 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     {
       int i = exc_i;
       r_Der_P_i = 0.;
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = q_v.v[i+1]/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], -q_v.v[i+1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -308,11 +308,11 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
     for(int i =exc_i+1; i<nx-2; i++){
 
-      r_Der_P_i = (p_v.v[i+1]-p_v.v[i-1])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = (q_v.v[i+1]-q_v.v[i-1])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -339,11 +339,11 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     {
       int i = exc_i;
       n_v.v[i] = 0.5;
-      r_Der_P_i = (-3.*p_v.v[i]+ 4.*p_v.v[i+1] -p_v.v[i+2])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = (-3.*q_v.v[i]+ 4.*q_v.v[i+1] -q_v.v[i+2])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -362,11 +362,11 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
     for(int i =exc_i+1; i<nx-2; i++){
 
-      r_Der_P_i = (p_v.v[i+1]-p_v.v[i-1])/(2.*dr[i]);
-      r_Der_P_ip1 = (p_v.v[i+2] - p_v.v[i])/(2.*dr[i+1]);
+      r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
-      r_Der_Q_i = (q_v.v[i+1]-q_v.v[i-1])/(2.*dr[i]);
-      r_Der_Q_ip1 = (q_v.v[i+2] - q_v.v[i])/(2.*dr[i+1]);
+      r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);

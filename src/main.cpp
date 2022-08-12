@@ -193,18 +193,18 @@ int main(int argc, char const *argv[]) {
   diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, n.v,s.v, p.v,q.v,phi.v,residual);
   diagnostics.find_apparent_horizon(grid,s);
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
-  diagnostics.compute_NCC(grid, n_nm1, s_nm1, s.v, ncc_in, ncc_out);
+  diagnostics.compute_NCC(grid, n_nm1, s_nm1,n.v, s.v, ncc_in, ncc_out);
 
   i_e += 1;
 
   if ((i_e%save_steps ==0) ){
-    diagnostics.compute_GB(grid,
-    n_nm1,
-    s_nm1,
-    s.v,
-    n.v,
-    gb);
-    write.write_vec(gb, "gb");
+    // diagnostics.compute_GB(grid,
+    // n_nm1,
+    // s_nm1,
+    // s.v,
+    // n.v,
+    // gb);
+    // write.write_vec(gb, "gb");
     write.write_vec(ncc_in, "ncc_in");
     write.write_vec(ncc_out, "ncc_out");
     write.write_residual(residual);
