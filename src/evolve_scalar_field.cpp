@@ -589,7 +589,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //
 //     generate_rhs_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dsdt, dpdt, dqdt, dphidt);
 //
-//     for(int i =exc_i; i<nx-1; i++){
+//     for(int i =exc_i; i<nx; i++){
 //       kp1[i] = dt*dpdt[i];
 //       kq1[i] = dt*dqdt[i];
 //       kphi1[i] = dt*dphidt[i];
@@ -603,7 +603,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //       Field q_1("q_k1", "odd", grid);
 //       Field phi_1("phi_k1", "even", grid);
 //
-//       for(int i = exc_i; i<nx-1; i++){
+//       for(int i = exc_i; i<nx; i++){
 //         n_1.v[i] = n_v.v[i];
 //         s_1.v[i] = s_v.v[i] ;
 //         p_1.v[i] = p_v.v[i] + kp1[i];
@@ -630,7 +630,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //         Field q_2("q_k2", "odd", grid);
 //         Field phi_2("phi_k2", "even", grid);
 //
-//         for(int i = exc_i; i<nx-1; i++){
+//         for(int i = exc_i; i<nx; i++){
 //           n_2.v[i] = n_v.v[i];
 //           s_2.v[i] = s_v.v[i] ;
 //           p_2.v[i] = p_v.v[i] + 0.25*kp1[i] + 0.25*kp2[i];
@@ -653,7 +653,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //
 //       }
 //
-//       for(int i=exc_i; i<nx-1; i++){
+//       for(int i=exc_i; i<nx; i++){
 //         p_v.v[i] += (1./6.)*kp1[i] + (1./6.)*kp2[i] + (2./3.)*kp3[i] ;
 //         q_v.v[i] += (1./6.)*kq1[i] + (1./6.)*kq2[i] + (2./3.)*kq3[i] ;
 //         phi_v.v[i] += (1./6.)*kphi1[i] + (1./6.)*kphi2[i] + (2./3.)*kphi3[i] ;
@@ -685,7 +685,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //
 //     generate_rhs_non_excised(grid ,n_v, s_v, p_v, q_v, phi_v, dpdt, dqdt, dphidt);
 //
-//     for(int i =0; i<nx-1; i++){
+//     for(int i =0; i<nx; i++){
 //       kp1[i] = dt*dpdt[i];
 //       kq1[i] = dt*dqdt[i];
 //       kphi1[i] = dt*dphidt[i];
@@ -698,7 +698,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //       Field q_1("q_k1", "odd", grid);
 //       Field phi_1("phi_k1", "even", grid);
 //
-//       for(int i = 0; i<nx-1; i++){
+//       for(int i = 0; i<nx; i++){
 //         n_1.v[i] = n_v.v[i];
 //         s_1.v[i] = s_v.v[i];
 //         p_1.v[i] = p_v.v[i] + kp1[i];
@@ -708,7 +708,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //       solve_metric_fields.solve(grid, n_1, s_1, p_1, q_1, phi_1);
 //       generate_rhs_non_excised(grid, n_1, s_1, p_1, q_1, phi_1, dpdt, dqdt, dphidt);
 //
-//       for(int i =0; i<nx-1; i++){
+//       for(int i =0; i<nx; i++){
 //         kp2[i] = dt*dpdt[i];
 //         kq2[i] = dt*dqdt[i];
 //         kphi2[i] = dt*dphidt[i];
@@ -723,7 +723,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //         Field q_2("q_k2", "odd", grid);
 //         Field phi_2("phi_k2", "even", grid);
 //
-//         for(int i = 0; i<nx-1; i++){
+//         for(int i = 0; i<nx; i++){
 //           n_2.v[i] = n_v.v[i];
 //           s_2.v[i] = s_v.v[i];
 //           p_2.v[i] = p_v.v[i] + 0.25*kp1[i] + 0.25*kp2[i];
@@ -733,7 +733,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //         solve_metric_fields.solve(grid, n_2, s_2, p_2, q_2, phi_2);
 //         generate_rhs_non_excised(grid, n_2, s_2, p_2, q_2, phi_2, dpdt, dqdt, dphidt);
 //
-//         for(int i =0; i<nx-1; i++){
+//         for(int i =0; i<nx; i++){
 //           kp3[i] = dt*dpdt[i];
 //           kq3[i] = dt*dqdt[i];
 //           kphi3[i] = dt*dphidt[i];
@@ -743,7 +743,7 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
 //
 //
 //       }
-//       for(int i=0; i<nx-1; i++){
+//       for(int i=0; i<nx; i++){
 //         p_v.v[i] += (1./6.)*kp1[i] + (1./6.)*kp2[i] + (2./3.)*kp3[i] ;
 //         q_v.v[i] += (1./6.)*kq1[i] + (1./6.)*kq2[i] + (2./3.)*kq3[i] ;
 //         phi_v.v[i] += (1./6.)*kphi1[i] + (1./6.)*kphi2[i] + (2./3.)*kphi3[i] ;

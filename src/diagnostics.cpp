@@ -315,7 +315,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         else{
           grid.exc_i = new_exc_i;
       }
-      if (grid.exc_i > grid.ah_index){
+      if (grid.exc_i >= grid.ah_index){
         cout<<"naked_elliptic_region outside horizon."<<endl;
         std::exit(0);
       }

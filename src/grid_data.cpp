@@ -51,7 +51,8 @@ Grid_data::Grid_data( const int nx,const int nt, const double ls, const double l
     dr[j] = r_p_of_x(cl,x[j])*dx;
   }
   x[nx-1] = cl;
-  r[nx-1] = cl;
+  // r[nx-1] = cl;
+  r[nx-1] = 1e100;
   dr[nx-1] = r[nx-1]-r[nx-2];
 }
 //==============================================================================
