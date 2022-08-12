@@ -21,7 +21,7 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [[0.43,0.,0.5,3]]
+input_data  = [[1.15,0.5,0.,0.]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -89,7 +89,7 @@ def launch_sim(vals):
     sim.initial_mass = Mass_val
     dx = sim.cl/sim.nx
     ratio = 0.5
-    sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+    sim.exc_i = int((ratio/dx)*((2*sim.cl*sim.initial_mass)/(sim.cl + 2*sim.initial_mass)))
     sim.launch()
 
 if sim.slurm == True:

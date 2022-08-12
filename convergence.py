@@ -84,9 +84,9 @@ mu = np.array([0.])
 out_path = home_path+ "/output/Phase-Space/Convg"
 #===============================================================================
 input_data = []
-# input_data_mass = [[1.3,0.5,0.,0.],[0.43,0,0.5,3]]
+# input_data_mass = [[1.15,0.5,0.,0.]]
 # input_data_mass = get_arr(input_data_mass,"mass")
-input_data = [[0.16,0.5,0.,0.]]
+input_data = [[0.1,0.,0.5,3],[0.14,0,0.5,3]]
 input_data = get_arr(input_data,"normal")
 current_time = datetime.now()
 sim = Convg()
@@ -99,8 +99,8 @@ if(sim.initial_mass == 0):
 else:
     sim.exc_i = 3
 sim.convgscript = home_path +"/Convergence-Analysis.ipynb"
-nx = 4000
-nt = 8000
+nx = 5000
+nt = 10000
 ss_step = 200
 sim.exc_i = 0
 sim.rl = 8.
@@ -156,7 +156,7 @@ def launch_sim_mass(vals):
         sim.initial_mass = mass
         dx = sim.cl/sim.nx
         ratio = 0.5
-        sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+        sim.exc_i = int((ratio/dx)*((2*sim.cl*sim.initial_mass)/(sim.cl + 2*sim.initial_mass)))
         level_str = "4h"
     elif level == 2:
         sim.nx = 2*nx
@@ -165,7 +165,7 @@ def launch_sim_mass(vals):
         sim.initial_mass = mass
         dx = sim.cl/sim.nx
         ratio = 0.5
-        sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+        sim.exc_i = int((ratio/dx)*((2*sim.cl*sim.initial_mass)/(sim.cl + 2*sim.initial_mass)))
         level_str = "2h"
     elif level ==1:
         sim.nx = 4*nx
@@ -174,7 +174,7 @@ def launch_sim_mass(vals):
         sim.initial_mass = mass
         dx = sim.cl/sim.nx
         ratio = 0.5
-        sim.exc_i = int((ratio/dx)*((4*sim.cl*sim.initial_mass)/(sim.cl + 4*sim.initial_mass)))
+        sim.exc_i = int((ratio/dx)*((2*sim.cl*sim.initial_mass)/(sim.cl + 2*sim.initial_mass)))
         level_str = "h"
     sim.launch(level_str)
 #===============================================================================
