@@ -21,27 +21,27 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [[1.3,0.5,0.,0.]]
-input_data = np.array(input_data)
+# input_data  = [[1.3,0.5,0.,0.]]
+# input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.write_runs = True
+sim.write_runs = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 4000
-sim.nt = 10000
-sim.save_steps = int(sim.nt/1000)
+sim.nx = 5000
+sim.nt = 12000
+sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.A = 1e-2
+sim.A = 1e-3
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =False
+sim.search =True
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -111,15 +111,25 @@ if sim.slurm == True:
 else:
     if sim.search == True:
         run_type = "black_hole_mass_search"
-        sim.A = 1e-2
-        tol = 1e-2
         cluster = False
-        mu = 12
-        ls = 0
-        data_search = [[0.2,0.12,0.225]]
+        sim.A = 1e-3
+        data_search = [[0.1,0.3,1e-2,0.1,0,0],
+        [0.3,0.6,1e-2,0.2,0,0],
+        [0.6,0.9,1e-2,0.3,0,0],
+        [0.8,1.2,1e-2,0.4,0,0],
+        [1.,1.3,1e-2,0.5,0,0],
+        [1.2,1.7,1e-2,0.6,0,0],
+        [1.5,1.8,1e-2,0.7,0,0],
+        [1.8,2.1,1e-2,0.8,0,0],
+        [2.,2.4,1e-2,0.9,0,0],
+        [2.2,2.6,1e-2,1.,0,0]
+        ]
         def launch_search(arr):
-            lexp = arr[0]
-            mass_range = [arr[1],arr[2]]
+            mass_range = [arr[0],arr[1]]
+            tol = arr[2]
+            ls = arr[3]
+            lexp = arr[4]
+            mu = arr[5]
             sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
             sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
 
@@ -140,7 +150,7 @@ else:
 
             print("Searching mass...")
             print("run_type = {}".format(run_type))
-            print("tol = ", tol)
+            # print("tol = ", tol)
             print("nx = ", sim.nx)
             print("nt = ", sim.nt)
             print("save_steps = ", sim.save_steps)

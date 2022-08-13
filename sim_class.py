@@ -175,7 +175,7 @@ class Sim:
                 self.mu = mu
                 self.A = val
                 self.launch()
-                time.sleep(60)
+                #time.sleep(60)
                 done = False
                 counter = 0
                 while not done:
@@ -190,25 +190,25 @@ class Sim:
                                     counter += 1
                             else:
                                 if line.startswith("NaN"):
-                                    self.write_record("NaN; Amp = {}; M_init = {}".format(val,M_init))
+                                    self.write_record("NaN; Amp = {}; M_init = {}; status = {}".format(val,M_init,line))
                                     A_low = val
                                     M_low = M_init
                                     done = True
 
                                 elif line.startswith("naked"):
-                                    self.write_record("naked_elliptic_region; Amp = {}; M_init = {}".format(val,M_init))
+                                    self.write_record("naked_elliptic_region; Amp = {}; M_init = {}; status = {}".format(val,M_init,line))
                                     A_low = val
                                     M_low = M_init
                                     done = True
 
 
                                 elif line.startswith("exit_code_1"):
-                                    self.write_record("bh; Amp = {}; M_init = {}".format(val,M_init))
+                                    self.write_record("bh; Amp = {}; M_init = {}; status = {}".format(val,M_init,line))
                                     A_high = val
                                     M_high = M_init
                                     done = True
                                 elif line.startswith("exit_code_0"):
-                                    self.write_record("Problem with run, flat space formed.")
+                                    self.write_record("Problem with run, flat space formed; status = {}".format(line))
                                     A_low = val
                                     done = True
 
@@ -334,7 +334,7 @@ class Sim:
             self.initial_mass = val
             dx = self.cl/self.nx
             ratio = 0.5
-            self.exc_i = int((ratio/dx)*((4*self.cl*self.initial_mass)/(self.cl + 4*self.initial_mass)))
+            self.exc_i = int((ratio/dx)*((2*self.cl*self.initial_mass)/(self.cl + 2*self.initial_mass)))
             self.launch()
             time.sleep(2)
             done = False
@@ -343,22 +343,22 @@ class Sim:
                 with open(self.output_dir + "/output.out") as f:
                     for line in f:
                         if line.startswith("NaN"):
-                            self.write_record("NaN; Mass = {}".format(val))
+                            self.write_record("NaN; Mass = {}; status = {}".format(val,line))
                             M_low = val
                             done = True
 
                         elif line.startswith("naked"):
-                            self.write_record("naked_elliptic_region; Mass = {}".format(val))
+                            self.write_record("naked_elliptic_region; Mass = {}; status = {}".format(val,line))
                             M_low = val
                             done = True
 
                         elif line.startswith("exit_code_1"):
-                            self.write_record("bh; Mass = {}".format(val))
+                            self.write_record("bh; Mass = {}; status = {}".format(val,line))
                             M_high = val
                             done = True
 
                         elif line.startswith("exit_code_0"):
-                            self.write_record("Problem with run with run flat space formed; Mass = {}".format(val))
+                            self.write_record("Problem with run with run flat space formed; Mass = {}; status = {}".format(val,line))
                             M_low = val
                             done = True
 
