@@ -30,19 +30,19 @@ input_data = []
 # [0.027,0.,0.5,12.],
 # [0.030,0.,0.4,12.],
 # [0.033,0.,0.3,12.]]
-input_data = [
-[0.15,0.5,0.,0.]]
-input_data = np.array(input_data)
+# input_data = [
+# [0.15,0.5,0.,0.]]
+# input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.cluster = False
-sim.write_runs = True
+sim.write_runs = False
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 4000
-sim.nt = 4000
-sim.save_steps = 4
+sim.nx = 5000
+sim.nt = 5000
+sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
     sim.exc_i = 0
@@ -52,7 +52,7 @@ sim.exc_i = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =False
+sim.search =True
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -97,18 +97,28 @@ def launch_sim(vals):
     sim.launch()
 #===============================================================================
 if sim.search == True:
-    ls = 0
-    mu = 12
-    data_search = [[0.3,0.05,0.12]]
-    tol = 1e-3
+    data_search = [[0.1,0.2,1e-3,0.1,0,0],
+    [0.1,0.2,1e-3,0.2,0,0],
+    [0.1,0.2,1e-3,0.3,0,0],
+    [0.1,0.2,1e-3,0.4,0,0],
+    [0.1,0.2, 1e-3,0.5,0,0],
+    [0.1,0.2,1e-3,0.6,0,0],
+    [0.1,0.2,1e-3,0.7,0,0],
+    [0.1,0.2,1e-3,0.8,0,0],
+    [0.1,0.2,1e-3,0.9,0,0],
+    [0.1,0.29,1e-3,1.,0,0]
+    ]
 
     #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
     run_type = "naked_elliptic_to_blackhole"
 
     def launch_search(arr):
-        lexp = arr[0]
-        Amp_range = [arr[1],arr[2]]
+        Amp_range = [arr[0],arr[1]]
+        tol = arr[2]
+        ls = arr[3]
+        lexp = arr[4]
+        mu = arr[5]
         sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
         sim.amplitude_search(ls=ls,lexp = lexp,mu=mu, Amp_range = Amp_range , run_type = run_type, tol = tol)
 
@@ -131,8 +141,9 @@ if sim.search == True:
 
         print("Searching amplitude...")
         print("run_type = {}".format(run_type))
-        print("tol = ", tol)
-
+        print("nx = ",sim.nx)
+        print("nt = ", sim.nt)
+        print("save_steps = ", sim.save_steps)
         print(data_search)
 
         print("Data saved at:{}".format(sim.out_dir))
