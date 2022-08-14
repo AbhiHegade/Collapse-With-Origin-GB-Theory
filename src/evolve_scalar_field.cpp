@@ -441,9 +441,10 @@ void Evolve_scalar_field::evolve(const Grid_data grid, const Field &n_v, Field &
         phi_v.v[i] += (1./6.)*kphi1[i] + (1./3.)*kphi2[i] + (1./3.)*kphi3[i] + (1./6.)*kphi4[i];
       }
       for(int i=0; i<exc_i; i++){
-        p_v.v[i] = p_v.v[exc_i];
-        q_v.v[i] = q_v.v[exc_i];
-        phi_v.v[i] = phi_v.v[exc_i];
+        p_v.v[i] = 0.;
+        q_v.v[i] = 0.;
+        phi_v.v[i] = 0.;
+        s_v.v[i] = 0.;
       }
       s_v.v[exc_i] += (1./6.)*sk1 + (1./3.)*sk2 + (1./3.)*sk3 + (1./6.)*sk4;
 

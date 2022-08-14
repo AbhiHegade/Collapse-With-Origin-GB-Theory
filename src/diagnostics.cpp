@@ -70,11 +70,11 @@ void Diagnostics::find_outer_most_index(const vector<double> &v, int &elem, cons
 void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
 {
   int index = 0;
-  find_outer_most_index(s_v.v,index,grid.exc_i);
+  find_outer_most_index(s_v.v,index,1);
   // cout<<"index = "<<index<<endl;
   if(index>=0){
     if(grid.exc_i>0){
-      int indexby2 = ((9*index)/10 ==0 ) ? (index/2) : ((9*index)/10);
+      int indexby2 = ((8*index)/10 ==0 ) ? (index/2) : ((8*index)/10);
       int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
 
       if (index==0){
@@ -92,7 +92,8 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
           grid.exc_i = new_exc_i;
           cout<<"done."<<endl;
         }
-      }
+
+    }
 
     else{
       assert(grid.exc_i==0);
@@ -316,6 +317,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
           grid.exc_i = new_exc_i;
       }
       if (grid.exc_i >= grid.ah_index){
+        cout<<"Elliptic region at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<"), AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<"), t = "<<grid.t_evolve<<endl;
         cout<<"naked_elliptic_region outside horizon."<<endl;
         std::exit(0);
       }
