@@ -141,7 +141,7 @@ double Evolve_scalar_field::rhs_s_free(double r,
 void Evolve_scalar_field::KO_filter(Grid_data grid,
    const string type, vector<double> &rhs, const vector<double> &vec)
 { //Fourth Order Filter
-   double eps= 0.2;
+   double eps= 0.3;
    double dt = grid.dt;
    int exc_i = grid.exc_i;
    int nx = grid.nx;
