@@ -18,6 +18,7 @@ public:
   void write_characteristics(const std::vector<double> &ingoing, const std::vector<double> &outgoing);
   void write_residual(const std::vector<double> &residual);
   void write_vec(const std::vector<double> &vec, const std::string name);
+  void write_MS_mass(const int pos, const double rval,const std::vector<double> &s);
 private:
   void write_field(const Field &n);
 

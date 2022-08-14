@@ -109,8 +109,10 @@ double Evolve_scalar_field::rhs_p(double r,
 
       num = snm1 + sn0 + sn1 + sn2 + sn3 + sn4 + sn5 + sn6 + sn7 ;
     }
+    double ans = num;
+    ans/= denom;
 
-    return num/denom;
+    return ans;
   }
 }
 //==============================================================================
@@ -125,8 +127,7 @@ double Evolve_scalar_field::rhs_s_free(double r,
   double Qr = Q/r;
   double ssr = ss/r;
   double ans = 0.;
-  // return
-  // (pow(Qr,2)*pow(r,3)*nn)/4. + r*r_Der_ss*ssr*nn + (r*pow(ssr,2)*nn)/2. + (Qr*r*nn*P)/(2.*ssr) + (r*nn*pow(P,2))/4.;
+
   // return
   // ((pow(Qr,2)*pow(r,3)*nn)/4. - 2*Bep*pow(Qr,3)*pow(r,3)*nn + (r*pow(ssr,2)*nn)/2. + 4*Bep*Qr*r*pow(ssr,2)*nn - 64*pow(Bep,2)*pow(Qr,2)*r*pow(ssr,2)*nn + 16*pow(Bep,2)*pow(Qr,2)*pow(r,3)*pow(ssr,4)*nn + (Qr*r*nn*P)/(2.*ssr) - (4*Bep*pow(Qr,2)*r*nn*P)/ssr + 4*Bepp*Qr*r*ssr*nn*P - 32*Bep*Bepp*pow(Qr,2)*r*ssr*nn*P - 2*Bep*pow(Qr,2)*pow(r,3)*ssr*nn*P + 4*Bep*r*pow(ssr,3)*nn*P - 128*pow(Bep,2)*Qr*r*pow(ssr,3)*nn*P + (r*nn*pow(P,2))/4. - 6*Bep*Qr*r*nn*pow(P,2) + 4*Bepp*r*pow(ssr,2)*nn*pow(P,2) - 64*Bep*Bepp*Qr*r*pow(ssr,2)*nn*pow(P,2) - 80*pow(Bep,2)*r*pow(ssr,4)*nn*pow(P,2) - 2*Bep*r*ssr*nn*pow(P,3) - 32*Bep*Bepp*r*pow(ssr,3)*nn*pow(P,3) - pow(r_Der_nn,2)*((256*pow(Bep,3)*Qr*pow(r,3)*pow(ssr,6))/nn + (256*pow(Bep,3)*r*pow(ssr,5)*P)/nn) - r_Der_P*(-4*Bep*ssr*nn + 32*pow(Bep,2)*Qr*ssr*nn + 32*pow(Bep,2)*pow(ssr,2)*nn*P) - r_Der_Q*(-4*Bep*r*pow(ssr,2)*nn + 32*pow(Bep,2)*Qr*r*pow(ssr,2)*nn + 32*pow(Bep,2)*r*pow(ssr,3)*nn*P) - pow(r_Der_ss,2)*(-128*pow(Bep,2)*r*pow(ssr,4)*nn + 768*pow(Bep,3)*Qr*r*pow(ssr,4)*nn + 768*pow(Bep,3)*r*pow(ssr,5)*nn*P) - r_Der_ss*(-(r*ssr*nn) + 12*Bep*Qr*r*ssr*nn - 32*pow(Bep,2)*pow(Qr,2)*r*ssr*nn - 16*pow(Bep,2)*pow(Qr,2)*pow(r,3)*pow(ssr,3)*nn - 256*pow(Bep,3)*r_Der_P*pow(ssr,4)*nn + 32*pow(Bep,2)*r*pow(ssr,5)*nn - 256*pow(Bep,2)*Bepp*pow(Qr,2)*pow(r,3)*pow(ssr,5)*nn - 256*pow(Bep,3)*r*r_Der_Q*pow(ssr,5)*nn + 12*Bep*r*pow(ssr,2)*nn*P - 96*pow(Bep,2)*Qr*r*pow(ssr,2)*nn*P - 256*pow(Bep,2)*Bepp*Qr*r*pow(ssr,4)*nn*P - 48*pow(Bep,2)*r*pow(ssr,3)*nn*pow(P,2)) - r_Der_nn*(-4*Bep*Qr*pow(r,2)*pow(ssr,2) + 32*pow(Bep,2)*pow(Qr,2)*pow(r,2)*pow(ssr,2) - 32*pow(Bep,2)*pow(ssr,4) + 256*pow(Bep,2)*Bepp*pow(Qr,2)*pow(r,2)*pow(ssr,4) - 16*pow(Bep,2)*pow(Qr,2)*pow(r,4)*pow(ssr,4) + 256*pow(Bep,3)*r_Der_Q*pow(ssr,4) + 256*pow(Bep,3)*r*r_Der_P*pow(ssr,5) - 4*Bep*pow(r,2)*pow(ssr,3)*P + 32*pow(Bep,2)*Qr*pow(r,2)*pow(ssr,3)*P + 256*pow(Bep,2)*Bepp*Qr*pow(r,2)*pow(ssr,5)*P + 16*pow(Bep,2)*pow(r,2)*pow(ssr,4)*pow(P,2) + r_Der_ss*(64*pow(Bep,2)*pow(ssr,3) - 512*pow(Bep,3)*Qr*pow(ssr,3) - 128*pow(Bep,2)*pow(r,2)*pow(ssr,5) + 1024*pow(Bep,3)*Qr*pow(r,2)*pow(ssr,5) - 256*pow(Bep,3)*pow(ssr,4)*P + 768*pow(Bep,3)*pow(r,2)*pow(ssr,6)*P)))/(1 - 16*Bep*Qr + 64*pow(Bep,2)*pow(Qr,2) - 32*pow(Bep,2)*pow(ssr,4) + 256*pow(Bep,2)*Bepp*pow(Qr,2)*pow(r,2)*pow(ssr,4) + 256*pow(Bep,3)*r_Der_Q*pow(ssr,4) - 16*Bep*ssr*P + 128*pow(Bep,2)*Qr*ssr*P + 64*pow(Bep,2)*pow(ssr,2)*pow(P,2) + r_Der_ss*(128*pow(Bep,2)*pow(ssr,3) - 1024*pow(Bep,3)*Qr*pow(ssr,3) - 768*pow(Bep,3)*pow(ssr,4)*P) + r_Der_nn*((128*pow(Bep,2)*r*pow(ssr,4))/nn - (1024*pow(Bep,3)*Qr*r*pow(ssr,4))/nn - (768*pow(Bep,3)*r*pow(ssr,5)*P)/nn))
   // ;
@@ -140,7 +141,7 @@ double Evolve_scalar_field::rhs_s_free(double r,
 void Evolve_scalar_field::KO_filter(Grid_data grid,
    const string type, vector<double> &rhs, const vector<double> &vec)
 { //Fourth Order Filter
-   double eps= 0.75;
+   double eps= 0.9;
    double dt = grid.dt;
    int exc_i = grid.exc_i;
    int nx = grid.nx;

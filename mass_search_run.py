@@ -21,8 +21,8 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-# input_data  = [[1.3,0.5,0.,0.]]
-# input_data = np.array(input_data)
+input_data  = [[0.25,0.1,0,0]]
+input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
@@ -30,18 +30,18 @@ sim.write_runs = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 5000
-sim.nt = 12000
-sim.save_steps = int(sim.nt/10)
+sim.nt = 10000
+sim.save_steps = int(sim.nt/1000)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.A = 1e-3
+sim.A = 0
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.search =False
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -169,7 +169,7 @@ else:
             while True:
                 if not result.ready():
                     print('We\'re not done yet, %s tasks to go!' % result._number_left)
-                    time.sleep(2)
+                    time.sleep(30)
                 else:
                     break
 

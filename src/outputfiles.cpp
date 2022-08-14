@@ -161,3 +161,15 @@ void Write_data::write_vec(const vector<double> &vec, const string name_v){
   write_output.close();
 
 }
+
+void Write_data::write_MS_mass(const int pos, const double rval, const vector<double> &s){
+  string name = path+"ms_mass.dat";
+  std::ofstream write_output(name , std::ios::app);
+  assert(write_output.is_open());
+  write_output.precision(16);
+
+  double MS_mass = 0.5*rval*(s[pos]*s[pos]);
+  write_output<<MS_mass<<"\n";
+  write_output.flush();
+  write_output.close();
+}

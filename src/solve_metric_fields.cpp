@@ -45,7 +45,11 @@ double Solve_metric_fields::rhs_shift(double r,
     s1 = -4*r_Der_Q*(-Bep + 8*pow(Bep,2)*Qr)*ssr + ((-1 + 8*Bep*Qr - 10*Bep*pow(r,2)*pow(P,2)*Qr + 8*Bepp*pow(r,2)*pow(Qr,2) - 64*Bep*Bepp*pow(r,2)*pow(Qr,3) + 2*Bep*pow(r,4)*pow(Qr,3))*ssr)/2.;
     s2 = -32*pow(Bep,2)*r_Der_Q*P*pow(ssr,2) - 4*Bep*r*r_Der_P*(-1 + 8*Bep*Qr)*pow(ssr,2) - 4*(-(Bep*P) - Bepp*pow(r,2)*P*Qr + 16*Bep*Bepp*pow(r,2)*P*pow(Qr,2))*pow(ssr,2);
     s3 = -48*pow(Bep,2)*r*r_Der_P*P*pow(ssr,3) + 16*pow(Bep,2)*pow(r,2)*r_Der_Q*Qr*pow(ssr,3) + 2*Bep*r*(-(r*Qr) - 24*Bepp*r*pow(P,2)*Qr + 8*Bepp*pow(r,3)*pow(Qr,3))*pow(ssr,3);
-
+    // if(ssr*r>1.5){
+    //   cout<<U<<" "<<sm1<<" "<<s0<<" "<<s1<<" "<<s2<<" "<<s3<<endl;
+    //   cout<<r_Der_Q<<" "<<Bep<<" "<<Qr<<" "<<Bepp<<" "<<P<<" "<<r_Der_P<<endl;
+    //   std::exit(0);
+    // }
     return (sm1/U + s0/U + s1/U + s2/U + s3/U) ;
 
 }
@@ -334,11 +338,11 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
   }
   else{
     for(int i=0; i<exc_i; i++){
-      n_v.v[i] = 0.5;
+      n_v.v[i] = 1;
     }
     {
       int i = exc_i;
-      n_v.v[i] = 0.5;
+      n_v.v[i] = 1;
       r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
       r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
@@ -380,6 +384,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       k2 = dx*r_p_of_x(cl, xip1)*rhs_lapse(rip1, n_v.v[i] + k1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1 ,q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
 
       n_v.v[i+1] = n_v.v[i] + 0.5*(k1 + k2);
+      // cout<<"nn = "<<n_v.v[i+1]<<endl;
 
     }
 
