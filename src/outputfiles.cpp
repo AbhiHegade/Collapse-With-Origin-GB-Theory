@@ -169,7 +169,7 @@ void Write_data::write_MS_mass(const int pos, const double rval, const vector<do
   write_output.precision(16);
 
   double MS_mass = 0.5*rval*(s[pos]*s[pos]);
-  write_output<<MS_mass<<"\n";
+  write_output<<MS_mass<<" ";
   write_output.flush();
   write_output.close();
 }
