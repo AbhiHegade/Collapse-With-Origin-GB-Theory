@@ -21,7 +21,7 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [[0.26,0.1,0,0],[1.05,0.4,0,0], [1.27,0.5,0,0]]
+input_data  = [[0.32,0,0.3,3],[0.26,0.1,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -29,15 +29,15 @@ sim.slurm = False
 sim.write_runs = False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 6000
-sim.nt = 12000
-sim.save_steps = int(sim.nt/20)
+sim.nx = 5000
+sim.nt = 40000
+sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.A = 0
+sim.A = 1e-3
 sim.rl = 8.
 sim.ru =12.
 sim.collapse_and_bh = 1;
@@ -113,10 +113,26 @@ else:
         run_type = "black_hole_mass_search"
         cluster = False
         sim.A = 1e-3
-        data_search = [
-        [1.25,1.4,1e-2,0.5,0,0],
-        [1.78125,1.8125,1e-2,0.7,0,0]
-        ]
+        data_search = [[0.1,0.3,1e-2,0.1,0,0],
+            [0.3,0.6,1e-2,0.2,0,0],
+            [0.6,0.9, 1e-2,0.3,0,0],
+            [0.8,1.2,1e-2,0.4,0,0],
+            [1.2,1.4,1e-2,0.5,0,0],
+            [1.2,1.7,1e-2,0.6,0,0],
+            [1.7,2.0,1e-2,0.7,0,0],
+            [1.8,2.1,1e-2,0.8,0,0],
+            [2.,2.4,1e-2,0.9,0,0],
+            [2.2,2.6,1e-2,1.,0,0],
+            [0.2,0.4,1e-2,0,0.3,3],
+            [0.2,0.8,1e-2,0,0.4,3],
+            [0.3,0.8,1e-2,0,0.5,3],
+            [0.4,1.,1e-2,0,0.6,3],
+            [0.5,1.2,1e-2,0,0.7,3],
+            [0.6,1.2,1e-2,0,0.8,3],
+            [0.8,1.4,1e-2,0,0.9,3],
+            [0.9,1.4,1e-2,0,1.,3]
+
+            ]
         def launch_search(arr):
             mass_range = [arr[0],arr[1]]
             tol = arr[2]

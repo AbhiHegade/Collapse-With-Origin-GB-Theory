@@ -74,7 +74,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
   // cout<<"index = "<<index<<endl;
   if(index>=0){
     if(grid.exc_i>0){
-      int indexby2 = ((95*index)/100 ==0 ) ? (index/2) : ((95*index)/100);
+      int indexby2 = ((80*index)/100 ==0 ) ? (index/2) : ((80*index)/100);
       int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
 
       if (index==0){
@@ -254,60 +254,115 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
 
     else{
         int new_exc_i = grid.exc_i;
-      {
-        int i = grid.exc_i;
+   //    {
+   //      int i = grid.exc_i;
+   //
+   //      double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+   //      double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
+   //
+   //      double r_Der_nn= Dx_ptp0_2nd(n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
+   //      double r_Der_ss= Dx_ptp0_2nd(s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
+   //      double r_Der_P= Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+   //      double r_Der_Q= Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+   //
+   //      int status= compute_radial_characteristic(r[i],
+   //      n_v.v[i], r_Der_nn,
+   //      s_v.v[i], r_Der_ss,
+   //      p_v.v[i], r_Der_P,
+   //      q_v.v[i], r_Der_Q,
+   //      Bep, Bepp,
+   //      ingoing_c, outgoing_c);
+   //
+   //      if (status==-1) {
+   //        new_exc_i += 1;
+   //      }
+   //      ingoing[i]=   ingoing_c;
+   //      outgoing[i]= outgoing_c;
+   //    }
+   //
+   // /*---------------------------------------------------------------------------*/
+   // /* interior */
+   //    for (int i=grid.exc_i + 1; i<nx-1; ++i) {
+   //
+   //      double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+   //      double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
+   //
+   //      double r_Der_nn= Dx_ptpc_2nd(n_v.v[i+1], n_v.v[i-1], dr[i]);
+   //      double r_Der_ss= Dx_ptpc_2nd(s_v.v[i+1], s_v.v[i-1], dr[i]);
+   //      double r_Der_P= Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+   //      double r_Der_Q= Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+   //
+   //
+   //      int status= compute_radial_characteristic(r[i],
+   //      n_v.v[i], r_Der_nn,
+   //      s_v.v[i], r_Der_ss,
+   //      p_v.v[i], r_Der_P,
+   //      q_v.v[i], r_Der_Q,
+   //      Bep, Bepp,
+   //      ingoing_c, outgoing_c);
+   //
+   //      if (status==-1) {
+   //        new_exc_i += 1;
+   //      }
+   //      ingoing[i]=   ingoing_c;
+   //      outgoing[i]= outgoing_c;
+   //
+   //    }
+  for(int i =grid.exc_i; i<grid.ah_index-1;i++) {
 
-        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
-        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
-        double r_Der_nn= Dx_ptp0_2nd(n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
-        double r_Der_ss= Dx_ptp0_2nd(s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
-        double r_Der_P= Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
-        double r_Der_Q= Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+     double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+     double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
 
-        int status= compute_radial_characteristic(r[i],
-        n_v.v[i], r_Der_nn,
-        s_v.v[i], r_Der_ss,
-        p_v.v[i], r_Der_P,
-        q_v.v[i], r_Der_Q,
-        Bep, Bepp,
-        ingoing_c, outgoing_c);
+     double r_Der_nn= Dx_ptp0_2nd(n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
+     double r_Der_ss= Dx_ptp0_2nd(s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
+     double r_Der_P= Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+     double r_Der_Q= Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
 
-        if (status==-1) {
-          new_exc_i += 1;
-        }
-        ingoing[i]=   ingoing_c;
-        outgoing[i]= outgoing_c;
-      }
+     int status= compute_radial_characteristic(r[i],
+     n_v.v[i], r_Der_nn,
+     s_v.v[i], r_Der_ss,
+     p_v.v[i], r_Der_P,
+     q_v.v[i], r_Der_Q,
+     Bep, Bepp,
+     ingoing_c, outgoing_c);
 
-   /*---------------------------------------------------------------------------*/
-   /* interior */
-      for (int i=grid.exc_i + 1; i<nx-1; ++i) {
+     if (status==-1) {
+       new_exc_i += 1;
+     }
+     ingoing[i]=   ingoing_c;
+     outgoing[i]= outgoing_c;
+   }
 
-        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
-        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
+/*---------------------------------------------------------------------------*/
+/* interior */
+   for (int i=grid.ah_index-1; i<nx-1; ++i) {
 
-        double r_Der_nn= Dx_ptpc_2nd(n_v.v[i+1], n_v.v[i-1], dr[i]);
-        double r_Der_ss= Dx_ptpc_2nd(s_v.v[i+1], s_v.v[i-1], dr[i]);
-        double r_Der_P= Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
-        double r_Der_Q= Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+     double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+     double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
+
+     double r_Der_nn= Dx_ptpc_2nd(n_v.v[i+1], n_v.v[i-1], dr[i]);
+     double r_Der_ss= Dx_ptpc_2nd(s_v.v[i+1], s_v.v[i-1], dr[i]);
+     double r_Der_P= Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+     double r_Der_Q= Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
 
 
-        int status= compute_radial_characteristic(r[i],
-        n_v.v[i], r_Der_nn,
-        s_v.v[i], r_Der_ss,
-        p_v.v[i], r_Der_P,
-        q_v.v[i], r_Der_Q,
-        Bep, Bepp,
-        ingoing_c, outgoing_c);
+     int status= compute_radial_characteristic(r[i],
+     n_v.v[i], r_Der_nn,
+     s_v.v[i], r_Der_ss,
+     p_v.v[i], r_Der_P,
+     q_v.v[i], r_Der_Q,
+     Bep, Bepp,
+     ingoing_c, outgoing_c);
 
-        if (status==-1) {
-          new_exc_i += 1;
-        }
-        ingoing[i]=   ingoing_c;
-        outgoing[i]= outgoing_c;
+     if (status==-1) {
+       new_exc_i += 1;
+     }
+     ingoing[i]=   ingoing_c;
+     outgoing[i]= outgoing_c;
 
-      }
+   }
+  //=============================================================================
         if(new_exc_i>grid.exc_i)
         {
           grid.exc_i = new_exc_i;
@@ -316,7 +371,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         else{
           grid.exc_i = new_exc_i;
       }
-      if (grid.exc_i >= grid.ah_index){
+      if (grid.exc_i >= grid.ah_index-3){
         // cout<<"Elliptic region within 3 grid points of ah; ";
         cout<<"Elliptic region at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<"), AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<"), t = "<<grid.t_evolve<<endl;
         cout<<"naked_elliptic_region outside horizon."<<endl;

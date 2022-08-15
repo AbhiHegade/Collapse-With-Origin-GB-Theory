@@ -216,13 +216,12 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       s_v.v[i] = 0.;
 
     }
-    {
-      int i = exc_i;
+    for(int i = grid.exc_i; i< grid.ah_index-1; i++){
       r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
-      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
+      r_Der_P_ip1 = Dx_ptp0_2nd(p_v.v[i+3], p_v.v[i+2],p_v.v[i+1], dr[i+1]);
 
       r_Der_Q_i = Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
-      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
+      r_Der_Q_ip1 = Dx_ptp0_2nd(q_v.v[i+3], q_v.v[i+2],q_v.v[i+1], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -237,19 +236,9 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
       s_v.v[i+1] = fabs(s_v.v[i] + 0.5*(k1+k2));
 
-      // double tol = 1e-10;
-      // double err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
-      //                                             r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
-      // while(err>tol){
-      //   double fx = err;
-      //   double fpx = 1. - 0.5*dx*r_p_of_x(cl, xip1)*drhs_shiftdshift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
-      //
-      //   s_v.v[i+1] = s_v.v[i+1] - fx/fpx;
-      //   err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
-      //                                               r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
-      // }
+
     }
-    for(int i = exc_i+1; i<nx-2; i++){
+    for(int i = grid.ah_index - 1; i<nx-2; i++){
       r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
       r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
@@ -281,6 +270,71 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       //                                               r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
       // }
     }
+    // {
+    //   int i = exc_i;
+    //   r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+    //   r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
+    //
+    //   r_Der_Q_i = Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+    //   r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
+    //
+    //   Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
+    //   Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   Bepp_i = beta_pp(ls,lexp,mu, phi_v.v[i]);
+    //   Bepp_ip1 = beta_pp(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+    //   double xip1 = x[i+1];
+    //   double rip1 = r_of_x(cl, xip1);
+    //   k2 = dx*r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i] + k1, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+    //
+    //   s_v.v[i+1] = fabs(s_v.v[i] + 0.5*(k1+k2));
+    //
+    //   // double tol = 1e-10;
+    //   // double err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+    //   //                                             r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+    //   // while(err>tol){
+    //   //   double fx = err;
+    //   //   double fpx = 1. - 0.5*dx*r_p_of_x(cl, xip1)*drhs_shiftdshift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+    //   //
+    //   //   s_v.v[i+1] = s_v.v[i+1] - fx/fpx;
+    //   //   err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+    //   //                                               r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+    //   // }
+    // }
+    // for(int i = exc_i+1; i<nx-2; i++){
+    //   r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+    //   r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
+    //
+    //   r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+    //   r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
+    //
+    //   Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
+    //   Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   Bepp_i = beta_pp(ls,lexp,mu, phi_v.v[i]);
+    //   Bepp_ip1 = beta_pp(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   k1 = dx*r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+    //   double xip1 = x[i+1];
+    //   double rip1 = r_of_x(cl, xip1);
+    //   k2 = dx*r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i] + k1, p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+    //
+    //   s_v.v[i+1] = fabs(s_v.v[i] + 0.5*(k1+k2));
+    //
+    //   // double tol = 1e-10;
+    //   // double err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+    //   //                                             r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+    //   // while(err>tol){
+    //   //   double fx = err;
+    //   //   double fpx = 1. - 0.5*dx*r_p_of_x(cl, xip1)*drhs_shiftdshift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+    //   //
+    //   //   s_v.v[i+1] = s_v.v[i+1] - fx/fpx;
+    //   //   err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+    //   //                                               r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+    //   // }
+    // }
     s_v.v[nx-1] = 0.;
 
 
@@ -357,17 +411,15 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     n_v.rescale();
   }
   else{
-    for(int i=0; i<exc_i; i++){
+    for(int i=0; i<exc_i+1; i++){
       n_v.v[i] = 1;
     }
-    {
-      int i = exc_i;
-      n_v.v[i] = 1;
+    for(int i = exc_i; i< grid.ah_index-1; i++){
       r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
-      r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
+      r_Der_P_ip1 = Dx_ptp0_2nd(p_v.v[i+3], p_v.v[i+2],p_v.v[i+1], dr[i+1]);
 
       r_Der_Q_i = Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
-      r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
+      r_Der_Q_ip1 = Dx_ptp0_2nd(q_v.v[i+3], q_v.v[i+2],q_v.v[i+1], dr[i+1]);
 
       Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
       Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
@@ -384,7 +436,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
     }
 
-    for(int i =exc_i+1; i<nx-2; i++){
+    for(int i =grid.ah_index-1; i<nx-2; i++){
 
       r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
       r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
@@ -407,6 +459,53 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
       // cout<<"nn = "<<n_v.v[i+1]<<endl;
 
     }
+    // {
+    //   int i = exc_i;
+    //   n_v.v[i] = 1;
+    //   r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+    //   r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
+    //
+    //   r_Der_Q_i = Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+    //   r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
+    //
+    //   Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
+    //   Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   Bepp_i = beta_pp(ls,lexp,mu, phi_v.v[i]);
+    //   Bepp_ip1 = beta_pp(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   k1 = dx*r_p_of_x(cl, x[i])*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+    //   double xip1 = x[i+1];
+    //   double rip1 = r_of_x(cl, xip1);
+    //   k2 = dx*r_p_of_x(cl, xip1)*rhs_lapse(rip1, n_v.v[i] + k1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1 ,q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+    //
+    //   n_v.v[i+1] = n_v.v[i] + 0.5*(k1 + k2);
+    //
+    // }
+    //
+    // for(int i =exc_i+1; i<nx-2; i++){
+    //
+    //   r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+    //   r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
+    //
+    //   r_Der_Q_i = Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+    //   r_Der_Q_ip1 = Dx_ptpc_2nd(q_v.v[i+2], q_v.v[i], dr[i+1]);
+    //
+    //   Bep_i = beta_p(ls,lexp,mu, phi_v.v[i]);
+    //   Bep_ip1 = beta_p(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   Bepp_i = beta_pp(ls,lexp,mu, phi_v.v[i]);
+    //   Bepp_ip1 = beta_pp(ls,lexp,mu, phi_v.v[i+1]);
+    //
+    //   k1 = dx*r_p_of_x(cl, x[i])*rhs_lapse(r[i], n_v.v[i], s_v.v[i], p_v.v[i], r_Der_P_i ,q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i);
+    //   double xip1 = x[i+1];
+    //   double rip1 = r_of_x(cl, xip1);
+    //   k2 = dx*r_p_of_x(cl, xip1)*rhs_lapse(rip1, n_v.v[i] + k1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1 ,q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+    //
+    //   n_v.v[i+1] = n_v.v[i] + 0.5*(k1 + k2);
+    //   // cout<<"nn = "<<n_v.v[i+1]<<endl;
+    //
+    // }
 
     n_v.v[nx-1] = n_v.v[nx-2];
     n_v.rescale();
