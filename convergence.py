@@ -84,14 +84,14 @@ mu = np.array([0.])
 out_path = home_path+ "/output/Phase-Space/Convg"
 #===============================================================================
 input_data = []
-# input_data_mass = [[1.15,0.5,0.,0.]]
-# input_data_mass = get_arr(input_data_mass,"mass")
-input_data = [[0.02875,0.2,0,0]]
-input_data = get_arr(input_data,"normal")
+input_data_mass = [[0.23,0.1,0.,0.]]
+input_data_mass = get_arr(input_data_mass,"mass")
+# input_data = [[0.02875,0.2,0,0]]
+# input_data = get_arr(input_data,"normal")
 current_time = datetime.now()
 sim = Convg()
 sim.animscript = home_path +"/Animation-Script.ipynb"
-sim.mass_run = False
+sim.mass_run = True
 sim.cl = 100.0
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -100,7 +100,7 @@ else:
     sim.exc_i = 3
 sim.convgscript = home_path +"/Convergence-Analysis.ipynb"
 nx = 5000
-nt = 5000
+nt = 10000
 ss_step = 200
 sim.exc_i = 0
 sim.rl = 8.

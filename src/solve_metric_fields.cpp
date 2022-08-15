@@ -237,17 +237,17 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
       s_v.v[i+1] = fabs(s_v.v[i] + 0.5*(k1+k2));
 
-      double tol = 1e-10;
-      double err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
-                                                  r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
-      while(err>tol){
-        double fx = err;
-        double fpx = 1. - 0.5*dx*r_p_of_x(cl, xip1)*drhs_shiftdshift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
-
-        s_v.v[i+1] = s_v.v[i+1] - fx/fpx;
-        err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
-                                                    r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
-      }
+      // double tol = 1e-10;
+      // double err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+      //                                             r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+      // while(err>tol){
+      //   double fx = err;
+      //   double fpx = 1. - 0.5*dx*r_p_of_x(cl, xip1)*drhs_shiftdshift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      //
+      //   s_v.v[i+1] = s_v.v[i+1] - fx/fpx;
+      //   err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+      //                                               r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+      // }
     }
     for(int i = exc_i+1; i<nx-2; i++){
       r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
@@ -269,17 +269,17 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
       s_v.v[i+1] = fabs(s_v.v[i] + 0.5*(k1+k2));
 
-      double tol = 1e-10;
-      double err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
-                                                  r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
-      while(err>tol){
-        double fx = err;
-        double fpx = 1. - 0.5*dx*r_p_of_x(cl, xip1)*drhs_shiftdshift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
-
-        s_v.v[i+1] = s_v.v[i+1] - fx/fpx;
-        err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
-                                                    r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
-      }
+      // double tol = 1e-10;
+      // double err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+      //                                             r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+      // while(err>tol){
+      //   double fx = err;
+      //   double fpx = 1. - 0.5*dx*r_p_of_x(cl, xip1)*drhs_shiftdshift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1);
+      //
+      //   s_v.v[i+1] = s_v.v[i+1] - fx/fpx;
+      //   err = s_v.v[i+1] - s_v.v[i] - 0.5*dx*(r_p_of_x(cl, x[i])*rhs_shift(r[i], s_v.v[i], p_v.v[i], r_Der_P_i, q_v.v[i], r_Der_Q_i, Bep_i, Bepp_i)+
+      //                                               r_p_of_x(cl, xip1)*rhs_shift(rip1, s_v.v[i+1], p_v.v[i+1], r_Der_P_ip1, q_v.v[i+1], r_Der_Q_ip1, Bep_ip1, Bepp_ip1));
+      // }
     }
     s_v.v[nx-1] = 0.;
 
