@@ -221,10 +221,10 @@ int main(int argc, char const *argv[]) {
 
   cout<<"Final time = "<<grid.t_evolve<<endl;
   if(grid.exc_i>0){
-    cout<<"exit_code_1, BH_Formation, MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<", run finished successfully."<<endl;
+    cout<<"exit_code_1, BH_Formation, MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<", run finished successfully, t = "<<grid.t_evolve<<endl;
   }
   else{
-    cout<<"exit_code_0, no black hole formation, MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<", run finished successfully."<<endl;
+    cout<<"exit_code_0, no black hole formation, MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<", run finished successfully, t = "<<grid.t_evolve<<endl;
   }
   // cout<<"---------------------------------------------------------------"<<endl;
   // cout<<"---------------------------------------------------------------"<<endl;
