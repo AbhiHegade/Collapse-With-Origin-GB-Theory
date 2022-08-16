@@ -21,7 +21,7 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [[1.35,0.5,0,0]]
+input_data  = [[0.8875,0,1.,3]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -29,8 +29,8 @@ sim.slurm = False
 sim.write_runs =False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 10000
-sim.nt = 20000
+sim.nx = 8000
+sim.nt = 10*8000
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
@@ -114,11 +114,15 @@ else:
         cluster = False
         sim.A = 1e-3
         data_search = [
-            [0.9.,1.2,1e-2,0.5,0,0],
-            [1.3,1.72,1e-2,0.7,0,0],
-            [0.8,1.15,1e-2,0,1.,3]
-
-            ]
+                [0.32,0.34,1e-2,0,0.3,3],
+                [0.42,0.46,1e-2,0,0.4,3],
+                [0.52,0.58,1e-2,0,0.5,3],
+                [0.61,0.68,1e-2,0,0.6,3],
+                [0.70,0.8,1e-2,0,0.7,3],
+                [0.79,0.86,1e-2,0,0.8,3],
+                [0.86,0.96,1e-2,0,0.9,3],
+                [0.94,1.015,1e-2,0,1.,3]
+                ]
         def launch_search(arr):
             mass_range = [arr[0],arr[1]]
             tol = arr[2]
@@ -126,13 +130,13 @@ else:
             lexp = arr[4]
             mu = arr[5]
             sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
-            if(ls<1e-3):
-                sim.nx = 10000
-                sim.nt = 4*sim.nx
-                sim.save_steps = int(sim.nt/10)
-                sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
-            else:
-                sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
+            # if(ls<1e-3):
+            #     sim.nx = 10000
+            #     sim.nt = 4*sim.nx
+            #     sim.save_steps = int(sim.nt/10)
+            #     sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
+            # else:
+            sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
 
         #--------------------------------------------------------------------------
         if __name__ == '__main__':
@@ -140,7 +144,7 @@ else:
                 pool_nums = len(data_search)
             else:
                 if len(data_search) >=6:
-                    pool_nums = 4
+                    pool_nums = 6
                 else :
                     pool_nums = len(data_search)
 
@@ -186,7 +190,7 @@ else:
     else:
         if __name__ == '__main__':
             if len(input_data) >=6:
-                pool_nums = 4
+                pool_nums = 6
             else :
                 pool_nums = len(input_data)
 

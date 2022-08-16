@@ -74,7 +74,7 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
   // cout<<"index = "<<index<<endl;
   if(index>=0){
     if(grid.exc_i>0){
-      int indexby2 = ((90*index)/100 ==0 ) ? (index/2) : ((90*index)/100);
+      int indexby2 = ((80*index)/100 ==0 ) ? (index/2) : ((80*index)/100);
       int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
 
       if (index==0){

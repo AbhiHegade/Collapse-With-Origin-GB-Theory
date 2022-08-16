@@ -31,7 +31,7 @@ input_data = []
 # [0.030,0.,0.4,12.],
 # [0.033,0.,0.3,12.]]
 input_data = [
-[0.036,0.1,0.,0.],[0.037,0.1,0.,0.],[0.13,0.1,0,0],[ 0.13984375,0.1,0,0]]
+[0.16,0.5,0,0],[0.16,0,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -42,7 +42,7 @@ sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 5000
 sim.nt = 5000
-sim.save_steps = int(sim.nt/10)
+sim.save_steps = int(sim.nt/1000)
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
     sim.exc_i = 0
