@@ -13,7 +13,8 @@ using std::vector;
 #include "grid_data.hpp"
 #include "compute_potentials.hpp"
 //==============================================================================
-Grid_data::Grid_data( const int nx,const int nt, const double ls, const double lexp, const double mu, int exc_i  ,const double cl,const double xl, double t_evolve, const double cfl )
+Grid_data::Grid_data( const int nx,const int nt, const double ex_ratio,
+  const double ls, const double lexp, const double mu, int exc_i  ,const double cl,const double xl, double t_evolve, const double cfl )
 : nx{nx},
   exc_i{exc_i},
   xl{xl},
@@ -27,6 +28,7 @@ Grid_data::Grid_data( const int nx,const int nt, const double ls, const double l
   t_evolve{t_evolve},
   dt{cfl*dx},
   nt{nt},
+  ex_ratio{ex_ratio},
   ls{ls},
   lexp{lexp},
   mu{mu}

@@ -307,7 +307,7 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
   //
   //
   // }
-  for(int i =grid.exc_i; i< grid.ah_index-1;i++){
+  for(int i =grid.exc_i; i< grid.exc_i+1;i++){
 
     double Bep=  beta_p(ls,lexp,mu, phi_v.v[i]);
     double Bepp= beta_pp(ls,lexp,mu, phi_v.v[i]);
@@ -325,7 +325,7 @@ void Evolve_scalar_field::generate_rhs_excised(const Grid_data grid,
 
   }
 
-  for(int i = grid.ah_index-1; i<nx-1; i++){
+  for(int i = grid.exc_i+1; i<nx-1; i++){
     double r_Der_nn= Dx_ptpc_2nd(n_v.v[i+1], n_v.v[i-1], dr[i]);
     double r_Der_ss= Dx_ptpc_2nd(s_v.v[i+1], s_v.v[i-1], dr[i]);
     double r_Der_P= Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);

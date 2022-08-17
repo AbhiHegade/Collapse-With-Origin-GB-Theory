@@ -31,6 +31,7 @@ Sim_params::Sim_params(const string output_dir)
 {
    nx = stoi(read_sim_params(output_dir,"nx"));
    nt= stoi(read_sim_params(output_dir,"nt"));
+   ex_ratio = stod(read_sim_params(output_dir, "ex_ratio"));
    save_steps= stoi(read_sim_params(output_dir,"save_steps"));
    ls= stod(read_sim_params(output_dir,"ls"));
    lexp= stod(read_sim_params(output_dir,"lexp"));

@@ -53,13 +53,15 @@ void Diagnostics::find_abs_min(const vector<double> &v,
 void Diagnostics::find_outer_most_index(const vector<double> &v, int &elem, const int start_index)
 {
 
-  double ref_val = 1.;
+  double ref_val = 1.0;
   double tol = 1e-2;
   int index_val = -1;
   int len = 3*(v.size())/4;
   for(int i = start_index; i<len; i++){
-    if(fabs(ref_val - v[i])<tol){
+    if((fabs(ref_val - v[i])<=tol))
+    {
       index_val = i;
+      cout<<v[i]<<"\t"<<index_val<<endl;
     }
   }
   elem = index_val;
@@ -74,7 +76,8 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
   // cout<<"index = "<<index<<endl;
   if(index>=0){
     if(grid.exc_i>0){
-      int indexby2 = ((80*index)/100 ==0 ) ? (index/2) : ((80*index)/100);
+      int ex_int = grid.ex_ratio*index;
+      int indexby2 = ( ex_int ==0 ) ? (index/2) : (ex_int);
       int new_exc_i = (indexby2>grid.exc_i) ? indexby2 : grid.exc_i;
 
       if (index==0){
@@ -98,7 +101,8 @@ void Diagnostics::find_apparent_horizon(Grid_data &grid, Field &s_v)
     else{
       assert(grid.exc_i==0);
       assert(grid.ah_index ==0);
-      int indexby2 = ((9*index)/10 ==0 ) ? (index/2) : ((9*index)/10);
+      int ex_int = grid.ex_ratio*index;
+      int indexby2 = ( ex_int ==0 ) ? (index/2) : (ex_int);
       if (index==0){
           cout<<"Apparent Horizon at the origin."<<endl;
           std::exit(0);
@@ -244,7 +248,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         if (status==-1) {
           cout<<"Elliptic region formation in flat space."<<endl;
           cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
-          std::exit(0);
+          // std::exit(0);
         }
         ingoing[i]=   ingoing_c;
         outgoing[i]= outgoing_c;
@@ -308,7 +312,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
    //      outgoing[i]= outgoing_c;
    //
    //    }
-  for(int i =grid.exc_i; i<grid.ah_index-1;i++) {
+  for(int i =grid.exc_i; i<grid.exc_i+1;i++) {
 
 
      double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
@@ -336,7 +340,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
 
 /*---------------------------------------------------------------------------*/
 /* interior */
-   for (int i=grid.ah_index-1; i<nx-1; ++i) {
+   for (int i=grid.exc_i+1; i<nx-1; ++i) {
 
      double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
      double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
@@ -375,7 +379,7 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         // cout<<"Elliptic region within 3 grid points of ah; ";
         cout<<"Elliptic region at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<"), AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<"), t = "<<grid.t_evolve<<endl;
         cout<<"naked_elliptic_region outside horizon. "<<"Elliptic region at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<"), AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<"), t = "<<grid.t_evolve<<endl;
-        std::exit(0);
+        // std::exit(0);
       }
   }
 

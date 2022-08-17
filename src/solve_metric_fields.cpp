@@ -216,7 +216,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
       s_v.v[i] = 0.;
 
     }
-    for(int i = grid.exc_i; i< grid.ah_index-1; i++){
+    for(int i = grid.exc_i; i< grid.exc_i+1; i++){
       r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
       r_Der_P_ip1 = Dx_ptp0_2nd(p_v.v[i+3], p_v.v[i+2],p_v.v[i+1], dr[i+1]);
 
@@ -238,7 +238,7 @@ void Solve_metric_fields::solve_shift(const Grid_data grid,Field &s_v, const Fie
 
 
     }
-    for(int i = grid.ah_index - 1; i<nx-2; i++){
+    for(int i = grid.exc_i+1; i<nx-2; i++){
       r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
       r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);
 
@@ -414,7 +414,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
     for(int i=0; i<exc_i+1; i++){
       n_v.v[i] = 1;
     }
-    for(int i = exc_i; i< grid.ah_index-1; i++){
+    for(int i = exc_i; i< grid.exc_i+1; i++){
       r_Der_P_i = Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
       r_Der_P_ip1 = Dx_ptp0_2nd(p_v.v[i+3], p_v.v[i+2],p_v.v[i+1], dr[i+1]);
 
@@ -436,7 +436,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
 
     }
 
-    for(int i =grid.ah_index-1; i<nx-2; i++){
+    for(int i =grid.exc_i+1; i<nx-2; i++){
 
       r_Der_P_i = Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
       r_Der_P_ip1 = Dx_ptpc_2nd(p_v.v[i+2], p_v.v[i], dr[i+1]);

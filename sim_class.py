@@ -88,10 +88,11 @@ class Sim:
             if self.write_runs:
                 with open("{}/output.out".format(self.output_dir),'r') as f:
                     for line in f:
-                        pass
+                        if line.startswith("Initial MS_mass = "):
+                            mass_init = float(line[len("Initial MS_mass = "):])
                     run_status = line
                 with open("{}/Run_params/run_params.dat".format(self.out_dir), 'a') as f:
-                    f.write("A = {}; ls = {}; lexp = {}; mu = {}; M_init = {}; status ={}".format(self.A,self.ls,self.lexp,self.mu,self.initial_mass,run_status))
+                    f.write("A = {}; ls = {}; lexp = {}; mu = {}; M_init = {}; status ={}".format(self.A,self.ls,self.lexp,self.mu,mass_init,run_status))
 
 
         # subprocess.Popen('\n./bin/default.run {} > {}/output.out'.format(self.output_dir,self.output_dir), shell=True)

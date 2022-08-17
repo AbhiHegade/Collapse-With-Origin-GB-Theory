@@ -7,7 +7,7 @@
 class Grid_data{
 public:
   /*----Constructor-----------------------------------------------------------*/
-  Grid_data(const int nx,const int nt, const double ls, const double lexp, const double mu,
+  Grid_data(const int nx,const int nt, const double ex_ratio, const double ls, const double lexp, const double mu,
     int exc_i = 0 ,const double cl = 100.0,const double xl = 0., double t_evolve = 0.0, const double cfl = 0.2 );
   /*----Destructor------------------------------------------------------------*/
   ~Grid_data(void);
@@ -18,6 +18,7 @@ public:
   const double cl; // Compactification Length
   const double dx; // dx
   const double cfl;
+  const double ex_ratio;
   int ah_index;
 
   std::vector<double> x; // x grid values stored in a vector

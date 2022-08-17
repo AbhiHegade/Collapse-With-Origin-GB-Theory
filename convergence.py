@@ -94,6 +94,7 @@ sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.mass_run = True
 sim.cl = 100.0
 sim.initial_mass = 0
+sim.ex_ratio = 0.9
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:

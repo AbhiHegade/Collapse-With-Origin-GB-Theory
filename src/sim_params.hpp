@@ -8,6 +8,7 @@ class Sim_params
 public:
    int nx;
    int nt;
+   double ex_ratio;
    int save_steps;
    int collapse_and_bh;
    int exc_i;
