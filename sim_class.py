@@ -75,6 +75,7 @@ class Sim:
 #===============================================================================
     def launch(self):
         self.make_output_dir()
+        # print("Done")
         if self.slurm == True:
             self.write_sim_params()
             self.copy_anim_script()

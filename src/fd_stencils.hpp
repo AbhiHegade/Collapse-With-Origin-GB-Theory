@@ -10,6 +10,7 @@ double Dx_ptp0_2nd(const double vp2, const double vp1, const double v0, const do
 
 double Dx_2_ptpc_2nd(const double vp1 , const double v0, const double vm1, const double dx);
 
+double Dx_3_ptpc_3(const double vp2, const double vp1, const double vm1, const double vm2, const double dx);
 
 
 

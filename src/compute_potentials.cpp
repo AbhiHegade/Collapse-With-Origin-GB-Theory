@@ -35,6 +35,11 @@ double beta_pp(const double ls, const double lexp, const double mu, const double
     // return 0.;
 }
 
+double beta_ppp(const double ls, const double lexp, const double mu, const double phi){
+  double exp1 = exp(-mu*phi*phi);
+  return pow(lexp,2)*exp1*(2*mu*phi*(-3 + 2*mu*pow(phi,2)));
+}
+
 void beta_gen(const double ls, const double lexp, const double mu, const std::vector<double> &phi_v, std::vector<double> &beta_v1,
 std::vector<double> &beta_p1,
 std::vector<double> &beta_pp1){
