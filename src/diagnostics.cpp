@@ -429,25 +429,26 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       {
         int i = grid.exc_i;
 
-        r_Der_nn=0. ;
-        r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
-                    + Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]))/2.;
-        r_Der_P= 0.;
-        r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], -q_v[i+1], dr[i])
-                    + Dx_ptpc_2nd(q_v_np1[i+1], -q_v_np1[i+1], dr[i]))/2.;
-
-        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
-
-        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
-
-        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
-
-        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
-
-        residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
-        r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
-        (p_v[i] + p_v_np1[i])/2.,
-        r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+        // r_Der_nn=0. ;
+        // r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
+        //             + Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]))/2.;
+        // r_Der_P= 0.;
+        // r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], -q_v[i+1], dr[i])
+        //             + Dx_ptpc_2nd(q_v_np1[i+1], -q_v_np1[i+1], dr[i]))/2.;
+        //
+        // Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        //
+        // Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        //
+        // t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+        //
+        // t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+        //
+        // residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
+        // r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+        // (p_v[i] + p_v_np1[i])/2.,
+        // r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+        residual[i] =0.;
 
       }
 

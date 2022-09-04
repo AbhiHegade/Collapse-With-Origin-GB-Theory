@@ -195,25 +195,25 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
 
       double nn = n_v.v[i];
       double r_Der_nn = 0.;
-      double r_Der_nn_2 = Dx_2_ptpc_2nd(n_v.v[i+1], n_v.v[i], n_v.v[i+1], dr[i]);
+      //double r_Der_nn_2 = Dx_2_ptpc_2nd(n_v.v[i+1], n_v.v[i], n_v.v[i+1], dr[i]);
 
       double ss = s_v.v[i];
       double r_Der_ss = Dx_ptpc_2nd(s_v.v[i+1], -s_v.v[i+1], dr[i]);
-      double r_Der_ss_3 = Dx_3_ptpc_3(s_v.v[i+2], s_v.v[i+1], -s_v.v[i+1], -s_v.v[i+2], dr[i]);
+      //double r_Der_ss_3 = Dx_3_ptpc_3(s_v.v[i+2], s_v.v[i+1], -s_v.v[i+1], -s_v.v[i+2], dr[i]);
 
       double P = p_v.v[i];
       double r_Der_P = 0.;
-      double rr_Der_P =Dx_2_ptpc_2nd(p_v.v[i+1], p_v.v[i], p_v.v[i+1], dr[i]);
-      double r_Der_P_2 = Dx_2_ptpc_2nd(p_v.v[i+1], p_v.v[i], p_v.v[i+1], dr[i]);
+      //double rr_Der_P =Dx_2_ptpc_2nd(p_v.v[i+1], p_v.v[i], p_v.v[i+1], dr[i]);
+      //double r_Der_P_2 = Dx_2_ptpc_2nd(p_v.v[i+1], p_v.v[i], p_v.v[i+1], dr[i]);
 
       double Q = q_v.v[i];
       double r_Der_Q = Dx_ptpc_2nd(q_v.v[i+1], -q_v.v[i+1], dr[i]);
-      double r_Der_Q_3 = Dx_3_ptpc_3(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
+      //double r_Der_Q_3 = Dx_3_ptpc_3(q_v.v[i+2], q_v.v[i+1], -q_v.v[i+1], -q_v.v[i+2], dr[i]);
 
 
       double Bep = beta_p(ls,lexp,mu, phi_v.v[i]);
       double Bepp = beta_pp(ls,lexp,mu, phi_v.v[i]);
-      double Beppp = beta_ppp(ls, lexp, mu, phi_v.v[i]);
+      //double Beppp = beta_ppp(ls, lexp, mu, phi_v.v[i]);
 
       //Written this way because of expansion around zero and appearance of second derivatives.
       dpdt[i] = -(nn*(pow(P,3) - 16*Bep*pow(P,3)*r_Der_Q + 64*pow(Bep,2)*pow(P,3)*pow(r_Der_Q,2) - 20*Bep*pow(P,4)*r_Der_ss + 12*r_Der_Q*r_Der_ss + 160*pow(Bep,2)*pow(P,4)*r_Der_Q*r_Der_ss - 288*Bep*pow(r_Der_Q,2)*r_Der_ss + 2304*pow(Bep,2)*pow(r_Der_Q,3)*r_Der_ss - 6144*pow(Bep,3)*pow(r_Der_Q,4)*r_Der_ss + 6*P*pow(r_Der_ss,2) + 80*pow(Bep,2)*pow(P,5)*pow(r_Der_ss,2) - 480*Bep*P*r_Der_Q*pow(r_Der_ss,2) + 6528*pow(Bep,2)*P*pow(r_Der_Q,2)*pow(r_Der_ss,2) - 24576*pow(Bep,3)*P*pow(r_Der_Q,3)*pow(r_Der_ss,2) - 208*Bep*pow(P,2)*pow(r_Der_ss,3) - 128*Bep*Bepp*pow(P,4)*pow(r_Der_ss,3) + 6272*pow(Bep,2)*pow(P,2)*r_Der_Q*pow(r_Der_ss,3) + 1024*pow(Bep,2)*Bepp*pow(P,4)*r_Der_Q*pow(r_Der_ss,3) - 36864*pow(Bep,3)*pow(P,2)*pow(r_Der_Q,2)*pow(r_Der_ss,3) + 2208*pow(Bep,2)*pow(P,3)*pow(r_Der_ss,4) + 768*pow(Bep,2)*Bepp*pow(P,5)*pow(r_Der_ss,4) - 26112*pow(Bep,3)*pow(P,3)*r_Der_Q*pow(r_Der_ss,4) + 48*Bep*pow(r_Der_ss,5) + 384*Bep*Bepp*pow(P,2)*pow(r_Der_ss,5) - 7680*pow(Bep,3)*pow(P,4)*pow(r_Der_ss,5) - 768*pow(Bep,2)*r_Der_Q*pow(r_Der_ss,5) - 6144*pow(Bep,2)*Bepp*pow(P,2)*r_Der_Q*pow(r_Der_ss,5) + 3072*pow(Bep,3)*pow(r_Der_Q,2)*pow(r_Der_ss,5) + 24576*pow(Bep,3)*Bepp*pow(P,2)*pow(r_Der_Q,2)*pow(r_Der_ss,5) - 384*pow(Bep,2)*P*pow(r_Der_ss,6) - 3072*pow(Bep,2)*Bepp*pow(P,3)*pow(r_Der_ss,6) + 3072*pow(Bep,3)*P*r_Der_Q*pow(r_Der_ss,6) + 24576*pow(Bep,3)*Bepp*pow(P,3)*r_Der_Q*pow(r_Der_ss,6)));
@@ -227,10 +227,13 @@ void Evolve_scalar_field::generate_rhs_non_excised(Grid_data grid,
       //
       // dpdt[i] += (p2num/p2denom)*(r[i]*r[i]);
 
-      dqdt[i] = (P*r_Der_nn_2 + nn*(r_Der_P_2 + 2.*r_Der_Q*r_Der_ss))*r[i];
+      // dqdt[i] = (P*r_Der_nn_2 + nn*(r_Der_P_2 + 2.*r_Der_Q*r_Der_ss))*r[i];
+      dqdt[i] = 0.;
+     //  dphidt[i] = n_v.v[i]*p_v.v[i] + r[i]*r[i]*((P*r_Der_nn_2)/2. + (nn*(r_Der_P_2 + 2.*r_Der_Q*r_Der_ss))/2.);
+     // }
+      dphidt[i] = n_v.v[i]*p_v.v[i];
 
-      dphidt[i] = n_v.v[i]*p_v.v[i] + r[i]*r[i]*((P*r_Der_nn_2)/2. + (nn*(r_Der_P_2 + 2.*r_Der_Q*r_Der_ss))/2.);
-     }
+   }
 
 
   for(int i = grid.exc_i + 1; i<nx-1; i++){

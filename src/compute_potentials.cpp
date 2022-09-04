@@ -6,14 +6,11 @@ using std::vector;
 #include "compute_potentials.hpp"
 //==============================================================================
 double r_of_x(double l,double x){
-  return (l*x)/(l - x);
-  // return x;
-  // return pow(x,2)/(l*(1 - x/l));
+  return x/(1 - pow(x,2)/pow(l,2));
+
 }
 double r_p_of_x(double l,double x){
-  return pow(l,2.0)/(pow(l - x, 2.0)) ;
-  // return 1;
-  // return ((2*l - x)*x)/pow(l - x,2);
+  return (pow(l,2)*(pow(l,2) + pow(x,2)))/pow(pow(l,2) - pow(x,2),2);
 }
 //==============================================================================
 

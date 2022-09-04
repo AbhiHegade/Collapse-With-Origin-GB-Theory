@@ -30,8 +30,7 @@ input_data = []
 # [0.027,0.,0.5,12.],
 # [0.030,0.,0.4,12.],
 # [0.033,0.,0.3,12.]]
-input_data = [[0.1,0.5,0,0],
-[0.04,0.5,0,0]]
+input_data = [[0.02,1.,0,0],[0.02,1.2,0,0],[0.02,0.5,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
