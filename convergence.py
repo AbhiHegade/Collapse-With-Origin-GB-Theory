@@ -14,7 +14,8 @@ class Convg:
     def make_output_dir(self,level):
         current_time = datetime.now()
         self.output_dir = self.out_dir + "/" + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)+"_"+str(current_time.second)
-        self.output_dir = self.output_dir + "_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_ls_" + "{:.2e}".format(self.ls) + "_lexp_" + "{:.2e}".format(self.lexp) + "_mu_" + "{:.2e}".format(self.mu)
+        self.output_dir = self.output_dir+"_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_ls_" + "{:.2e}".format(self.ls) + "_lexp_" + "{:.2e}".format(self.lexp) + "_mu_" + "{:.2e}".format(self.mu) + "_w0_"+"{:.2e}".format(self.w0) + "_r0_"+"{:.2e}".format(self.r0)
+
         self.output_dir = self.output_dir  + "/{}".format(level)
 
         if not os.path.exists(self.output_dir):
@@ -56,13 +57,14 @@ def generate_convg_arr(arr):
     return return_arr
 def generate_convg_arr_mass(arr):
     rnums = arr.shape[0]
-    return_arr = np.empty(shape = (3*rnums,5))
+    l1 = len(arr[0])
+    return_arr = np.empty(shape = (3*rnums,l1 + 1))
     for j in range(len(arr)):
-        mass,ls,lexp,mu = arr[j]
+        mass,Amp,ls,lexp,mu = arr[j]
         j1 = 3*j
-        return_arr[j1] = np.array([mass,ls,lexp,mu,4])
-        return_arr[j1+1] = np.array([mass,ls,lexp,mu,2])
-        return_arr[j1+2] = np.array([mass,ls,lexp,mu,1])
+        return_arr[j1] = np.array([mass,Amp,ls,lexp,mu,4])
+        return_arr[j1+1] = np.array([mass,Amp,ls,lexp,mu,2])
+        return_arr[j1+2] = np.array([mass,Amp,ls,lexp,mu,1])
     return return_arr
 
 def get_arr(arr,r_type):
@@ -84,14 +86,14 @@ mu = np.array([0.])
 out_path = home_path+ "/output/Phase-Space/Convg"
 #===============================================================================
 input_data = []
-# input_data_mass = [[0.2,0,0.,0.]]
-# input_data_mass = get_arr(input_data_mass,"mass")
-input_data = [[0.14,0.5,0,0],[0.02,0.5,0,0]]
-input_data = get_arr(input_data,"normal")
+input_data_mass = [[2.5,1e-2,0.6,0,0]]
+input_data_mass = get_arr(input_data_mass,"mass")
+# input_data = [[0.14,0.5,0,0],[0.14,0.,0,0]]
+# input_data = get_arr(input_data,"normal")
 current_time = datetime.now()
 sim = Convg()
 sim.animscript = home_path +"/Animation-Script.ipynb"
-sim.mass_run = False
+sim.mass_run = True
 sim.cl = 100.0
 sim.initial_mass = 0
 sim.ex_ratio = 0.9
@@ -104,9 +106,13 @@ nx = 5000
 nt = 5000
 ss_step = 200
 sim.exc_i = 0
-sim.rl = 8.
-sim.ru =12.
+sim.rl = 18.
+sim.ru =20.
+sim.dissipation = 0.5
 sim.collapse_and_bh = 1;
+sim.ic = "scalarized_shift_symm"
+sim.w0 = 0
+sim.r0 = 0
 #===============================================================================
 sim.out_dir = out_path+"/Convg_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,nx,nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
 if not os.path.exists(sim.out_dir):
@@ -142,14 +148,15 @@ def launch_sim(vals):
 #===============================================================================
 def launch_sim_mass(vals):
     mass = vals[0]
-    l_s = vals[1]
-    l_exp = vals[2]
-    mu_s = vals[3]
-    level = vals[4]
+    Amp = vals[1]
+    l_s = vals[2]
+    l_exp = vals[3]
+    mu_s = vals[4]
+    level = vals[5]
     sim.ls = l_s
     sim.lexp = l_exp
     sim.mu = mu_s
-    sim.A = 1e-2
+    sim.A = Amp
     if level == 4:
         sim.nx = nx
         sim.nt = nt

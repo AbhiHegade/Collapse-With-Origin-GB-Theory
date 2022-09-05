@@ -10,7 +10,8 @@ class Sim:
     def make_output_dir(self):
         current_time = datetime.now()
         self.output_dir = self.out_dir + "/" + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)+"_"+str(current_time.second)
-        self.output_dir = self.output_dir+"_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_ls_" + "{:.2e}".format(self.ls) + "_lexp_" + "{:.2e}".format(self.lexp) + "_mu_" + "{:.2e}".format(self.mu)
+        self.output_dir = self.output_dir+"_M_{:.2e}".format(self.initial_mass) + "_A_" + "{:.2e}".format(self.A) +"_ls_" + "{:.2e}".format(self.ls) + "_lexp_" + "{:.2e}".format(self.lexp) + "_mu_" + "{:.2e}".format(self.mu) + "_w0_"+"{:.2e}".format(self.w0) + "_r0_"+"{:.2e}".format(self.r0)
+
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 #===============================================================================
@@ -312,6 +313,8 @@ class Sim:
             self.write_record("Run finished.")
             self.write_record("A_low = {}; M_init = {}; collapse".format(A_low, M_low))
             self.write_record("A_high = {}; M_init = {}; bh".format(A_high, M_high))
+
+
 #===============================================================================
     def mass_search(self, ls, lexp, mu, mass_range, tol = 1e-3):
         M_low = mass_range[0]
@@ -369,3 +372,80 @@ class Sim:
         self.write_record("Run finished.")
         self.write_record("M_low = {}; naked_elliptic_region".format(M_low))
         self.write_record("M_high = {}; bh".format(M_high))
+#===============================================================================
+    def mgb_amp_search(self, ls,lexp,mu, Amp_range, rhoc, run_type, tol = 1e-3):
+        A_low = Amp_range[0]
+        A_high = Amp_range[1]
+        mgbbymbh_low = 0
+        mgbbymbh_high = 0
+        with open(self.record, 'w') as f:
+            f.write('Bisection search\n')
+            f.write('tol = {}\n'.format(tol))
+            f.write('run_type = {}\n'.format(run_type))
+            f.write('rl = {}; ru = {}\n'.format(self.rl,self.ru))
+            f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
+            f.write('ls = {}\n'.format(ls))
+            f.write('lexp = {}\n'.format(lexp))
+            f.write('rhoc = {}\n'.format(self.rhoc))
+            f.write('mb = {}\n'.format(self.mb))
+            f.write('mu = {}\n'.format(mu))
+            f.write('A_low = {} ; A_high = {} \n'.format(Amp_range[0],Amp_range[1]))
+
+
+        while((A_high - A_low)>tol):
+            val = (A_high + A_low)/2
+            self.ls = ls
+            self.lexp = lexp
+            self.mu = mu
+            self.amp_gb = val
+            self.launch()
+            # time.sleep(60)
+            done = False
+            counter = 0
+            while not done:
+                time.sleep(30)
+                with open(self.output_dir + "/output.out") as f:
+                    for line in f:
+                        if (counter==0):
+                            if line.startswith("Initial MS_mass = "):
+                                index = len("Initial MS_mass = ")
+                                M_init = float(line[index:])
+                                done = False
+                                counter =1
+                        elif( counter == 1):
+                            if line.startswith("mgbbyMbare = "):
+                                index = len("mgbbyMbare = ")
+                                mgbbymbh = float(line[index:])
+                                done = False
+                                counter =2
+
+                        else:
+                            if line.startswith("NaN"):
+                                self.write_record("NaN; Amp = {}; mgbbybh = {}; status = {}".format(val,mgbbybh,line))
+                                A_high = val
+                                mgbbymbh_high = mgbbymbh
+                                done = True
+
+                            elif line.startswith("naked"):
+                                self.write_record("naked_elliptic_region; Amp = {};  mgbbybh = {}; status = {}".format(val,mgbbybh,line))
+                                A_high = val
+                                mgbbymbh_high = mgbbymbh
+                                done = True
+
+
+                            elif line.startswith("exit_code_0"):
+                                self.write_record("flat_space; Amp = {}; mgbbybh = {}; status = {}".format(val,mgbbybh,line))
+                                A_low = val
+                                mgbbymbh_low = mgbbymbh
+                                done = True
+
+                            elif line.startswith("exit_code_1"):
+                                self.write_record("Problem with run, black hole formed; Amp = {}; mgbbybh = {}; status = {}".format(val,mgbbybh,line))
+                                A_high = val
+                                mgbbymbh_high = mgbbymbh
+                                done = True
+
+
+        self.write_record("Run finished.")
+        self.write_record("A_low = {}; mgbbybh_low = {};  flat_space".format(A_low,mgbbymbh_low))
+        self.write_record("A_high = {}; mgbbybh_high = {}; naked_elliptic_region".format(A_high,mgbbymbh_high))

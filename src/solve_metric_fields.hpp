@@ -16,6 +16,7 @@ public:
   ~Solve_metric_fields(void);
   //----------------------------------------------------------------------------
   void solve(const Grid_data grid,Field &n_v,Field &s_v, const Field &p_v, const Field &q_v, const Field &phi_v);
+  void calculate_mgb(const Grid_data grid, Field &s_v, const Field &p_v, const Field &q_v, const Field &phi_v);
 
 private:
   double interp_4_c(double ym2, double ym1, double y0, double y1, double y2);

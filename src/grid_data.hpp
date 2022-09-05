@@ -8,6 +8,8 @@ class Grid_data{
 public:
   /*----Constructor-----------------------------------------------------------*/
   Grid_data(const int nx,const int nt, const double ex_ratio, const double ls, const double lexp, const double mu,
+    const double dissipation,
+    int bh_start,
     int exc_i = 0 ,const double cl = 100.0,const double xl = 0., double t_evolve = 0.0, const double cfl = 0.2 );
   /*----Destructor------------------------------------------------------------*/
   ~Grid_data(void);
@@ -30,6 +32,10 @@ public:
   const double ls; //Coupling constant for shift-symmetric term
   const double lexp; //Coupling for exponential term
   const double mu; // Strength of exponential coupling
+
+  const double dissipation;
+
+  const int bh_start;
 
   void update_t();
 

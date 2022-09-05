@@ -7,10 +7,12 @@ using std::vector;
 //==============================================================================
 double r_of_x(double l,double x){
   return x/(1 - pow(x,2)/pow(l,2));
+  // return x;
 
 }
 double r_p_of_x(double l,double x){
   return (pow(l,2)*(pow(l,2) + pow(x,2)))/pow(pow(l,2) - pow(x,2),2);
+  // return 1.;
 }
 //==============================================================================
 

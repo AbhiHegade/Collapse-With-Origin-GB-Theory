@@ -43,6 +43,11 @@ Sim_params::Sim_params(const string output_dir)
    exc_i = stoi(read_sim_params(output_dir, "exc_i"));
    collapse_and_bh = stoi(read_sim_params(output_dir, "collapse_and_bh"));
    cl = stod(read_sim_params(output_dir, "cl"));
+   w0 = stod(read_sim_params(output_dir, "w0"));
+   r0 = stod(read_sim_params(output_dir, "r0"));
+   ic = read_sim_params(output_dir, "ic");
+   dissipation = stod(read_sim_params(output_dir, "dissipation"));
+   bh_start = stoi(read_sim_params(output_dir, "bh_start"));
 }
 /*===========================================================================*/
 Sim_params::~Sim_params(void)

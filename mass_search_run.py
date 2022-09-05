@@ -21,28 +21,33 @@ input_data = []
 #         assert (ls[l]>0), "l must be greater than zero."
 #         input_data.append([ls[l],Ms[j]])
 
-input_data  = [[0.8875,0,1.,3]]
+input_data  = [[1.17,1e-2,0.5,0,0],[1.17,0,0.5,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
-sim.write_runs =False
+sim.write_runs =True
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 8000
-sim.nt = 15*8000
-sim.ex_ratio = 0.9
+sim.nx = 6000
+sim.nt = 30000
+sim.ex_ratio = 0.8
 sim.save_steps = int(sim.nt/10)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-sim.A = 1e-3
-sim.rl = 8.
-sim.ru =12.
+# sim.A = 1e-3
+sim.rl = 18.
+sim.ru =20.
 sim.collapse_and_bh = 1;
-sim.search =True
+sim.dissipation = 0.5
+sim.search =False
+sim.ic = "scalarized_shift_symm"
+sim.r0 = 0.
+sim.w0 = 0.
+sim.bh_start = 1.
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -81,9 +86,11 @@ else:
 #===================================================
 def launch_sim(vals):
     Mass_val = vals[0]
-    l_s = vals[1]
-    l_exp = vals[2]
-    mu_s = vals[3]
+    A_val = vals[1]
+    l_s = vals[2]
+    l_exp = vals[3]
+    mu_s = vals[4]
+    sim.A = A_val
     sim.ls = l_s
     sim.lexp = l_exp
     sim.mu = mu_s

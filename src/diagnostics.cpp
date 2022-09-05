@@ -257,61 +257,11 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
     }
 
     else{
-        int new_exc_i = grid.exc_i;
-   //    {
-   //      int i = grid.exc_i;
-   //
-   //      double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
-   //      double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
-   //
-   //      double r_Der_nn= Dx_ptp0_2nd(n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
-   //      double r_Der_ss= Dx_ptp0_2nd(s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
-   //      double r_Der_P= Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
-   //      double r_Der_Q= Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
-   //
-   //      int status= compute_radial_characteristic(r[i],
-   //      n_v.v[i], r_Der_nn,
-   //      s_v.v[i], r_Der_ss,
-   //      p_v.v[i], r_Der_P,
-   //      q_v.v[i], r_Der_Q,
-   //      Bep, Bepp,
-   //      ingoing_c, outgoing_c);
-   //
-   //      if (status==-1) {
-   //        new_exc_i += 1;
-   //      }
-   //      ingoing[i]=   ingoing_c;
-   //      outgoing[i]= outgoing_c;
-   //    }
-   //
-   // /*---------------------------------------------------------------------------*/
-   // /* interior */
-   //    for (int i=grid.exc_i + 1; i<nx-1; ++i) {
-   //
-   //      double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
-   //      double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
-   //
-   //      double r_Der_nn= Dx_ptpc_2nd(n_v.v[i+1], n_v.v[i-1], dr[i]);
-   //      double r_Der_ss= Dx_ptpc_2nd(s_v.v[i+1], s_v.v[i-1], dr[i]);
-   //      double r_Der_P= Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
-   //      double r_Der_Q= Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
-   //
-   //
-   //      int status= compute_radial_characteristic(r[i],
-   //      n_v.v[i], r_Der_nn,
-   //      s_v.v[i], r_Der_ss,
-   //      p_v.v[i], r_Der_P,
-   //      q_v.v[i], r_Der_Q,
-   //      Bep, Bepp,
-   //      ingoing_c, outgoing_c);
-   //
-   //      if (status==-1) {
-   //        new_exc_i += 1;
-   //      }
-   //      ingoing[i]=   ingoing_c;
-   //      outgoing[i]= outgoing_c;
-   //
-   //    }
+
+  int new_exc_i = grid.exc_i;
+
+  if(grid.bh_start==0){
+
   for(int i =grid.exc_i; i<grid.exc_i+1;i++) {
 
 
@@ -366,6 +316,65 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
      outgoing[i]= outgoing_c;
 
    }
+ }
+  else{
+
+    for(int i =grid.exc_i; i<grid.ah_index-3;i++) {
+
+
+       double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+       double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
+
+       double r_Der_nn= Dx_ptp0_2nd(n_v.v[i+2], n_v.v[i+1], n_v.v[i], dr[i]);
+       double r_Der_ss= Dx_ptp0_2nd(s_v.v[i+2], s_v.v[i+1], s_v.v[i], dr[i]);
+       double r_Der_P= Dx_ptp0_2nd(p_v.v[i+2], p_v.v[i+1], p_v.v[i], dr[i]);
+       double r_Der_Q= Dx_ptp0_2nd(q_v.v[i+2], q_v.v[i+1], q_v.v[i], dr[i]);
+
+       int status= compute_radial_characteristic(r[i],
+       n_v.v[i], r_Der_nn,
+       s_v.v[i], r_Der_ss,
+       p_v.v[i], r_Der_P,
+       q_v.v[i], r_Der_Q,
+       Bep, Bepp,
+       ingoing_c, outgoing_c);
+
+       if (status==-1) {
+         new_exc_i += 1;
+       }
+       ingoing[i]=   ingoing_c;
+       outgoing[i]= outgoing_c;
+     }
+
+  /*---------------------------------------------------------------------------*/
+  /* interior */
+     for (int i=grid.ah_index-3; i<nx-1; ++i) {
+
+       double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
+       double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
+
+       double r_Der_nn= Dx_ptpc_2nd(n_v.v[i+1], n_v.v[i-1], dr[i]);
+       double r_Der_ss= Dx_ptpc_2nd(s_v.v[i+1], s_v.v[i-1], dr[i]);
+       double r_Der_P= Dx_ptpc_2nd(p_v.v[i+1], p_v.v[i-1], dr[i]);
+       double r_Der_Q= Dx_ptpc_2nd(q_v.v[i+1], q_v.v[i-1], dr[i]);
+
+
+       int status= compute_radial_characteristic(r[i],
+       n_v.v[i], r_Der_nn,
+       s_v.v[i], r_Der_ss,
+       p_v.v[i], r_Der_P,
+       q_v.v[i], r_Der_Q,
+       Bep, Bepp,
+       ingoing_c, outgoing_c);
+
+       if (status==-1) {
+         new_exc_i += 1;
+       }
+       ingoing[i]=   ingoing_c;
+       outgoing[i]= outgoing_c;
+
+     }
+
+  }
   //=============================================================================
         if(new_exc_i>grid.exc_i)
         {
@@ -429,26 +438,25 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       {
         int i = grid.exc_i;
 
-        // r_Der_nn=0. ;
-        // r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
-        //             + Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]))/2.;
-        // r_Der_P= 0.;
-        // r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], -q_v[i+1], dr[i])
-        //             + Dx_ptpc_2nd(q_v_np1[i+1], -q_v_np1[i+1], dr[i]))/2.;
-        //
-        // Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
-        //
-        // Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
-        //
-        // t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
-        //
-        // t_Der_P = (p_v_np1[i] - p_v[i])/dt;
-        //
-        // residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
-        // r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
-        // (p_v[i] + p_v_np1[i])/2.,
-        // r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
-        residual[i] =0.;
+        r_Der_nn=0. ;
+        r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
+                    + Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]))/2.;
+        r_Der_P= 0.;
+        r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], -q_v[i+1], dr[i])
+                    + Dx_ptpc_2nd(q_v_np1[i+1], -q_v_np1[i+1], dr[i]))/2.;
+
+        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
+        r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+        (p_v[i] + p_v_np1[i])/2.,
+        r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
       }
 
@@ -484,13 +492,36 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
     }
 
     else{
-
+      if(grid.bh_start==0){
       {
         int i = grid.exc_i;
 
-        residual[i] = 0.;
+        r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+                    + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
 
+        r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+                    + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
+
+        r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
+                    + Dx_ptp0_2nd(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], dr[i]))/2.;
+
+        r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
+                    + Dx_ptp0_2nd(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], dr[i]))/2.;
+
+        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
+        r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+        (p_v[i] + p_v_np1[i])/2.,
+        r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
       }
+
       for(int i = grid.exc_i+1; i<nx-1; i++){
 
         r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
@@ -519,7 +550,66 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
         r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
       }
       residual[nx-1] = 0.;
+    }
+      else{
+      for(int i = grid.exc_i; i<grid.ah_index-3; i++){
 
+
+        r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+                    + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
+
+        r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+                    + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
+
+        r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
+                    + Dx_ptp0_2nd(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], dr[i]))/2.;
+
+        r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
+                    + Dx_ptp0_2nd(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], dr[i]))/2.;
+
+        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
+        r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+        (p_v[i] + p_v_np1[i])/2.,
+        r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+      }
+
+      for(int i = grid.ah_index-3; i<nx-1; i++){
+
+        r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+                    + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
+
+        r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+                    + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
+
+        r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
+                    + Dx_ptpc_2nd(p_v_np1[i+1], p_v_np1[i-1], dr[i]))/2.;
+
+        r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
+                    + Dx_ptpc_2nd(q_v_np1[i+1], q_v_np1[i-1], dr[i]))/2.;
+
+        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
+        r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+        (p_v[i] + p_v_np1[i])/2.,
+        r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+      }
+      residual[nx-1] = 0.;
+    }
 
 
     }
@@ -585,6 +675,8 @@ void Diagnostics::compute_NCC(Grid_data &grid,
 
     else{
 
+      if(grid.bh_start==0){
+
       {
         int i = grid.exc_i;
 
@@ -615,9 +707,41 @@ void Diagnostics::compute_NCC(Grid_data &grid,
 
 
     }
+      else{
+
+
+          for(int i = grid.exc_i; i< grid.ah_index-3; i++){
+
+
+            r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i]) +
+                        Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2.;
+
+            t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+            ncc_in[i] = get_NCC_in((n_v[i] +n_v_np1[i])/2., r_Der_nn, (s_v[i] +s_v_np1[i])/2., t_Der_ss);
+            ncc_out[i] = get_NCC_out((n_v[i] +n_v_np1[i])/2., r_Der_nn, (s_v[i] +s_v_np1[i])/2., t_Der_ss);
+
+          }
+
+          for(int i = grid.ah_index-3; i<nx-1; i++){
+
+            r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+                        + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
+
+            t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+            ncc_in[i] = get_NCC_in((n_v[i] +n_v_np1[i])/2., r_Der_nn, (s_v[i] +s_v_np1[i])/2., t_Der_ss);
+            ncc_out[i] = get_NCC_out((n_v[i] +n_v_np1[i])/2., r_Der_nn, (s_v[i] +s_v_np1[i])/2., t_Der_ss);
+
+          }
+          ncc_in[nx-1] = 0.;
+          ncc_out[nx-1] = 0.;
+
+  }
 
 
   }
+}
 //==============================================================================
 //==============================================================================
 //==============================================================================

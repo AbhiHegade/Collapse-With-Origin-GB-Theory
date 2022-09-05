@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
   Write_data write(path);
 
   //Generate grid with nx, nt, l and exci
-  Grid_data grid(sp.nx, sp.nt,sp.ex_ratio,sp.ls,sp.lexp,sp.mu,sp.exc_i, sp.cl);
+  Grid_data grid(sp.nx, sp.nt,sp.ex_ratio,sp.ls,sp.lexp,sp.mu,sp.dissipation,sp.bh_start,sp.exc_i, sp.cl);
   int save_steps = sp.save_steps;
 
   //Write grid to file
@@ -105,6 +105,7 @@ int main(int argc, char const *argv[]) {
   cout<<"nx = "<<grid.nx<<endl;
   cout<<"nt = "<<grid.nt<<endl;
   cout<<"cl = "<<grid.cl<<endl;
+  cout<<"sp.ic = "<<sp.ic<<endl;
   cout<<"t_save_steps = "<<save_steps<<endl;
   cout<<"dx = "<<grid.dx<<endl;
   cout<<"dt = "<<grid.dt<<endl;
@@ -118,13 +119,42 @@ int main(int argc, char const *argv[]) {
 
   //============================================================================
   //Set initial data
+  if(sp.ic == "gaussian"){
+    initialdata.set_Gaussian(grid, sp.w0, sp.r0, n,s,p,q,phi);
+  }
+  else if(sp.ic == "normal"){
   if(M<fabs(1e-16)){
   initialdata.set_Minkowski(grid, n, s, p, q, phi);
   }
   else{
     initialdata.set_bh_bump(grid,n,s,p,q,phi );
   }
-  // initialdata.set_Gaussian(grid, n, s, p, q, phi);
+  }
+  else if(sp.ic == "scalarized_shift_symm"){
+    {
+    Field s11("shift","odd",grid);
+    Field n11("shift","odd",grid);
+    Field p11("dt_phi", "even", grid);
+    Field q11("dr_phi", "odd", grid);
+    Field phi11("phi", "even", grid);
+
+    initialdata.set_bh_bump(grid,n11,s11,p11,q11,phi11 );
+    solve_metric.calculate_mgb( grid, s11 , p11 ,q11,phi11);
+    int mass_extraction_radius = 3*(grid.nx/4);
+    double mgb_pert = grid.r[mass_extraction_radius]*(pow((s11.v[mass_extraction_radius]),2.)/2.);
+    cout<<"Initial mgb_pert = "<< setprecision(8)<<mgb_pert<<endl;
+    cout<<"mgbbyMbare = "<<setprecision(8)<<mgb_pert/sp.M<<endl;
+    cout<<"compactness of ic = "<<setprecision(8)<<mgb_pert/(initialdata.r_u - initialdata.r_l)<<endl;
+  }
+
+    initialdata.set_shift_symm_scalarized(grid,n,s,p,q,phi );
+  }
+  else{
+    cout<<"sp.ic = "<<sp.ic<<"; not implemented"<<endl;
+    std::exit(0);
+  }
+
+
   cout<<"Initial excision position (i,r) = ("<<grid.exc_i<<","<<grid.r[grid.exc_i]<<")"<<endl;
   //Check if initial data is a naked singularity
   {

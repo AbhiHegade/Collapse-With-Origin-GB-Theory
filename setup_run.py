@@ -18,30 +18,18 @@ mu = np.array([0.])
 out_path = home_path+ "/output/Phase-Space/Runs_all"
 #===============================================================================
 input_data = []
-
-# for j in range(len(Amps)):
-#     for l in range(len(ls)):
-#         input_data.append([ls[l],Amps[j]])
-# input_data = [[0.0184375,0.,1.,12.],
-# [0.0203125,0.,0.9,12.],
-# [0.02171875,0.,0.8,12.],
-# [0.02328125,0.,0.7,12.],
-# [0.025625,0.,0.6,12.],
-# [0.027,0.,0.5,12.],
-# [0.030,0.,0.4,12.],
-# [0.033,0.,0.3,12.]]
-input_data = [[0.02,1.,0,0],[0.02,1.2,0,0],[0.02,0.5,0,0]]
+input_data = [[0.1,10**(1/2),0,0],[0.01,10**(1/2),0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.slurm = False
 sim.cluster = False
-sim.write_runs =True
+sim.write_runs =False
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 8000
-sim.nt = 8000
-sim.save_steps = int(sim.nt/100)
+sim.nt = 16000
+sim.save_steps = int(sim.nt/500)
 sim.ex_ratio = 0.8
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -49,10 +37,15 @@ if(sim.initial_mass == 0):
 else:
     sim.exc_i = 3
 sim.exc_i = 0
-sim.rl = 8.
-sim.ru =12.
+sim.rl =8.
+sim.ru =40.
 sim.collapse_and_bh = 1
-sim.search =False
+sim.dissipation = 0.5
+sim.search =True
+sim.ic = "normal"
+sim.r0 = 0.
+sim.w0 = 0.
+sim.bh_start = 0.
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -134,22 +127,22 @@ if sim.search == True:
     #   [0.2,0.3,1e-3,0,2.5,3],
     #   [0.2,0.3,1e-3,0,2.6,3]
     #   ]
-    data_search = [[0.001,0.013,1e-4,0,2.1,mu_high],
-      [0.001,0.013,1e-4,0,2.2,mu_high],
-      [0.001,0.013,1e-4,0,2.3,mu_high],
-      [0.001,0.013,1e-4,0,2.4,mu_high],
-      [0.001,0.013,1e-4,0,2.5,mu_high],
-      [0.001,0.013,1e-4,0,2.6,mu_high],
-      [0.001,0.013,1e-4,0,2.1,3],
-      [0.001,0.013,1e-4,0,2.2,3],
-      [0.001,0.013,1e-4,0,2.3,3],
-      [0.001,0.013,1e-4,0,2.4,3],
-      [0.001,0.013,1e-4,0,2.5,3],
-      [0.001,0.013,1e-4,0,2.6,3]
-      ]
+    # data_search = [[0.001,0.013,1e-4,0,2.1,mu_high],
+    #   [0.001,0.013,1e-4,0,2.2,mu_high],
+    #   [0.001,0.013,1e-4,0,2.3,mu_high],
+    #   [0.001,0.013,1e-4,0,2.4,mu_high],
+    #   [0.001,0.013,1e-4,0,2.5,mu_high],
+    #   [0.001,0.013,1e-4,0,2.6,mu_high],
+    #   [0.001,0.013,1e-4,0,2.1,3],
+    #   [0.001,0.013,1e-4,0,2.2,3],
+    #   [0.001,0.013,1e-4,0,2.3,3],
+    #   [0.001,0.013,1e-4,0,2.4,3],
+    #   [0.001,0.013,1e-4,0,2.5,3],
+    #   [0.001,0.013,1e-4,0,2.6,3]
+    #   ]
     # data_search = [[0.01,0.02,1e-3,0,0,0]]
 
-
+    data_search = [[0.01,0.1,1e-3,10**(1/2),0,0]]
     #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
     run_type = "flat_space_to_naked_elliptic"

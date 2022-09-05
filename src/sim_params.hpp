@@ -20,6 +20,11 @@ public:
    double rl;
    double ru;
    double cl;
+   double w0;
+   double r0;
+   std::string ic;
+   double dissipation;
+   int bh_start;
 
 
    Sim_params(const std::string output_dir);
