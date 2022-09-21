@@ -92,6 +92,7 @@ input_data_mass = get_arr(input_data_mass,"mass")
 # input_data = get_arr(input_data,"normal")
 current_time = datetime.now()
 sim = Convg()
+sim.write_curvature = 1
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.mass_run = True
 sim.cl = 100.0
@@ -120,6 +121,7 @@ if not os.path.exists(sim.out_dir):
 
 #===============================================================================
 def launch_sim(vals):
+    sim.bh_start=0
     Amp = vals[0]
     l_s = vals[1]
     l_exp = vals[2]
@@ -147,6 +149,7 @@ def launch_sim(vals):
     sim.launch(level_str)
 #===============================================================================
 def launch_sim_mass(vals):
+    sim.bh_start=1
     mass = vals[0]
     Amp = vals[1]
     l_s = vals[2]

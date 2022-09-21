@@ -29,6 +29,7 @@ string Sim_params::read_sim_params(const string output_dir, const string find_th
 /*===========================================================================*/
 Sim_params::Sim_params(const string output_dir)
 {
+   write_curvature = stoi(read_sim_params(output_dir, "write_curvature"));
    nx = stoi(read_sim_params(output_dir,"nx"));
    nt= stoi(read_sim_params(output_dir,"nt"));
    ex_ratio = stod(read_sim_params(output_dir, "ex_ratio"));

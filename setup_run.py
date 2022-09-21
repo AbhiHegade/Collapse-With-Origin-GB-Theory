@@ -18,18 +18,19 @@ mu = np.array([0.])
 out_path = home_path+ "/output/Phase-Space/Runs_all"
 #===============================================================================
 input_data = []
-input_data = [[0.1,10**(1/2),0,0],[0.01,10**(1/2),0,0]]
+input_data = [[0.2875,0.6,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
+sim.write_curvature = 1
 sim.slurm = False
 sim.cluster = False
 sim.write_runs =False
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 8000
-sim.nt = 16000
-sim.save_steps = int(sim.nt/500)
+sim.nx = 10000
+sim.nt = 10000
+sim.save_steps = int(sim.nt/0.5)
 sim.ex_ratio = 0.8
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -38,14 +39,14 @@ else:
     sim.exc_i = 3
 sim.exc_i = 0
 sim.rl =8.
-sim.ru =40.
+sim.ru =12.
 sim.collapse_and_bh = 1
 sim.dissipation = 0.5
 sim.search =True
 sim.ic = "normal"
 sim.r0 = 0.
 sim.w0 = 0.
-sim.bh_start = 0.
+sim.bh_start = 0
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -141,19 +142,40 @@ if sim.search == True:
     #   [0.001,0.013,1e-4,0,2.6,3]
     #   ]
     # data_search = [[0.01,0.02,1e-3,0,0,0]]
-
-    data_search = [[0.01,0.1,1e-3,10**(1/2),0,0]]
+    r1 = "flat_space_to_naked_elliptic"
+    r2 = "naked_elliptic_to_blackhole"
+    data_search = [
+    [0.1,0.2,1e-3,0,1.0,3,r2],
+    [0.1,0.2,1e-3,0,1.2,3,r2],
+    [0.1,0.2,1e-3,0,1.4,3,r2],
+    [0.1,0.2,1e-3,0,1.6,3,r2],
+    [0.1,0.2,1e-3,0,1.8,3,r2],
+    [0.1,0.2,1e-3,0,2.0,3,r2],
+    [0.1,0.2,1e-3,0,2.2,3,r2],
+    [0.1,0.2,1e-3,0,2.4,3,r2],
+    [0.1,0.2,1e-3,0,2.6,3,r2],
+    [1e-3,0.06,1e-4,0,1.0,3,r1],
+    [1e-3,0.06,1e-4,0,1.2,3,r1],
+    [1e-3,0.06,1e-4,0,1.4,3,r1],
+    [1e-3,0.06,1e-4,0,1.6,3,r1],
+    [1e-3,0.06,1e-4,0,1.8,3,r1],
+    [1e-3,0.06,1e-4,0,2.0,3,r1],
+    [1e-3,0.06,1e-4,0,2.2,3,r1],
+    [1e-3,0.06,1e-4,0,2.4,3,r1],
+    [1e-3,0.06,1e-4,0,2.6,3,r1],
+    ]
     #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
-    run_type = "flat_space_to_naked_elliptic"
+    # run_type = "naked_elliptic_to_blackhole"
 
     def launch_search(arr):
+        run_type = arr[-1]
         Amp_range = [arr[0],arr[1]]
         tol = arr[2]
         ls = arr[3]
         lexp = arr[4]
         mu = arr[5]
-        sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
+        sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}_{}.dat".format(ls,lexp,mu,run_type)
         sim.amplitude_search(ls=ls,lexp = lexp,mu=mu, Amp_range = Amp_range , run_type = run_type, tol = tol)
 
     #--------------------------------------------------------------------------
@@ -174,7 +196,7 @@ if sim.search == True:
         t_start = time.time()
 
         print("Searching amplitude...")
-        print("run_type = {}".format(run_type))
+        # print("run_type = {}".format(run_type))
         print("nx = ",sim.nx)
         print("nt = ", sim.nt)
         print("save_steps = ", sim.save_steps)

@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[   1267716,      31469]
+NotebookDataLength[   1267658,      31468]
 NotebookOptionsPosition[   1200445,      30396]
-NotebookOutlinePosition[   1201190,      30420]
-CellTagsIndexPosition[   1201147,      30417]
+NotebookOutlinePosition[   1201132,      30419]
+CellTagsIndexPosition[   1201089,      30416]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -30402,8 +30402,7 @@ StyleDefinitions->Notebook[{
    Cell[
     StyleData[StyleDefinitions -> "Default.nb"]], 
    Cell[
-    StyleData["Text"], FontColor -> RGBColor[1, 0, 0]]}, 
-  WindowMargins -> {{556, Automatic}, {Automatic, -64}}, Visible -> False, 
+    StyleData["Text"], FontColor -> RGBColor[1, 0, 0]]}, Visible -> False, 
   FrontEndVersion -> "13.1 for Mac OS X ARM (64-bit) (June 16, 2022)", 
   StyleDefinitions -> "Default.nb"],
 ExpressionUUID->"0b2d1a81-aa2d-4f77-b25c-e9218d6c3ba8"

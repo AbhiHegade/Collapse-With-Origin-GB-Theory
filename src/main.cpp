@@ -84,7 +84,6 @@ int main(int argc, char const *argv[]) {
 
   //============================================================================
   vector<double> residual(grid.nx,0 );
-  vector<double> gb(grid.nx,0);
   vector<double> n_nm1(grid.nx,0);
   vector<double> s_nm1(grid.nx,0);
   vector<double> p_nm1(grid.nx,0);
@@ -229,13 +228,20 @@ int main(int argc, char const *argv[]) {
   i_e += 1;
 
   if ((i_e%save_steps ==0) ){
-    // diagnostics.compute_GB(grid,
-    // n_nm1,
-    // s_nm1,
-    // s.v,
-    // n.v,
-    // gb);
-    // write.write_vec(gb, "gb");
+    if(sp.write_curvature == 1){
+      vector<double> gb(grid.nx,0);
+      vector<double> ricci(grid.nx,0);
+      
+      diagnostics.compute_GB_Ricci(grid,
+      n_nm1,
+      s_nm1,
+      s.v,
+      n.v,
+      gb,
+      ricci);
+      write.write_vec(gb, "gb");
+      write.write_vec(ricci, "ricci");
+    }
     write.write_vec(ncc_in, "ncc_in");
     write.write_vec(ncc_out, "ncc_out");
     write.write_residual(residual);
@@ -251,7 +257,7 @@ int main(int argc, char const *argv[]) {
 
   cout<<"Final time = "<<grid.t_evolve<<endl;
   if(grid.exc_i>0){
-    cout<<"exit_code_1, BH_Formation, MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<", run finished successfully, t = "<<grid.t_evolve<<endl;
+    cout<<"exit_code_1, BH_Formation, MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<"; M_horizon = "<<setprecision(4)<<grid.r[grid.ah_index]*(pow((s.v[grid.ah_index]),2.)/2.)<<", run finished successfully, t = "<<grid.t_evolve<<endl;
   }
   else{
     cout<<"exit_code_0, no black hole formation, MS_mass = "<< setprecision(4)<<grid.r[mass_extraction_radius]*(pow((s.v[mass_extraction_radius]),2.)/2.)<<", run finished successfully, t = "<<grid.t_evolve<<endl;

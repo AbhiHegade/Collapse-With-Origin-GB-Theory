@@ -373,7 +373,11 @@ class Sim:
         self.write_record("M_low = {}; naked_elliptic_region".format(M_low))
         self.write_record("M_high = {}; bh".format(M_high))
 #===============================================================================
-    def mgb_amp_search(self, ls,lexp,mu, Amp_range, rhoc, run_type, tol = 1e-3):
+    def mgb_amp_search(self, ls,lexp,mu, Amp_range, mass, run_type, tol = 1e-3):
+        self.initial_mass = mass
+        dx = self.cl/self.nx
+        ratio = 0.5
+        self.exc_i = int((ratio/dx)*((2*self.cl*self.initial_mass)/(self.cl + 2*self.initial_mass)))
         A_low = Amp_range[0]
         A_high = Amp_range[1]
         mgbbymbh_low = 0
@@ -386,8 +390,6 @@ class Sim:
             f.write('nx = {}\nnt = {}\n'.format(self.nx,self.nt))
             f.write('ls = {}\n'.format(ls))
             f.write('lexp = {}\n'.format(lexp))
-            f.write('rhoc = {}\n'.format(self.rhoc))
-            f.write('mb = {}\n'.format(self.mb))
             f.write('mu = {}\n'.format(mu))
             f.write('A_low = {} ; A_high = {} \n'.format(Amp_range[0],Amp_range[1]))
 
@@ -397,7 +399,7 @@ class Sim:
             self.ls = ls
             self.lexp = lexp
             self.mu = mu
-            self.amp_gb = val
+            self.A = val
             self.launch()
             # time.sleep(60)
             done = False
@@ -421,31 +423,31 @@ class Sim:
 
                         else:
                             if line.startswith("NaN"):
-                                self.write_record("NaN; Amp = {}; mgbbybh = {}; status = {}".format(val,mgbbybh,line))
+                                self.write_record("NaN; Amp = {}; mgbbymbh = {}; status = {}".format(val,mgbbymbh,line))
                                 A_high = val
                                 mgbbymbh_high = mgbbymbh
                                 done = True
 
                             elif line.startswith("naked"):
-                                self.write_record("naked_elliptic_region; Amp = {};  mgbbybh = {}; status = {}".format(val,mgbbybh,line))
+                                self.write_record("naked_elliptic_region; Amp = {};  mgbbymbh = {}; status = {}".format(val,mgbbymbh,line))
                                 A_high = val
                                 mgbbymbh_high = mgbbymbh
                                 done = True
 
 
                             elif line.startswith("exit_code_0"):
-                                self.write_record("flat_space; Amp = {}; mgbbybh = {}; status = {}".format(val,mgbbybh,line))
+                                self.write_record("Problem with run flat_space; Amp = {}; mgbbymbh = {}; status = {}".format(val,mgbbymbh,line))
                                 A_low = val
                                 mgbbymbh_low = mgbbymbh
                                 done = True
 
                             elif line.startswith("exit_code_1"):
-                                self.write_record("Problem with run, black hole formed; Amp = {}; mgbbybh = {}; status = {}".format(val,mgbbybh,line))
-                                A_high = val
-                                mgbbymbh_high = mgbbymbh
+                                self.write_record("black hole formed; Amp = {}; mgbbymbh = {}; status = {}".format(val,mgbbymbh,line))
+                                A_low = val
+                                mgbbymbh_low = mgbbymbh
                                 done = True
 
 
         self.write_record("Run finished.")
-        self.write_record("A_low = {}; mgbbybh_low = {};  flat_space".format(A_low,mgbbymbh_low))
-        self.write_record("A_high = {}; mgbbybh_high = {}; naked_elliptic_region".format(A_high,mgbbymbh_high))
+        self.write_record("A_low = {}; mgbbymbh_low = {};  bh".format(A_low,mgbbymbh_low))
+        self.write_record("A_high = {}; mgbbymbh_high = {}; naked_elliptic_region".format(A_high,mgbbymbh_high))

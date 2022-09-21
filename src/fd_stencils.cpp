@@ -29,6 +29,12 @@ double Dx_3_ptpc_3(const double vp2, const double vp1, const double vm1, const d
   return (0.5*vp2 - vp1 + vm1 - 0.5*vm2)/(dx*dx*dx);
 }
 
+double Dx_2_ptp0_2nd(const double vp3, double const vp2, double const vp1 , const double v0, const double dx){
+
+  return (2.*v0 - 5.*vp1 + 4.*vp2 - vp3)/(dx*dx);
+}
+
+
 
 
 

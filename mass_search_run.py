@@ -25,29 +25,30 @@ input_data  = [[1.17,1e-2,0.5,0,0],[1.17,0,0.5,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
+sim.write_curvature = 1
 sim.slurm = False
-sim.write_runs =True
+sim.write_runs =False
 sim.animscript = home_path+ "/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 6000
-sim.nt = 30000
+sim.nx = 8000
+sim.nt = 100000
 sim.ex_ratio = 0.8
-sim.save_steps = int(sim.nt/10)
+sim.save_steps = int(sim.nt/0.5)
 sim.initial_mass = 1
 if(sim.initial_mass == 0):
     sim.exc_i = 0
 else:
     sim.exc_i = 3
-# sim.A = 1e-3
-sim.rl = 18.
-sim.ru =20.
+sim.A = 1e-3
+sim.rl = 8.
+sim.ru =12.
 sim.collapse_and_bh = 1;
 sim.dissipation = 0.5
-sim.search =False
-sim.ic = "scalarized_shift_symm"
+sim.search =True
+sim.ic = "normal"
 sim.r0 = 0.
 sim.w0 = 0.
-sim.bh_start = 1.
+sim.bh_start = 1
 #===============================================================================
 if sim.search == True:
     sim.out_dir = out_path+"/Search/Search_Mass_rl_{}_ru_{}/Run_nx_{}_nt_{}_".format(sim.rl,sim.ru,sim.nx,sim.nt) + current_time.strftime("%a")+"_"+current_time.strftime("%b")+"_"+ str(current_time.day) +"_"+ str(current_time.hour) + "_"+str(current_time.minute)
@@ -131,20 +132,29 @@ else:
                 [0.9225,0.96,1e-2,0,0.9,3],
                 [1.0,1.015,1e-2,0,1.,3]
                 ]
+        # data_search = [[1.17,0,0.04,1e-4,0.5,0,0],
+        # [1.17,0,0.04,1e-4,0.4,0,0],[1.17,0,0.04,1e-4,0.3,0,0],
+        # [1.17,0,0.04,1e-4,0.2,0,0]]
         def launch_search(arr):
-            mass_range = [arr[0],arr[1]]
-            tol = arr[2]
-            ls = arr[3]
-            lexp = arr[4]
-            mu = arr[5]
-            sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
-            # if(ls<1e-3):
-            #     sim.nx = 10000
-            #     sim.nt = 4*sim.nx
-            #     sim.save_steps = int(sim.nt/10)
-            #     sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
-            # else:
-            sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
+            if (run_type == "black_hole_mass_search" ):
+                sim.A = 1e-3
+                mass_range = [arr[0],arr[1]]
+                tol = arr[2]
+                ls = arr[3]
+                lexp = arr[4]
+                mu = arr[5]
+                sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
+                sim.mass_search(ls=ls,lexp = lexp, mu = mu, mass_range = mass_range , tol = tol)
+            elif (run_type == "mgb_search"):
+                init_mass = arr[0]
+                amp_range = [arr[1],arr[2]]
+                tol = arr[3]
+                ls = arr[4]
+                lexp = arr[5]
+                mu = arr[6]
+                sim.record = run_params + "/record_ls_{}_lexp_{}_mu_{}.dat".format(ls,lexp,mu)
+                sim.mgb_amp_search( ls = ls,lexp = lexp,mu = mu, Amp_range = amp_range, mass = init_mass, run_type = run_type, tol = tol)
+
 
         #--------------------------------------------------------------------------
         if __name__ == '__main__':

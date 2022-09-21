@@ -25,6 +25,7 @@ public:
    std::string ic;
    double dissipation;
    int bh_start;
+   int write_curvature;
 
 
    Sim_params(const std::string output_dir);
