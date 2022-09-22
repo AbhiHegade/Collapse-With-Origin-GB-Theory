@@ -19,7 +19,7 @@ out_path = home_path+ "/output/Phase-Space/Runs_all"
 #===============================================================================
 input_data = []
 # input_data = [[0.009,0.5,0,0],[0.0095,0.5,0,0],[0.01,0.5,0,0],[0.015,0.5,0,0],[0.02,0.5,0,0]]
-input_data = [[0.02,0,0,0]]
+input_data = [[0.009,0.5,0,0],[0.03,0.5,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
@@ -31,7 +31,7 @@ sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
 sim.nx = 10000
 sim.nt = 10000
-sim.save_steps = int(sim.nt/10)
+sim.save_steps = int(sim.nt/1000)
 sim.ex_ratio = 0.8
 sim.initial_mass = 0
 if(sim.initial_mass == 0):

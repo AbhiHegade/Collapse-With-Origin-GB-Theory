@@ -17,9 +17,14 @@ double r_p_of_x(double l,double x){
 //==============================================================================
 
 double beta(const double ls, const double lexp, const double mu, const double phi){
+  if(fabs(mu)<1e-8){
+    return pow(ls,2)*phi;
+  }
+  else{
   double num = (1 - exp(-mu*phi*phi));
   double denom = 2.*mu;
   return (num/denom)*pow(lexp,2) + pow(ls,2)*phi ;
+  }
   // return pow(l,2)*phi;
 }
 

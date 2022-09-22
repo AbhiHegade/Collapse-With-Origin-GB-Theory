@@ -228,16 +228,19 @@ int main(int argc, char const *argv[]) {
     vector<double> gb(grid.nx,0);
     vector<double> ricci(grid.nx,0);
     vector<double> ricci_grad_phi_sq_diff(grid.nx,0);
+    vector<double> lsq_f_phi_gb(grid.nx,0);
     // diagnostics.compute_GB_Ricci(grid, n_nm1, s_nm1, n.v, s.v, gb, ricci);
     diagnostics.compute_GB_Ricci(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, n.v,s.v, p.v,q.v,phi.v,gb,ricci);
 
     for(int i1 = grid.exc_i; i1<grid.nx; i1++){
       double psq = pow((p.v[i1]+ p_nm1[i1])/2.,2.);
       double qsq = pow((q.v[i1]+ q_nm1[i1])/2.,2.);
+      double fphi = beta(grid.ls, grid.lexp, grid.mu, (phi.v[i1] + phi_nm1[i1])*0.5);
       ricci_grad_phi_sq_diff[i1] = ricci[i1] - (qsq-psq);
-
+      lsq_f_phi_gb[i1] = fphi*gb[i1];
     }
     if ((i_e%save_steps ==0) ){
+        write.write_vec(lsq_f_phi_gb, "lsq_f_phi_gb");
         write.write_vec(ricci_grad_phi_sq_diff, "ricci_sq_diff");
         write.write_vec(gb, "gb");
         write.write_vec(ricci, "ricci");
