@@ -202,21 +202,38 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
       {
         int i = grid.exc_i;
 
-        double Bep=  beta_p(ls,lexp,mu,phi_v.v[i]);
-        double Bepp= beta_pp(ls,lexp,mu,phi_v.v[i]);
+        double nn = n_v.v[i];
 
-        double r_Der_nn=0. ;
-        double r_Der_ss= Dx_ptpc_2nd(s_v.v[i+1],-s_v.v[i+1], dr[i]);
-        double r_Der_P= 0.;
-        double r_Der_Q= Dx_ptpc_2nd(q_v.v[i+1],-q_v.v[i+1], dr[i]);
+        double r_Der_Q = Dx_ptpc_2nd(q_v.v[i+1], -q_v.v[i+1], dr[i]);
+        double r_Der_ss = Dx_ptpc_2nd(s_v.v[i+1], -s_v.v[i+1], dr[i]);
+        double P = p_v.v[i];
 
-        int status= compute_radial_characteristic(r[i],
-        n_v.v[i], r_Der_nn,
-        s_v.v[i], r_Der_ss,
-        p_v.v[i], r_Der_P,
-        q_v.v[i], r_Der_Q,
-        Bep, Bepp,
-        ingoing_c, outgoing_c);
+        double rr_Der_P =Dx_2_ptpc_2nd(p_v.v[i+1], p_v.v[i], p_v.v[i+1], dr[i]);
+        double rr_Der_nn = Dx_2_ptpc_2nd(n_v.v[i+1], n_v.v[i], n_v.v[i+1], dr[i]);
+
+        double Bep = beta_p(ls,lexp,mu, phi_v.v[i]);
+        double Bepp = beta_pp(ls,lexp,mu, phi_v.v[i]);
+
+        double ingoing_c=  0;
+        double outgoing_c= 0;
+        int status = 0.;
+
+        double D = (-4*pow(nn,2)*(pow(-1 + 8*Bep*r_Der_Q,7) + 60*Bep*P*pow(1 - 8*Bep*r_Der_Q,6)*r_Der_ss - 1536*pow(Bep,2)*pow(P,2)*pow(1 - 8*Bep*r_Der_Q,5)*pow(r_Der_ss,2) + 21760*pow(Bep,3)*pow(P,3)*pow(1 - 8*Bep*r_Der_Q,4)*pow(r_Der_ss,3) + 16*pow(Bep,2)*pow(1 - 8*Bep*r_Der_Q,3)*(-11504*pow(Bep,2)*pow(P,4) + 48*pow(P,2)*(Bepp - 16*Bep*Bepp*r_Der_Q + 64*pow(Bep,2)*Bepp*pow(r_Der_Q,2)) + 4*(3 - 24*Bep*r_Der_Q - 192*pow(Bep,2)*pow(r_Der_Q,2) + 1536*pow(Bep,3)*pow(r_Der_Q,3)))*pow(r_Der_ss,4) - 128*pow(Bep,2)*pow(1 - 8*Bep*r_Der_Q,2)*(-7240*pow(Bep,3)*pow(P,5) + 264*Bep*pow(P,3)*(Bepp - 16*Bep*Bepp*r_Der_Q + 64*pow(Bep,2)*Bepp*pow(r_Der_Q,2)) + P*(54*Bep - 240*pow(Bep,2)*r_Der_Q - 6528*pow(Bep,3)*pow(r_Der_Q,2) + 39936*pow(Bep,4)*pow(r_Der_Q,3)))*pow(r_Der_ss,5) + 64*pow(Bep,2)*(1 - 8*Bep*r_Der_Q)*(3*(400*pow(Bep,2)*pow(P,2) + 3072*pow(Bep,2)*Bepp*pow(P,4) - 13312*pow(Bep,4)*pow(P,6)) - 96*Bep*(-84*pow(Bep,2)*pow(P,2) + 1536*pow(Bep,2)*Bepp*pow(P,4))*r_Der_Q + 64*pow(Bep,4)*P*(-5616*P + 9216*Bepp*pow(P,3))*pow(r_Der_Q,2) + 1744896*pow(Bep,5)*pow(P,2)*pow(r_Der_Q,3))*pow(r_Der_ss,6) - 256*pow(Bep,3)*(-11520*pow(Bep,4)*pow(P,7) + 19968*pow(Bep,2)*pow(P,5)*(Bepp - 16*Bep*Bepp*r_Der_Q + 64*pow(Bep,2)*Bepp*pow(r_Der_Q,2)) + 48*Bep*pow(P,3)*(-Bep + 1688*pow(Bep,2)*r_Der_Q - 26816*pow(Bep,3)*pow(r_Der_Q,2) + 107008*pow(Bep,4)*pow(r_Der_Q,3)))*pow(r_Der_ss,7) - 6144*pow(Bep,4)*(2*pow(Bep,2)*pow(P,6)*(-1792*Bepp + 14336*Bep*Bepp*r_Der_Q) - 4*Bep*pow(P,4)*(-252*Bep + 7616*pow(Bep,2)*r_Der_Q - 44800*pow(Bep,3)*pow(r_Der_Q,2)))*pow(r_Der_ss,8) - 786432*pow(Bep,4)*(-55*pow(Bep,3)*pow(P,5) + 48*pow(Bep,3)*Bepp*pow(P,7) + 632*pow(Bep,4)*pow(P,5)*r_Der_Q)*pow(r_Der_ss,9) - 94371840*pow(Bep,8)*pow(P,6)*pow(r_Der_ss,10)))/((1 - 8*Bep*r_Der_Q - 8*Bep*P*r_Der_ss)*pow(1 - 512*pow(Bep,3)*pow(r_Der_Q,3) + 288*pow(Bep,2)*pow(P,2)*pow(r_Der_ss,2) - 960*pow(Bep,3)*pow(P,3)*pow(r_Der_ss,3) + 96*pow(Bep,2)*(-1 + 8*Bep*r_Der_Q)*pow(r_Der_ss,4) + 32*pow(Bep,2)*pow(r_Der_Q,2)*(6 - 56*Bep*P*r_Der_ss) - 8*Bep*r_Der_Q*(3 - 56*Bep*P*r_Der_ss + 288*pow(Bep,2)*pow(P,2)*pow(r_Der_ss,2) + 96*pow(Bep,2)*(-1 + 8*Bep*r_Der_Q)*pow(r_Der_ss,4)) - 4*P*(7*Bep*r_Der_ss + 192*pow(Bep,3)*(-1 + 8*Bep*r_Der_Q)*pow(r_Der_ss,5)),2))
+        ;
+
+        double trace = 0.;
+
+        if (D<0) {
+          ingoing_c=  0;
+          outgoing_c= 0;
+          status = -1;
+        }
+        else{
+          ingoing_c= 0.5*(trace - pow(D,0.5));
+          outgoing_c=0.5*(trace + pow(D,0.5));
+          status = 0.;
+        }
+
 
         if (status==-1) {
           // cout<<"Elliptic region formation in flat space."<<endl;
@@ -430,7 +447,6 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
     double dt = grid.dt;
     double ls = grid.ls, lexp = grid.lexp, mu = grid.mu;
     int nx = grid.nx;
-    double r_Der_nn = 0.,r_Der_ss=0., r_Der_P=0., r_Der_Q=0., Bep=0., Bepp = 0., t_Der_ss=0., t_Der_P = 0.;
 
 
     if(grid.exc_i==0){
@@ -438,49 +454,52 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       {
         int i = grid.exc_i;
 
-        r_Der_nn=0. ;
-        r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
+        double rr_Der_nn= Dx_2_ptpc_2nd((n_v[i+1] + n_v_np1[i+1])/2., (n_v[i] + n_v_np1[i])/2., (n_v[i+1] + n_v_np1[i+1])/2., dr[i]);
+
+        double nn = (n_v[i] + n_v_np1[i])/2.;
+
+        double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
                     + Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]))/2.;
-        r_Der_P= 0.;
-        r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], -q_v[i+1], dr[i])
+        double P = (p_v[i] + p_v_np1[i])/2.;
+        double r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], -q_v[i+1], dr[i])
                     + Dx_ptpc_2nd(q_v_np1[i+1], -q_v_np1[i+1], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double s1dot = (Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]) - Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i]))/dt;
 
-        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+        double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+        double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
-        r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
-        (p_v[i] + p_v_np1[i])/2.,
-        r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+
+        double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+
+        residual[i] = -0.5*(4*rr_Der_nn*(-1 + 8*Bep*r_Der_Q + 8*Bep*P*r_Der_ss) + nn*(2*(3 - 16*Bep*r_Der_Q)*pow(r_Der_ss,2) - 32*Bep*P*pow(r_Der_ss,3) + pow(P,2)*(1 + 16*Bepp*pow(r_Der_ss,2))) + 4*((-1 + 8*Bep*r_Der_Q)*s1dot + 8*Bep*P*r_Der_ss*s1dot + 4*Bep*pow(r_Der_ss,2)*t_Der_P))/nn;
 
       }
 
       for(int i = grid.exc_i+1; i<nx-1; i++){
 
-        r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+        double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
                     + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
 
-        r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+        double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
                     + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
 
-        r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
+        double r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
                     + Dx_ptpc_2nd(p_v_np1[i+1], p_v_np1[i-1], dr[i]))/2.;
 
-        r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
+        double r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
                     + Dx_ptpc_2nd(q_v_np1[i+1], q_v_np1[i-1], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+        double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
         residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
         r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
@@ -496,25 +515,25 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       {
         int i = grid.exc_i;
 
-        r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+        double r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
                     + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
 
-        r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+        double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
                     + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
 
-        r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
+        double r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
                     + Dx_ptp0_2nd(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], dr[i]))/2.;
 
-        r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
+        double r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
                     + Dx_ptp0_2nd(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+        double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
         residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
         r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
@@ -524,25 +543,25 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
 
       for(int i = grid.exc_i+1; i<nx-1; i++){
 
-        r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+        double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
                     + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
 
-        r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+        double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
                     + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
 
-        r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
+        double r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
                     + Dx_ptpc_2nd(p_v_np1[i+1], p_v_np1[i-1], dr[i]))/2.;
 
-        r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
+        double r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
                     + Dx_ptpc_2nd(q_v_np1[i+1], q_v_np1[i-1], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+        double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
         residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
         r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
@@ -554,59 +573,59 @@ void Diagnostics::compute_e_rr_residual(Grid_data &grid, const vector<double> &n
       else{
       for(int i = grid.exc_i; i<grid.ah_index-3; i++){
 
-
-        r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+        double r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
                     + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
 
-        r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+        double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
                     + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
 
-        r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
+        double r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
                     + Dx_ptp0_2nd(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], dr[i]))/2.;
 
-        r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
+        double r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
                     + Dx_ptp0_2nd(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+        double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
         residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
         r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
         (p_v[i] + p_v_np1[i])/2.,
         r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
-      }
+        }
 
       for(int i = grid.ah_index-3; i<nx-1; i++){
 
-        r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+        double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
                     + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
 
-        r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+        double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
                     + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
 
-        r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
+        double r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
                     + Dx_ptpc_2nd(p_v_np1[i+1], p_v_np1[i-1], dr[i]))/2.;
 
-        r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
+        double r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
                     + Dx_ptpc_2nd(q_v_np1[i+1], q_v_np1[i-1], dr[i]))/2.;
 
-        Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+        double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        t_Der_P = (p_v_np1[i] - p_v[i])/dt;
+        double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
         residual[i] = e_rr_residual(r[i], (n_v[i] + n_v_np1[i])/2.,
         r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
         (p_v[i] + p_v_np1[i])/2.,
         r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+
       }
       residual[nx-1] = 0.;
     }
@@ -749,7 +768,9 @@ double Diagnostics::get_GB_Val(double r, double nn, double r_Der_nn, double rr_D
 {
   double ans = 0;
   double ssr = ss/r;
-  ans = 8*pow(r,3)*r_Der_nn*pow(ssr,3)*t_Der_nn - 8*pow(r,3)*pow(ssr,3)*tr_Der_nn*nn + 8*r*r_Der_nn*r_Der_ss*ssr*(-2 + 5*pow(r,2)*pow(ssr,2))*pow(nn,2) - 8*pow(r,2)*pow(ssr,2)*tr_Der_ss*pow(nn,2) + 24*pow(r,2)*pow(r_Der_ss,2)*pow(ssr,2)*pow(nn,3) + 8*pow(r,3)*rr_Der_ss*pow(ssr,3)*pow(nn,3) + t_Der_ss*(-24*pow(r,2)*r_Der_nn*pow(ssr,2)*nn - 16*r*r_Der_ss*ssr*pow(nn,2)) + 8*r*rr_Der_nn*ssr*(-(r*ssr*pow(nn,2)) + pow(r,3)*pow(ssr,3)*pow(nn,2))
+  // ans = 8*pow(r,3)*r_Der_nn*pow(ssr,3)*t_Der_nn - 8*pow(r,3)*pow(ssr,3)*tr_Der_nn*nn + 8*r*r_Der_nn*r_Der_ss*ssr*(-2 + 5*pow(r,2)*pow(ssr,2))*pow(nn,2) - 8*pow(r,2)*pow(ssr,2)*tr_Der_ss*pow(nn,2) + 24*pow(r,2)*pow(r_Der_ss,2)*pow(ssr,2)*pow(nn,3) + 8*pow(r,3)*rr_Der_ss*pow(ssr,3)*pow(nn,3) + t_Der_ss*(-24*pow(r,2)*r_Der_nn*pow(ssr,2)*nn - 16*r*r_Der_ss*ssr*pow(nn,2)) + 8*r*rr_Der_nn*ssr*(-(r*ssr*pow(nn,2)) + pow(r,3)*pow(ssr,3)*pow(nn,2))
+  // ;
+  ans = 8*pow(r,3)*r_Der_nn*pow(ssr,3)*t_Der_nn - 8*pow(r,3)*pow(ssr,3)*tr_Der_nn*nn - 8*pow(r,2)*pow(ssr,2)*tr_Der_ss*pow(nn,2) + 24*pow(r,2)*pow(r_Der_ss,2)*pow(ssr,2)*pow(nn,3) + 8*pow(r,3)*rr_Der_ss*pow(ssr,3)*pow(nn,3) + t_Der_ss*(-24*pow(r,2)*r_Der_nn*pow(ssr,2)*nn - 16*r*r_Der_ss*ssr*pow(nn,2)) + 8*r*r_Der_nn*r_Der_ss*ssr*(-2*pow(nn,2) + 5*pow(r,2)*pow(ssr,2)*pow(nn,2)) + 8*r*rr_Der_nn*ssr*(-(r*ssr*pow(nn,2)) + pow(r,3)*pow(ssr,3)*pow(nn,2))
   ;
   ans /= pow(r,2)*pow(nn,3);
 
@@ -758,15 +779,22 @@ double Diagnostics::get_GB_Val(double r, double nn, double r_Der_nn, double rr_D
 // //==============================================================================
 double Diagnostics::get_Ricci_Val(double r, double nn, double r_Der_nn, double rr_Der_nn, double t_Der_nn, double tr_Der_nn, double ss, double r_Der_ss, double rr_Der_ss, double t_Der_ss, double tr_Der_ss)
 {
+  double ans = 0.;
   double ssr = ss/r;
-  return 2*pow(r_Der_ss,2) + 2*r*rr_Der_ss*ssr + 8*r_Der_ss*ssr + 2*pow(ssr,2) + t_Der_ss*((-2*r_Der_nn)/pow(nn,2) - 4/(r*nn)) + r_Der_nn*(-4/(r*nn) + (6*r*r_Der_ss*ssr)/nn + (4*r*pow(ssr,2))/nn) + rr_Der_nn*(-2/nn + (2*pow(r,2)*pow(ssr,2))/nn) + (2*r*r_Der_nn*ssr*t_Der_nn)/pow(nn,3) - (2*r*ssr*tr_Der_nn)/pow(nn,2) - (2*tr_Der_ss)/nn;
+
+  ans = 2*pow(r,3)*r_Der_nn*ssr*t_Der_nn - 2*pow(r,3)*ssr*tr_Der_nn*nn - 2*pow(r,2)*tr_Der_ss*pow(nn,2) + 2*pow(r,2)*pow(r_Der_ss,2)*pow(nn,3) + 2*pow(r,3)*rr_Der_ss*ssr*pow(nn,3) + 8*pow(r,2)*r_Der_ss*ssr*pow(nn,3) + 2*pow(r,2)*pow(ssr,2)*pow(nn,3) + t_Der_ss*(-2*pow(r,2)*r_Der_nn*nn - 4*r*pow(nn,2)) + 2*rr_Der_nn*(-(pow(r,2)*pow(nn,2)) + pow(r,4)*pow(ssr,2)*pow(nn,2)) + r_Der_nn*(6*pow(r,3)*r_Der_ss*ssr*pow(nn,2) + 4*(-(r*pow(nn,2)) + pow(r,3)*pow(ssr,2)*pow(nn,2)))
+  ;
+
+  ans /= pow(r,2)*pow(nn,3);
+
+  return ans;
 }
 // //==============================================================================
 void Diagnostics::compute_GB_Ricci(Grid_data &grid,
 const vector<double> &n_v,
 const vector<double> &s_v,
-const vector<double> &s_v_np1,
 const vector<double> &n_v_np1,
+const vector<double> &s_v_np1,
 vector<double> &gb,
 vector<double> &ricci)
 {
@@ -782,58 +810,65 @@ vector<double> &ricci)
     {
       int i = exc_i;
 
+      double nn = (n_v[i] + n_v_np1[i])/2.;
+
       double r_Der_nn = 0.;
-      double rr_Der_nn = 0.5*(Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i+1], dr[i]) + Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i+1], dr[i]) );
+
+      double rr_Der_nn = (Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i+1], dr[i]) +
+                          Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i+1], dr[i]))/2.;
+
       double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+
       double tr_Der_nn = 0.;
 
       double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
                   + Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]))/2.;
 
-      double rr_Der_ss = 0.5*(Dx_2_ptpc_2nd(s_v[i+1], s_v[i], -s_v[i+1], dr[i]) + Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], -s_v_np1[i+1], dr[i]) );
+      double rr_Der_ss = (Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], -s_v_np1[i+1], dr[i]) +
+                          Dx_2_ptpc_2nd(s_v[i+1], s_v[i], -s_v[i+1], dr[i]))/2.;
 
       double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
       double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i])
                           - Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i]))/dt;
 
-      gb[i] = get_GB_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
-        t_Der_nn, tr_Der_nn,
-        s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      gb[i] = (24*(-(rr_Der_nn*pow(r_Der_ss,2)) + nn*pow(r_Der_ss,4) - pow(r_Der_ss,2)*tr_Der_ss))/nn;
 
-      ricci[i] = get_Ricci_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
-        t_Der_nn, tr_Der_nn,
-        s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      ricci[i] = (6*(-rr_Der_nn + 2*nn*pow(r_Der_ss,2) - tr_Der_ss))/nn;
     }
 
     for(int i = exc_i + 1; i<nx-1; i++){
-      double r_Der_nn = (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
-                  + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2.;
+      double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
 
-      double rr_Der_nn = 0.5*(Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]) + Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) );
+      double rr_Der_nn = (Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) +
+                          Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]))/2.;
 
       double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
 
       double tr_Der_nn = (Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i])
-                          - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;;
+                          - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;
 
       double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
                   + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
 
-      double rr_Der_ss = 0.5*(Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]) + Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) );
+      double rr_Der_ss = (Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) +
+                          Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]))/2.;
 
       double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
       double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
                           - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
 
-      gb[i] = get_GB_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+      gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
         t_Der_nn, tr_Der_nn,
-        s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+        (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
 
-      ricci[i] = get_Ricci_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+      ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
         t_Der_nn, tr_Der_nn,
-        s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+        (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+
+      //cout<<r[i]<<"\t"<<ricci[i]<<"\t"<<r_Der_nn<<"\t"<<rr_Der_nn<<"\t"<<t_Der_nn<<"\t"<<tr_Der_nn<<"\t"<<r_Der_ss<<"\t"<<rr_Der_ss<<"\t"<<t_Der_ss<<"\t"<<tr_Der_ss<<endl;
     }
     { int i = nx-1;
 
@@ -867,13 +902,13 @@ vector<double> &ricci)
         double tr_Der_ss = (Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i])
                             - Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i]) )/dt;
 
-        gb[i] = get_GB_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
 
-        ricci[i] = get_Ricci_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
       }
       for(int i = exc_i + 1; i<nx-1; i++){
         double r_Der_nn = (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
@@ -896,13 +931,13 @@ vector<double> &ricci)
         double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
                             - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
 
-        gb[i] = get_GB_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
 
-        ricci[i] = get_Ricci_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
       }
       { int i = nx-1;
 
@@ -936,13 +971,13 @@ vector<double> &ricci)
         double tr_Der_ss = (Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i])
                             - Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i]) )/dt;
 
-        gb[i] = get_GB_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
 
-        ricci[i] = get_Ricci_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
       }
 
       for(int i = grid.ah_index-3; i<nx-1; i++){
@@ -967,13 +1002,13 @@ vector<double> &ricci)
         double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
                             - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
 
-        gb[i] = get_GB_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
 
-        ricci[i] = get_Ricci_Val(r[i], n_v[i], r_Der_nn, rr_Der_nn,
+        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
           t_Der_nn, tr_Der_nn,
-          s_v[i], r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
       }
 
       { int i = nx-1;

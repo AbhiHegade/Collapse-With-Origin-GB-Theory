@@ -93,6 +93,8 @@ int main(int argc, char const *argv[]) {
   vector<double> outgoing(grid.nx,0);
   vector<double> ncc_in(grid.nx,0);
   vector<double> ncc_out(grid.nx,0);
+  vector<double> gb(grid.nx,0);
+  vector<double> ricci(grid.nx,0);
 
   //============================================================================
   /* Simulation Parameters */
@@ -225,20 +227,21 @@ int main(int argc, char const *argv[]) {
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
   diagnostics.compute_NCC(grid, n_nm1, s_nm1,n.v, s.v, ncc_in, ncc_out);
 
+
+  if(sp.write_curvature == 1){
+    diagnostics.compute_GB_Ricci(grid,
+    n_nm1,
+    s_nm1,
+    n.v,
+    s.v,
+    gb,
+    ricci);
+  }
+
   i_e += 1;
 
   if ((i_e%save_steps ==0) ){
-    if(sp.write_curvature == 1){
-      vector<double> gb(grid.nx,0);
-      vector<double> ricci(grid.nx,0);
-      
-      diagnostics.compute_GB_Ricci(grid,
-      n_nm1,
-      s_nm1,
-      s.v,
-      n.v,
-      gb,
-      ricci);
+    if(sp.write_curvature==1){
       write.write_vec(gb, "gb");
       write.write_vec(ricci, "ricci");
     }

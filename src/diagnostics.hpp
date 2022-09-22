@@ -48,8 +48,8 @@ public:
   void compute_GB_Ricci(Grid_data &grid,
   const std::vector<double> &n_v,
   const std::vector<double> &s_v,
-  const std::vector<double> &s_v_np1,
   const std::vector<double> &n_v_np1,
+  const std::vector<double> &s_v_np1,
   std::vector<double> &gb,
   std::vector<double> &ricci);
 
@@ -70,17 +70,18 @@ private:
   double Bep, double Bepp,
   double t_Der_ss, double t_Der_P);
 
-  double get_GB_Val(double r,
-  double nn,
-  double r_Der_nn,
-  double rr_Der_nn,
-  double t_Der_nn,
-  double tr_Der_nn,
-  double ss,
-  double r_Der_ss,
-  double rr_Der_ss,
-  double t_Der_ss,
-  double tr_Der_ss);
+  double get_GB_Val(
+     double r,
+     double nn,
+     double r_Der_nn,
+     double rr_Der_nn,
+     double t_Der_nn,
+     double tr_Der_nn,
+     double ss,
+     double r_Der_ss,
+     double rr_Der_ss,
+     double t_Der_ss,
+     double tr_Der_ss);
 
   double get_Ricci_Val(
      double r,
