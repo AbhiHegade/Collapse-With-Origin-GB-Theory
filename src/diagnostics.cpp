@@ -762,41 +762,32 @@ void Diagnostics::compute_NCC(Grid_data &grid,
   }
 }
 //==============================================================================
-//==============================================================================
-//==============================================================================
-double Diagnostics::get_GB_Val(double r, double nn, double r_Der_nn, double rr_Der_nn, double t_Der_nn, double tr_Der_nn, double ss, double r_Der_ss, double rr_Der_ss, double t_Der_ss, double tr_Der_ss)
+double Diagnostics::get_GB_Val_reduced(double r, double nn, double r_Der_nn, double ss, double r_Der_ss, double P, double r_Der_P, double Q, double r_Der_Q, double Bep, double Bepp, double t_Der_ss, double t_Der_P)
 {
-  double ans = 0;
   double ssr = ss/r;
-  // ans = 8*pow(r,3)*r_Der_nn*pow(ssr,3)*t_Der_nn - 8*pow(r,3)*pow(ssr,3)*tr_Der_nn*nn + 8*r*r_Der_nn*r_Der_ss*ssr*(-2 + 5*pow(r,2)*pow(ssr,2))*pow(nn,2) - 8*pow(r,2)*pow(ssr,2)*tr_Der_ss*pow(nn,2) + 24*pow(r,2)*pow(r_Der_ss,2)*pow(ssr,2)*pow(nn,3) + 8*pow(r,3)*rr_Der_ss*pow(ssr,3)*pow(nn,3) + t_Der_ss*(-24*pow(r,2)*r_Der_nn*pow(ssr,2)*nn - 16*r*r_Der_ss*ssr*pow(nn,2)) + 8*r*rr_Der_nn*ssr*(-(r*ssr*pow(nn,2)) + pow(r,3)*pow(ssr,3)*pow(nn,2))
-  // ;
-  ans = 8*pow(r,3)*r_Der_nn*pow(ssr,3)*t_Der_nn - 8*pow(r,3)*pow(ssr,3)*tr_Der_nn*nn - 8*pow(r,2)*pow(ssr,2)*tr_Der_ss*pow(nn,2) + 24*pow(r,2)*pow(r_Der_ss,2)*pow(ssr,2)*pow(nn,3) + 8*pow(r,3)*rr_Der_ss*pow(ssr,3)*pow(nn,3) + t_Der_ss*(-24*pow(r,2)*r_Der_nn*pow(ssr,2)*nn - 16*r*r_Der_ss*ssr*pow(nn,2)) + 8*r*r_Der_nn*r_Der_ss*ssr*(-2*pow(nn,2) + 5*pow(r,2)*pow(ssr,2)*pow(nn,2)) + 8*r*rr_Der_nn*ssr*(-(r*ssr*pow(nn,2)) + pow(r,3)*pow(ssr,3)*pow(nn,2))
+  double Qr = Q/r;
+  return
+  (64*pow(r_Der_nn,2)*pow(ssr,3)*(Bep*Qr*pow(r,2)*ssr + Bep*P))/(pow(nn,2)*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (16*pow(r_Der_ss,2)*pow(ssr,2)*(-1 + 8*Bep*Qr + 4*Bep*ssr*P))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) - (4*pow(ssr,2)*(pow(Qr,2)*pow(r,2) - pow(P,2)))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) + t_Der_P*((64*Bep*r*r_Der_nn*pow(ssr,4))/(pow(nn,2)*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (64*Bep*r_Der_ss*pow(ssr,3))/(nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P))) + t_Der_ss*((8*(-1 + 8*Bepp*pow(Qr,2)*pow(r,2))*pow(ssr,2))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (64*Bep*r_Der_Q*pow(ssr,2))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) - (16*r_Der_nn*pow(ssr,2)*(-1 + 8*Bep*Qr + 4*Bep*ssr*P))/(pow(nn,2)*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) - (16*r_Der_ss*ssr*(-1 + 8*Bep*Qr + 4*Bep*ssr*P))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P))) + r_Der_ss*((-64*Bep*r_Der_Q*pow(ssr,3))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) - (64*Bep*r*r_Der_P*pow(ssr,4))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) - (16*pow(ssr,3)*(-1 + 4*Bepp*pow(Qr,2)*pow(r,2) - 4*Bepp*pow(P,2)))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + r_Der_nn*((64*Bep*r_Der_Q*pow(ssr,2))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) - (64*r_Der_P*pow(ssr,3)*(-2*Bep + Bep*pow(r,2)*pow(ssr,2)))/(nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (16*r_Der_ss*ssr*(1 - 8*Bep*Qr - pow(r,2)*pow(ssr,2) + 12*Bep*Qr*pow(r,2)*pow(ssr,2) - 4*Bep*ssr*P + 4*Bep*pow(r,2)*pow(ssr,3)*P))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (8*pow(ssr,2)*(-1 + 8*Bepp*pow(Qr,2)*pow(r,2) + pow(r,2)*pow(ssr,2) + 16*Bepp*Qr*pow(r,2)*ssr*P + 8*Bepp*pow(r,2)*pow(ssr,2)*pow(P,2)))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)))
   ;
-  ans /= pow(r,2)*pow(nn,3);
-
-  return ans;
 }
-// //==============================================================================
-double Diagnostics::get_Ricci_Val(double r, double nn, double r_Der_nn, double rr_Der_nn, double t_Der_nn, double tr_Der_nn, double ss, double r_Der_ss, double rr_Der_ss, double t_Der_ss, double tr_Der_ss)
+//==============================================================================
+double Diagnostics::get_Ricci_Val_reduced(double r, double nn, double r_Der_nn, double ss, double r_Der_ss, double P, double r_Der_P, double Q, double r_Der_Q, double Bep, double Bepp, double t_Der_ss, double t_Der_P)
 {
-  double ans = 0.;
   double ssr = ss/r;
-
-  ans = 2*pow(r,3)*r_Der_nn*ssr*t_Der_nn - 2*pow(r,3)*ssr*tr_Der_nn*nn - 2*pow(r,2)*tr_Der_ss*pow(nn,2) + 2*pow(r,2)*pow(r_Der_ss,2)*pow(nn,3) + 2*pow(r,3)*rr_Der_ss*ssr*pow(nn,3) + 8*pow(r,2)*r_Der_ss*ssr*pow(nn,3) + 2*pow(r,2)*pow(ssr,2)*pow(nn,3) + t_Der_ss*(-2*pow(r,2)*r_Der_nn*nn - 4*r*pow(nn,2)) + 2*rr_Der_nn*(-(pow(r,2)*pow(nn,2)) + pow(r,4)*pow(ssr,2)*pow(nn,2)) + r_Der_nn*(6*pow(r,3)*r_Der_ss*ssr*pow(nn,2) + 4*(-(r*pow(nn,2)) + pow(r,3)*pow(ssr,2)*pow(nn,2)))
+  double Qr = Q/r;
+  return
+  (-16*Bep*pow(r_Der_ss,2)*ssr*P)/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) + (16*pow(r_Der_nn,2)*(Bep*Qr*pow(r,2)*pow(ssr,2) + Bep*ssr*P))/(pow(nn,2)*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (-(pow(Qr,2)*pow(r,2)) - 2*pow(ssr,2) + 16*Bep*Qr*pow(ssr,2) + 16*Bep*pow(ssr,3)*P + pow(P,2))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) + t_Der_P*((16*Bep*r*r_Der_nn*pow(ssr,2))/(pow(nn,2)*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (16*Bep*r_Der_ss*ssr)/(nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P))) + t_Der_ss*((16*Bep*r_Der_Q)/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (16*Bep*r_Der_nn*ssr*P)/(pow(nn,2)*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (16*Bep*r_Der_ss*P)/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (2*(1 - 16*Bep*Qr + 8*Bepp*pow(Qr,2)*pow(r,2) - 16*Bep*ssr*P))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P))) + r_Der_ss*((-16*Bep*r_Der_Q*ssr)/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) - (16*Bep*r*r_Der_P*pow(ssr,2))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P) - (4*(ssr - 16*Bep*Qr*ssr + 4*Bepp*pow(Qr,2)*pow(r,2)*ssr - 16*Bep*pow(ssr,2)*P - 4*Bepp*ssr*pow(P,2)))/(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + r_Der_nn*((16*Bep*r_Der_Q)/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) - (16*r_Der_P*(-2*Bep*ssr + Bep*pow(r,2)*pow(ssr,3)))/(nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (16*r_Der_ss*(Bep*Qr*pow(r,2)*ssr + Bep*P - Bep*pow(r,2)*pow(ssr,2)*P))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)) + (2*(1 - 16*Bep*Qr + 8*Bepp*pow(Qr,2)*pow(r,2) - pow(r,2)*pow(ssr,2) + 16*Bep*Qr*pow(r,2)*pow(ssr,2) - 16*Bep*ssr*P + 16*Bepp*Qr*pow(r,2)*ssr*P + 16*Bep*pow(r,2)*pow(ssr,3)*P + 8*Bepp*pow(r,2)*pow(ssr,2)*pow(P,2)))/(r*nn*(-1 + 8*Bep*Qr + 8*Bep*ssr*P)))
   ;
-
-  ans /= pow(r,2)*pow(nn,3);
-
-  return ans;
 }
-// //==============================================================================
-void Diagnostics::compute_GB_Ricci(Grid_data &grid,
-const vector<double> &n_v,
-const vector<double> &s_v,
-const vector<double> &n_v_np1,
-const vector<double> &s_v_np1,
-vector<double> &gb,
-vector<double> &ricci)
+//==============================================================================
+void Diagnostics::compute_GB_Ricci(Grid_data &grid, const vector<double> &n_v, const vector<double> &s_v,
+  const vector<double> &p_v, const vector<double> &q_v, const vector<double> &phi_v,
+  const vector<double> &n_v_np1,
+  const vector<double> &s_v_np1,
+  const vector<double> &p_v_np1,
+  const vector<double> &q_v_np1,const vector<double> &phi_v_np1,
+  vector<double> &gb,
+  vector<double> &ricci)
 {
 
   vector<double> dr = grid.dr;
@@ -804,6 +795,7 @@ vector<double> &ricci)
   double dt = grid.dt;
   int nx = grid.nx;
   int exc_i = grid.exc_i;
+  double ls = grid.ls, lexp = grid.lexp, mu = grid.mu;
 
   if(exc_i ==0){
 
@@ -841,32 +833,32 @@ vector<double> &ricci)
       double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
                   + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
 
-      double rr_Der_nn = (Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) +
-                          Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]))/2.;
-
-      double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
-
-      double tr_Der_nn = (Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i])
-                          - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;
-
       double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
                   + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
 
-      double rr_Der_ss = (Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) +
-                          Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]))/2.;
+      double r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(p_v_np1[i+1], p_v_np1[i-1], dr[i]))/2.;
+
+      double r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(q_v_np1[i+1], q_v_np1[i-1], dr[i]))/2.;
+
+      double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
+
+      double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
       double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-      double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
-                          - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
+      double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
-      gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-        t_Der_nn, tr_Der_nn,
-        (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      gb[i] = get_GB_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
-      ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-        t_Der_nn, tr_Der_nn,
-        (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      ricci[i] = get_Ricci_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
       //cout<<r[i]<<"\t"<<ricci[i]<<"\t"<<r_Der_nn<<"\t"<<rr_Der_nn<<"\t"<<t_Der_nn<<"\t"<<tr_Der_nn<<"\t"<<r_Der_ss<<"\t"<<rr_Der_ss<<"\t"<<t_Der_ss<<"\t"<<tr_Der_ss<<endl;
     }
@@ -880,144 +872,411 @@ vector<double> &ricci)
 
 
   else{
-    if(grid.bh_start ==0){
-      {
-        int i = exc_i;
-        double r_Der_nn = (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
-                    + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
+    if(grid.bh_start==0){
+    {
+      int i = grid.exc_i;
 
-        double rr_Der_nn = 0.5*(Dx_2_ptp0_2nd(n_v[i+3],n_v[i+2],n_v[i+1], n_v[i], dr[i]) + Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) );
+      double r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+                  + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
 
-        double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+      double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+                  + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
 
-        double tr_Der_nn = ( Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]) - Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) )/dt ;
+      double r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
+                  + Dx_ptp0_2nd(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], dr[i]))/2.;
 
-        double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
-                    + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
+      double r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
+                  + Dx_ptp0_2nd(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], dr[i]))/2.;
 
-        double rr_Der_ss = 0.5*(Dx_2_ptp0_2nd(s_v[i+3],s_v[i+2],s_v[i+1], s_v[i], dr[i]) + Dx_2_ptp0_2nd(s_v_np1[i+3],s_v_np1[i+2],s_v_np1[i+1], s_v_np1[i], dr[i]) );
+      double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+      double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        double tr_Der_ss = (Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i])
-                            - Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i]) )/dt;
+      double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
-        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
-      }
-      for(int i = exc_i + 1; i<nx-1; i++){
-        double r_Der_nn = (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
-                    + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2.;
+      gb[i] = get_GB_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
-        double rr_Der_nn = 0.5*(Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]) + Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) );
+      ricci[i] = get_Ricci_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+    }
 
-        double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+    for(int i = grid.exc_i+1; i<nx-1; i++){
 
-        double tr_Der_nn = (Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i])
-                            - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;;
+      double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
 
-        double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
-                    + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
+      double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
 
-        double rr_Der_ss = 0.5*(Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]) + Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) );
+      double r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(p_v_np1[i+1], p_v_np1[i-1], dr[i]))/2.;
 
-        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+      double r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(q_v_np1[i+1], q_v_np1[i-1], dr[i]))/2.;
 
-        double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
-                            - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
+      double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
-      }
-      { int i = nx-1;
+      double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        gb[i] = 0.;
-        ricci[i] = 0.;
+      double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
-      }
+      gb[i] = get_GB_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
+      ricci[i] = get_Ricci_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
+    }
+    { int i = nx-1;
+
+      gb[i] = 0.;
+      ricci[i] = 0.;
 
     }
+  }
     else{
+    for(int i = grid.exc_i; i<grid.ah_index-3; i++){
 
-      for(int i = grid.exc_i; i<grid.ah_index-3; i++){
+      double r_Der_nn= (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+                  + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
 
-        double r_Der_nn = (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
-                    + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
+      double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+                  + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
 
-        double rr_Der_nn = 0.5*(Dx_2_ptp0_2nd(n_v[i+3],n_v[i+2],n_v[i+1], n_v[i], dr[i]) + Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) );
+      double r_Der_P= (Dx_ptp0_2nd(p_v[i+2], p_v[i+1], p_v[i], dr[i])
+                  + Dx_ptp0_2nd(p_v_np1[i+2], p_v_np1[i+1], p_v_np1[i], dr[i]))/2.;
 
-        double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+      double r_Der_Q= (Dx_ptp0_2nd(q_v[i+2], q_v[i+1], q_v[i], dr[i])
+                  + Dx_ptp0_2nd(q_v_np1[i+2], q_v_np1[i+1], q_v_np1[i], dr[i]))/2.;
 
-        double tr_Der_nn = ( Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]) - Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) )/dt ;
+      double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
-                    + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
+      double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        double rr_Der_ss = 0.5*(Dx_2_ptp0_2nd(s_v[i+3],s_v[i+2],s_v[i+1], s_v[i], dr[i]) + Dx_2_ptp0_2nd(s_v_np1[i+3],s_v_np1[i+2],s_v_np1[i+1], s_v_np1[i], dr[i]) );
+      double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+      double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
-        double tr_Der_ss = (Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i])
-                            - Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i]) )/dt;
+      gb[i] = get_GB_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
-        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
-
-        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      ricci[i] = get_Ricci_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
       }
 
-      for(int i = grid.ah_index-3; i<nx-1; i++){
+    for(int i = grid.ah_index-3; i<nx-1; i++){
 
-        double r_Der_nn = (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
-                    + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2.;
+      double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
 
-        double rr_Der_nn = 0.5*(Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]) + Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) );
+      double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
 
-        double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+      double r_Der_P= (Dx_ptpc_2nd(p_v[i+1], p_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(p_v_np1[i+1], p_v_np1[i-1], dr[i]))/2.;
 
-        double tr_Der_nn = (Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i])
-                            - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;;
+      double r_Der_Q= (Dx_ptpc_2nd(q_v[i+1], q_v[i-1], dr[i])
+                  + Dx_ptpc_2nd(q_v_np1[i+1], q_v_np1[i-1], dr[i]))/2.;
 
-        double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
-                    + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
+      double Bep = beta_p(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        double rr_Der_ss = 0.5*(Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]) + Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) );
+      double Bepp = beta_pp(ls,lexp,mu, (phi_v[i] +phi_v_np1[i])/2. );
 
-        double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+      double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
 
-        double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
-                            - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
+      double t_Der_P = (p_v_np1[i] - p_v[i])/dt;
 
-        gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+      gb[i] = get_GB_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
-        ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
-          t_Der_nn, tr_Der_nn,
-          (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
-      }
+      ricci[i] = get_Ricci_Val_reduced(r[i], (n_v[i] + n_v_np1[i])/2.,
+      r_Der_nn, (s_v[i] + s_v_np1[i])/2., r_Der_ss,
+      (p_v[i] + p_v_np1[i])/2.,
+      r_Der_P, (q_v[i] + q_v_np1[i])/2., r_Der_Q, Bep, Bepp, t_Der_ss, t_Der_P);
 
-      { int i = nx-1;
+    }
+    { int i = nx-1;
 
-        gb[i] = 0.;
-        ricci[i] = 0.;
-
-      }
+      gb[i] = 0.;
+      ricci[i] = 0.;
 
     }
   }
 }
+}
+//============================================================================================
+double Diagnostics::get_GB_Val(double r, double nn, double r_Der_nn, double rr_Der_nn, double t_Der_nn, double tr_Der_nn, double ss, double r_Der_ss, double rr_Der_ss, double t_Der_ss, double tr_Der_ss)
+{
+  double ans = 0;
+  double ssr = ss/r;
+  // ans = 8*pow(r,3)*r_Der_nn*pow(ssr,3)*t_Der_nn - 8*pow(r,3)*pow(ssr,3)*tr_Der_nn*nn + 8*r*r_Der_nn*r_Der_ss*ssr*(-2 + 5*pow(r,2)*pow(ssr,2))*pow(nn,2) - 8*pow(r,2)*pow(ssr,2)*tr_Der_ss*pow(nn,2) + 24*pow(r,2)*pow(r_Der_ss,2)*pow(ssr,2)*pow(nn,3) + 8*pow(r,3)*rr_Der_ss*pow(ssr,3)*pow(nn,3) + t_Der_ss*(-24*pow(r,2)*r_Der_nn*pow(ssr,2)*nn - 16*r*r_Der_ss*ssr*pow(nn,2)) + 8*r*rr_Der_nn*ssr*(-(r*ssr*pow(nn,2)) + pow(r,3)*pow(ssr,3)*pow(nn,2))
+  // ;
+  ans = 8*pow(r,3)*r_Der_nn*pow(ssr,3)*t_Der_nn - 8*pow(r,3)*pow(ssr,3)*tr_Der_nn*nn - 8*pow(r,2)*pow(ssr,2)*tr_Der_ss*pow(nn,2) + 24*pow(r,2)*pow(r_Der_ss,2)*pow(ssr,2)*pow(nn,3) + 8*pow(r,3)*rr_Der_ss*pow(ssr,3)*pow(nn,3) + t_Der_ss*(-24*pow(r,2)*r_Der_nn*pow(ssr,2)*nn - 16*r*r_Der_ss*ssr*pow(nn,2)) + 8*r*r_Der_nn*r_Der_ss*ssr*(-2*pow(nn,2) + 5*pow(r,2)*pow(ssr,2)*pow(nn,2)) + 8*r*rr_Der_nn*ssr*(-(r*ssr*pow(nn,2)) + pow(r,3)*pow(ssr,3)*pow(nn,2))
+  ;
+  ans /= pow(r,2)*pow(nn,3);
+
+  return ans;
+}
+// //==============================================================================
+double Diagnostics::get_Ricci_Val(double r, double nn, double r_Der_nn, double rr_Der_nn, double t_Der_nn, double tr_Der_nn, double ss, double r_Der_ss, double rr_Der_ss, double t_Der_ss, double tr_Der_ss)
+{
+  double ans = 0.;
+  double ssr = ss/r;
+
+  ans = 2*pow(r,3)*r_Der_nn*ssr*t_Der_nn - 2*pow(r,3)*ssr*tr_Der_nn*nn - 2*pow(r,2)*tr_Der_ss*pow(nn,2) + 2*pow(r,2)*pow(r_Der_ss,2)*pow(nn,3) + 2*pow(r,3)*rr_Der_ss*ssr*pow(nn,3) + 8*pow(r,2)*r_Der_ss*ssr*pow(nn,3) + 2*pow(r,2)*pow(ssr,2)*pow(nn,3) + t_Der_ss*(-2*pow(r,2)*r_Der_nn*nn - 4*r*pow(nn,2)) + 2*rr_Der_nn*(-(pow(r,2)*pow(nn,2)) + pow(r,4)*pow(ssr,2)*pow(nn,2)) + r_Der_nn*(6*pow(r,3)*r_Der_ss*ssr*pow(nn,2) + 4*(-(r*pow(nn,2)) + pow(r,3)*pow(ssr,2)*pow(nn,2)))
+  ;
+
+  ans /= pow(r,2)*pow(nn,3);
+
+  return ans;
+}
+// //==============================================================================
+// void Diagnostics::compute_GB_Ricci(Grid_data &grid,
+// const vector<double> &n_v,
+// const vector<double> &s_v,
+// const vector<double> &n_v_np1,
+// const vector<double> &s_v_np1,
+// vector<double> &gb,
+// vector<double> &ricci)
+// {
+//
+//   vector<double> dr = grid.dr;
+//   vector<double> r = grid.r;
+//   double dt = grid.dt;
+//   int nx = grid.nx;
+//   int exc_i = grid.exc_i;
+//
+//   if(exc_i ==0){
+//
+//     {
+//       int i = exc_i;
+//
+//       double nn = (n_v[i] + n_v_np1[i])/2.;
+//
+//       double r_Der_nn = 0.;
+//
+//       double rr_Der_nn = (Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i+1], dr[i]) +
+//                           Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i+1], dr[i]))/2.;
+//
+//       double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+//
+//       double tr_Der_nn = 0.;
+//
+//       double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i])
+//                   + Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i]))/2.;
+//
+//       double rr_Der_ss = (Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], -s_v_np1[i+1], dr[i]) +
+//                           Dx_2_ptpc_2nd(s_v[i+1], s_v[i], -s_v[i+1], dr[i]))/2.;
+//
+//       double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+//
+//       double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], -s_v_np1[i+1], dr[i])
+//                           - Dx_ptpc_2nd(s_v[i+1], -s_v[i+1], dr[i]))/dt;
+//
+//       gb[i] = (24*(-(rr_Der_nn*pow(r_Der_ss,2)) + nn*pow(r_Der_ss,4) - pow(r_Der_ss,2)*tr_Der_ss))/nn;
+//
+//       ricci[i] = (6*(-rr_Der_nn + 2*nn*pow(r_Der_ss,2) - tr_Der_ss))/nn;
+//     }
+//
+//     for(int i = exc_i + 1; i<nx-1; i++){
+//       double r_Der_nn= (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+//                   + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2. ;
+//
+//       double rr_Der_nn = (Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) +
+//                           Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]))/2.;
+//
+//       double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+//
+//       double tr_Der_nn = (Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i])
+//                           - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;
+//
+//       double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+//                   + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
+//
+//       double rr_Der_ss = (Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) +
+//                           Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]))/2.;
+//
+//       double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+//
+//       double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
+//                           - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
+//
+//       gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//         t_Der_nn, tr_Der_nn,
+//         (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//
+//       ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//         t_Der_nn, tr_Der_nn,
+//         (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//
+//       //cout<<r[i]<<"\t"<<ricci[i]<<"\t"<<r_Der_nn<<"\t"<<rr_Der_nn<<"\t"<<t_Der_nn<<"\t"<<tr_Der_nn<<"\t"<<r_Der_ss<<"\t"<<rr_Der_ss<<"\t"<<t_Der_ss<<"\t"<<tr_Der_ss<<endl;
+//     }
+//     { int i = nx-1;
+//
+//       gb[i] = 0.;
+//       ricci[i] = 0.;
+//
+//     }
+//   }
+//
+//
+//   else{
+//     if(grid.bh_start ==0){
+//       {
+//         int i = exc_i;
+//         double r_Der_nn = (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+//                     + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
+//
+//         double rr_Der_nn = 0.5*(Dx_2_ptp0_2nd(n_v[i+3],n_v[i+2],n_v[i+1], n_v[i], dr[i]) + Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) );
+//
+//         double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+//
+//         double tr_Der_nn = ( Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]) - Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) )/dt ;
+//
+//         double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+//                     + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
+//
+//         double rr_Der_ss = 0.5*(Dx_2_ptp0_2nd(s_v[i+3],s_v[i+2],s_v[i+1], s_v[i], dr[i]) + Dx_2_ptp0_2nd(s_v_np1[i+3],s_v_np1[i+2],s_v_np1[i+1], s_v_np1[i], dr[i]) );
+//
+//         double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+//
+//         double tr_Der_ss = (Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i])
+//                             - Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i]) )/dt;
+//
+//         gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//
+//         ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//       }
+//       for(int i = exc_i + 1; i<nx-1; i++){
+//         double r_Der_nn = (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+//                     + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2.;
+//
+//         double rr_Der_nn = 0.5*(Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]) + Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) );
+//
+//         double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+//
+//         double tr_Der_nn = (Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i])
+//                             - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;;
+//
+//         double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+//                     + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
+//
+//         double rr_Der_ss = 0.5*(Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]) + Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) );
+//
+//         double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+//
+//         double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
+//                             - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
+//
+//         gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//
+//         ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//       }
+//       { int i = nx-1;
+//
+//         gb[i] = 0.;
+//         ricci[i] = 0.;
+//
+//       }
+//
+//
+//     }
+//     else{
+//
+//       for(int i = grid.exc_i; i<grid.ah_index-3; i++){
+//
+//         double r_Der_nn = (Dx_ptp0_2nd(n_v[i+2], n_v[i+1], n_v[i], dr[i])
+//                     + Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]))/2. ;
+//
+//         double rr_Der_nn = 0.5*(Dx_2_ptp0_2nd(n_v[i+3],n_v[i+2],n_v[i+1], n_v[i], dr[i]) + Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) );
+//
+//         double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+//
+//         double tr_Der_nn = ( Dx_ptp0_2nd(n_v_np1[i+2], n_v_np1[i+1], n_v_np1[i], dr[i]) - Dx_2_ptp0_2nd(n_v_np1[i+3],n_v_np1[i+2],n_v_np1[i+1], n_v_np1[i], dr[i]) )/dt ;
+//
+//         double r_Der_ss= (Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i])
+//                     + Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i]))/2.;
+//
+//         double rr_Der_ss = 0.5*(Dx_2_ptp0_2nd(s_v[i+3],s_v[i+2],s_v[i+1], s_v[i], dr[i]) + Dx_2_ptp0_2nd(s_v_np1[i+3],s_v_np1[i+2],s_v_np1[i+1], s_v_np1[i], dr[i]) );
+//
+//         double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+//
+//         double tr_Der_ss = (Dx_ptp0_2nd(s_v_np1[i+2], s_v_np1[i+1], s_v_np1[i], dr[i])
+//                             - Dx_ptp0_2nd(s_v[i+2], s_v[i+1], s_v[i], dr[i]) )/dt;
+//
+//         gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//
+//         ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//       }
+//
+//       for(int i = grid.ah_index-3; i<nx-1; i++){
+//
+//         double r_Der_nn = (Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i])
+//                     + Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i]))/2.;
+//
+//         double rr_Der_nn = 0.5*(Dx_2_ptpc_2nd(n_v[i+1], n_v[i], n_v[i-1], dr[i]) + Dx_2_ptpc_2nd(n_v_np1[i+1], n_v_np1[i], n_v_np1[i-1], dr[i]) );
+//
+//         double t_Der_nn = (n_v_np1[i] - n_v[i])/dt;
+//
+//         double tr_Der_nn = (Dx_ptpc_2nd(n_v_np1[i+1], n_v_np1[i-1], dr[i])
+//                             - Dx_ptpc_2nd(n_v[i+1], n_v[i-1], dr[i]))/dt;;
+//
+//         double r_Der_ss= (Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i])
+//                     + Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i]))/2.;
+//
+//         double rr_Der_ss = 0.5*(Dx_2_ptpc_2nd(s_v[i+1], s_v[i], s_v[i-1], dr[i]) + Dx_2_ptpc_2nd(s_v_np1[i+1], s_v_np1[i], s_v_np1[i-1], dr[i]) );
+//
+//         double t_Der_ss = (s_v_np1[i] - s_v[i])/dt;
+//
+//         double tr_Der_ss = (Dx_ptpc_2nd(s_v_np1[i+1], s_v_np1[i-1], dr[i])
+//                             - Dx_ptpc_2nd(s_v[i+1], s_v[i-1], dr[i]))/dt;
+//
+//         gb[i] = get_GB_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//
+//         ricci[i] = get_Ricci_Val(r[i], (n_v[i] + n_v_np1[i])/2., r_Der_nn, rr_Der_nn,
+//           t_Der_nn, tr_Der_nn,
+//           (s_v[i] + s_v_np1[i])/2., r_Der_ss, rr_Der_ss, t_Der_ss, tr_Der_ss);
+//       }
+//
+//       { int i = nx-1;
+//
+//         gb[i] = 0.;
+//         ricci[i] = 0.;
+//
+//       }
+//
+//     }
+//   }
+// }

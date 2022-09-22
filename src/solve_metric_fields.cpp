@@ -30,7 +30,7 @@ double Solve_metric_fields::rhs_shift(double r,
   double Q, double r_Der_Q,
   double Bep, double Bepp)
   {
-    if(fabs(r_Der_Q)<1e-12){
+    if(fabs(r_Der_Q)<1e-10){
       return (-ss/(2.*r));
     }
     else{
@@ -311,7 +311,7 @@ void Solve_metric_fields::solve_lapse(const Grid_data grid, Field &n_v, Field &s
   if(exc_i==0){
     {
       int i = exc_i;
-      n_v.v[i] = 0.5;
+      n_v.v[i] = 1.0;
 
       double nn = n_v.v[i];
 

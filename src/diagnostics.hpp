@@ -45,11 +45,23 @@ public:
   /*---------------------------------------------------------------------------*/
   void find_abs_min(const vector<double> &v, double &min_elem, int &index, const double ref_val, const int start_index);
 
+  // void compute_GB_Ricci(Grid_data &grid,
+  // const std::vector<double> &n_v,
+  // const std::vector<double> &s_v,
+  // const std::vector<double> &n_v_np1,
+  // const std::vector<double> &s_v_np1,
+  // std::vector<double> &gb,
+  // std::vector<double> &ricci);
+
   void compute_GB_Ricci(Grid_data &grid,
   const std::vector<double> &n_v,
   const std::vector<double> &s_v,
+  const std::vector<double> &p_v, const std::vector<double>  &q_v,
+  const std::vector<double> &phi_v,
   const std::vector<double> &n_v_np1,
-  const std::vector<double> &s_v_np1,
+  const std::vector<double> &s_v_np1, const std::vector<double> &p_v_np1,
+  const std::vector<double> &q_v_np1,
+  const std::vector<double> &phi_v_np1,
   std::vector<double> &gb,
   std::vector<double> &ricci);
 
@@ -64,6 +76,20 @@ private:
   double &ingoing_c, double &outgoing_c);
 
   double e_rr_residual(double r, double nn, double r_Der_nn,
+  double ss, double r_Der_ss,
+  double P, double r_Der_P,
+  double Q, double r_Der_Q,
+  double Bep, double Bepp,
+  double t_Der_ss, double t_Der_P);
+
+  double get_GB_Val_reduced(double r, double nn, double r_Der_nn,
+  double ss, double r_Der_ss,
+  double P, double r_Der_P,
+  double Q, double r_Der_Q,
+  double Bep, double Bepp,
+  double t_Der_ss, double t_Der_P);
+
+  double get_Ricci_Val_reduced(double r, double nn, double r_Der_nn,
   double ss, double r_Der_ss,
   double P, double r_Der_P,
   double Q, double r_Der_Q,

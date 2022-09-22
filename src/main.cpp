@@ -1,6 +1,7 @@
 #include <cassert>
 #include <ctime>
 #include <cmath>
+
 #include <string>
 using std::string;
 #include <iomanip>
@@ -93,15 +94,9 @@ int main(int argc, char const *argv[]) {
   vector<double> outgoing(grid.nx,0);
   vector<double> ncc_in(grid.nx,0);
   vector<double> ncc_out(grid.nx,0);
-  vector<double> gb(grid.nx,0);
-  vector<double> ricci(grid.nx,0);
 
   //============================================================================
   /* Simulation Parameters */
-
-  // cout<<"Simulation Parameters"<<"\n"<<endl;
-  // cout<<"---------------------------------------------------------------"<<endl;
-  // cout<<"---------------------------------------------------------------"<<endl;
   cout<<"Saving file at : "<<path<<endl;
   cout<<"nx = "<<grid.nx<<endl;
   cout<<"nt = "<<grid.nt<<endl;
@@ -220,8 +215,9 @@ int main(int argc, char const *argv[]) {
   phi_nm1 = phi.v;
 
   evolve_scalar_field.evolve(grid, n, s, p, q, phi);
-  grid.update_t();
   solve_metric.solve( grid, n, s , p ,q,phi);
+  grid.update_t();
+  i_e += 1;
   diagnostics.compute_e_rr_residual(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, n.v,s.v, p.v,q.v,phi.v,residual);
   diagnostics.find_apparent_horizon(grid,s);
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
@@ -229,34 +225,46 @@ int main(int argc, char const *argv[]) {
 
 
   if(sp.write_curvature == 1){
-    diagnostics.compute_GB_Ricci(grid,
-    n_nm1,
-    s_nm1,
-    n.v,
-    s.v,
-    gb,
-    ricci);
-  }
+    vector<double> gb(grid.nx,0);
+    vector<double> ricci(grid.nx,0);
+    vector<double> ricci_grad_phi_sq_diff(grid.nx,0);
+    // diagnostics.compute_GB_Ricci(grid, n_nm1, s_nm1, n.v, s.v, gb, ricci);
+    diagnostics.compute_GB_Ricci(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, n.v,s.v, p.v,q.v,phi.v,gb,ricci);
 
-  i_e += 1;
+    for(int i1 = grid.exc_i; i1<grid.nx; i1++){
+      double psq = pow((p.v[i1]+ p_nm1[i1])/2.,2.);
+      double qsq = pow((q.v[i1]+ q_nm1[i1])/2.,2.);
+      ricci_grad_phi_sq_diff[i1] = ricci[i1] - (qsq-psq);
 
-  if ((i_e%save_steps ==0) ){
-    if(sp.write_curvature==1){
-      write.write_vec(gb, "gb");
-      write.write_vec(ricci, "ricci");
     }
-    write.write_vec(ncc_in, "ncc_in");
-    write.write_vec(ncc_out, "ncc_out");
-    write.write_residual(residual);
-    write.write_fields(n, s , p ,q, phi);
-    write.write_MS_mass(mass_extraction_radius,r_val_m_rad , s.v);
-    write.write_characteristics(ingoing, outgoing);
-    write.write_ah(grid);
+    if ((i_e%save_steps ==0) ){
+        write.write_vec(ricci_grad_phi_sq_diff, "ricci_sq_diff");
+        write.write_vec(gb, "gb");
+        write.write_vec(ricci, "ricci");
+        write.write_vec(ncc_in, "ncc_in");
+        write.write_vec(ncc_out, "ncc_out");
+        write.write_residual(residual);
+        write.write_fields(n, s , p ,q, phi);
+        write.write_MS_mass(mass_extraction_radius,r_val_m_rad , s.v);
+        write.write_characteristics(ingoing, outgoing);
+        write.write_ah(grid);
+      }
+    }
+  else{
+
+    if ((i_e%save_steps ==0) ){
+      write.write_vec(ncc_in, "ncc_in");
+      write.write_vec(ncc_out, "ncc_out");
+      write.write_residual(residual);
+      write.write_fields(n, s , p ,q, phi);
+      write.write_MS_mass(mass_extraction_radius,r_val_m_rad , s.v);
+      write.write_characteristics(ingoing, outgoing);
+      write.write_ah(grid);
+
+    }
 
   }
-
-
-}
+  }
 
   cout<<"Final time = "<<grid.t_evolve<<endl;
   if(grid.exc_i>0){
