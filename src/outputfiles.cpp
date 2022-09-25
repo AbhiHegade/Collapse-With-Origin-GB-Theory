@@ -173,3 +173,15 @@ void Write_data::write_MS_mass(const int pos, const double rval, const vector<do
   write_output.flush();
   write_output.close();
 }
+
+void Write_data::write_NER_index(const Grid_data grid){
+  string name = path+"NER_index.dat";
+  std::ofstream write_output(name , std::ios::app);
+  assert(write_output.is_open());
+  write_output.precision(16);
+
+  write_output<<grid.NER_index;
+  write_output.flush();
+  write_output.close();
+
+}

@@ -36,7 +36,9 @@ Grid_data::Grid_data( const int nx,const int nt, const double ex_ratio,
   lexp{lexp},
   mu{mu},
   dissipation{dissipation},
-  bh_start{bh_start}
+  bh_start{bh_start},
+  NER{0},
+  NER_index{0}
   {
   //   x[0] = dx/4.;
   //   r[0] = r_of_x(x[0]);

@@ -37,6 +37,10 @@ public:
 
   const int bh_start;
 
+  int NER_index;
+
+  int NER;
+
   void update_t();
 
 private:

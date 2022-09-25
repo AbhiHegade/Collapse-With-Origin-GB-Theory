@@ -4,7 +4,7 @@ import numpy as np
 from multiprocessing import Pool
 import time
 from datetime import datetime
-import os
+import os, subprocess
 #===============================================================================
 #theory = "shift_symm"
 #theory = "gaussian"
@@ -19,19 +19,46 @@ out_path = home_path+ "/output/Phase-Space/Runs_all"
 #===============================================================================
 input_data = []
 # input_data = [[0.009,0.5,0,0],[0.0095,0.5,0,0],[0.01,0.5,0,0],[0.015,0.5,0,0],[0.02,0.5,0,0]]
-input_data = [[0.009,0.5,0,0],[0.03,0.5,0,0]]
+# input_data = [[0.03,0.2,0,0],
+# [0.021,0.3,0,0],
+# [0.017,0.4,0,0],
+# [0.013,0.5,0,0],
+# [0.01,0.6,0,0],
+# [0.008,0.7,0,0],
+# [0.006,0.8,0,0],
+# [0.0048,0.9,0,0],
+# [0.0039,1.0,0,0]]
+# input_data = [[0.144,0.2,0,0],
+# [0.150,0.3,0,0],
+# [0.156,0.4,0,0],
+# [0.163,0.5,0,0],
+# [0.170,0.6,0,0],
+# [0.176,0.7,0,0],
+# [0.182,0.8,0,0],
+# [0.188,0.9,0,0],
+# [0.194,1.0,0,0]]
+# input_data = [[0.075,0.2,0,0],
+# [0.06,0.3,0,0],
+# [0.05,0.4,0,0],
+# [0.043,0.5,0,0],
+# [0.037,0.6,0,0],
+# [0.031,0.7,0,0],
+# [0.026,0.8,0,0],
+# [0.022,0.9,0,0],
+# [0.018,1.0,0,0]]
+input_data = [[0.06,1.0,0,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.write_curvature = 1
 sim.slurm = False
 sim.cluster = False
-sim.write_runs =False
+sim.write_runs =True
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 15000
-sim.nt = 15000
-sim.save_steps = int(sim.nt/1000)
+sim.nx = 10000
+sim.nt = 10000
+sim.save_steps = int(sim.nt/0.5)
 sim.ex_ratio = 0.8
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -74,6 +101,7 @@ if sim.search == False:
     np.savetxt(run_params + "/lexp.dat" , input_data[:,2])
     np.savetxt(run_params + "/mu.dat" , input_data[:,3])
 else:
+    subprocess.call('cp ./{} {}'.format("GB-Plots-NER.ipynb",run_params),shell=True)
     with open(run_params + "/run_params.dat", "w" ) as f:
         f.write("nx = {} \n".format(sim.nx))
         f.write("nt = {} \n".format(sim.nt))

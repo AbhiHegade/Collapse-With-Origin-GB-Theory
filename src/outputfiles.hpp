@@ -19,6 +19,7 @@ public:
   void write_residual(const std::vector<double> &residual);
   void write_vec(const std::vector<double> &vec, const std::string name);
   void write_MS_mass(const int pos, const double rval,const std::vector<double> &s);
+  void write_NER_index(const Grid_data grid);
 private:
   void write_field(const Field &n);
 

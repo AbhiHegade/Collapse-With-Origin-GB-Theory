@@ -263,9 +263,13 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
         ingoing_c, outgoing_c);
 
         if (status==-1) {
+          if(grid.NER==0){
           cout<<"Elliptic region formation in flat space."<<endl;
           cout<<"naked_elliptic_region at (i,r) = ("<<i<<","<<r[i]<<"), t = "<<grid.t_evolve<<endl;
-          std::exit(0);
+          grid.NER = 1;
+          grid.NER_index = i;
+          }
+          // std::exit(0);
         }
         ingoing[i]=   ingoing_c;
         outgoing[i]= outgoing_c;
@@ -403,9 +407,13 @@ void Diagnostics::check_for_elliptic_region(Grid_data &grid,
       }
       if (grid.exc_i >= grid.ah_index-3){
         // cout<<"Elliptic region within 3 grid points of ah; ";
+        if(grid.NER==0){
         cout<<"Elliptic region at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<"), AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<"), t = "<<grid.t_evolve<<endl;
         cout<<"naked_elliptic_region outside horizon. "<<"Elliptic region at (i,r) = ("<<grid.exc_i<<","<<r[grid.exc_i]<<"), AH at (i,r) = ("<<grid.ah_index<<","<<r[grid.ah_index]<<"), t = "<<grid.t_evolve<<endl;
-        std::exit(0);
+        grid.NER = 1;
+        grid.NER_index = grid.exc_i;
+        // std::exit(0);
+      }
       }
   }
 

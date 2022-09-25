@@ -239,7 +239,24 @@ int main(int argc, char const *argv[]) {
       grad_phi_sq[i1] = (qsq-psq);
       lsq_f_phi_gb[i1] = fphi*gb[i1];
     }
+    if(grid.NER==1){
+      write.write_NER_index(grid);
+      write.write_vec(lsq_f_phi_gb, "lsq_f_phi_gb");
+      write.write_vec(grad_phi_sq, "grad_phi_sq");
+      write.write_vec(gb, "gb");
+      write.write_vec(ricci, "ricci");
+      write.write_vec(ncc_in, "ncc_in");
+      write.write_vec(ncc_out, "ncc_out");
+      write.write_residual(residual);
+      write.write_fields(n, s , p ,q, phi);
+      write.write_MS_mass(mass_extraction_radius,r_val_m_rad , s.v);
+      write.write_characteristics(ingoing, outgoing);
+      write.write_ah(grid);
+      std::exit(0);
+
+    }
     if ((i_e%save_steps ==0) ){
+        write.write_NER_index(grid);
         write.write_vec(lsq_f_phi_gb, "lsq_f_phi_gb");
         write.write_vec(grad_phi_sq, "grad_phi_sq");
         write.write_vec(gb, "gb");
@@ -255,7 +272,21 @@ int main(int argc, char const *argv[]) {
     }
   else{
 
+    if(grid.NER==1){
+      write.write_NER_index(grid);
+      write.write_vec(ncc_in, "ncc_in");
+      write.write_vec(ncc_out, "ncc_out");
+      write.write_residual(residual);
+      write.write_fields(n, s , p ,q, phi);
+      write.write_MS_mass(mass_extraction_radius,r_val_m_rad , s.v);
+      write.write_characteristics(ingoing, outgoing);
+      write.write_ah(grid);
+      std::exit(0);
+
+    }
+
     if ((i_e%save_steps ==0) ){
+      write.write_NER_index(grid);
       write.write_vec(ncc_in, "ncc_in");
       write.write_vec(ncc_out, "ncc_out");
       write.write_residual(residual);
