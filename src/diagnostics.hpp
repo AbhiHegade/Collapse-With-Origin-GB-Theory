@@ -43,6 +43,29 @@ public:
   std::vector<double> &ncc_in,
   std::vector<double> &ncc_out);
   /*---------------------------------------------------------------------------*/
+  void compute_Dkk_Dll(Grid_data &grid,
+  const std::vector<double> &n_v,
+  const std::vector<double> &s_v,
+  const std::vector<double> &p_v, const std::vector<double>  &q_v,
+  const std::vector<double> &phi_v,
+  const std::vector<double> &n_v_np1,
+  const std::vector<double> &s_v_np1, const std::vector<double> &p_v_np1,
+  const std::vector<double> &q_v_np1,
+  const std::vector<double> &phi_v_np1,
+  std::vector<double> &dll,
+  std::vector<double> &dkk);
+  /*---------------------------------------------------------------------------*/
+  void compute_detM(Grid_data &grid,
+  const std::vector<double> &n_v,
+  const std::vector<double> &s_v,
+  const std::vector<double> &p_v, const std::vector<double>  &q_v,
+  const std::vector<double> &phi_v,
+  const std::vector<double> &n_v_np1,
+  const std::vector<double> &s_v_np1, const std::vector<double> &p_v_np1,
+  const std::vector<double> &q_v_np1,
+  const std::vector<double> &phi_v_np1,
+  std::vector<double> &detM);
+  /*---------------------------------------------------------------------------*/
   void find_abs_min(const vector<double> &v, double &min_elem, int &index, const double ref_val, const int start_index);
 
   // void compute_GB_Ricci(Grid_data &grid,
@@ -131,6 +154,19 @@ private:
   double get_NCC_out(double nn,
   double r_Der_nn,
   double ss,
+  double t_Der_ss);
+
+  double get_rsqDll(double r, double nn, double r_Der_nn, double ss, double t_Der_ss,
+  double P, double Q, double Bep );
+
+  double get_rsqDkk(double r, double nn, double r_Der_nn, double ss, double t_Der_ss,
+  double P, double Q, double Bep );
+
+  double get_detM(double r, double nn, double r_Der_nn,
+  double ss, double r_Der_ss,
+  double P,
+  double Q,
+  double Bep,
   double t_Der_ss);
 
   };

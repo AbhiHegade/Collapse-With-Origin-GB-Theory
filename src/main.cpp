@@ -94,6 +94,9 @@ int main(int argc, char const *argv[]) {
   vector<double> outgoing(grid.nx,0);
   vector<double> ncc_in(grid.nx,0);
   vector<double> ncc_out(grid.nx,0);
+  vector<double> dll(grid.nx,0);
+  vector<double> dkk(grid.nx,0);
+  vector<double> detM(grid.nx,0);
 
   //============================================================================
   /* Simulation Parameters */
@@ -223,6 +226,9 @@ int main(int argc, char const *argv[]) {
   diagnostics.check_for_elliptic_region(grid, n, s, p, q, phi, ingoing, outgoing);
   diagnostics.compute_NCC(grid, n_nm1, s_nm1,n.v, s.v, ncc_in, ncc_out);
 
+  diagnostics.compute_Dkk_Dll(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, n.v,s.v, p.v,q.v,phi.v,dll,dkk);
+
+  diagnostics.compute_detM(grid, n_nm1, s_nm1, p_nm1, q_nm1, phi_nm1, n.v, s.v, p.v, q.v, phi.v, detM);
 
   if(sp.write_curvature == 1){
     vector<double> gb(grid.nx,0);
@@ -240,6 +246,9 @@ int main(int argc, char const *argv[]) {
       lsq_f_phi_gb[i1] = fphi*gb[i1];
     }
     if(grid.NER==1){
+      write.write_vec(dkk,"rsq_dkk");
+      write.write_vec(dll,"rsq_dll");
+      write.write_vec(detM, "detM");
       write.write_NER_index(grid);
       write.write_vec(lsq_f_phi_gb, "lsq_f_phi_gb");
       write.write_vec(grad_phi_sq, "grad_phi_sq");
@@ -256,6 +265,9 @@ int main(int argc, char const *argv[]) {
 
     }
     if ((i_e%save_steps ==0) ){
+        write.write_vec(dkk,"rsq_dkk");
+        write.write_vec(dll,"rsq_dll");
+        write.write_vec(detM, "detM");
         write.write_NER_index(grid);
         write.write_vec(lsq_f_phi_gb, "lsq_f_phi_gb");
         write.write_vec(grad_phi_sq, "grad_phi_sq");
@@ -273,6 +285,9 @@ int main(int argc, char const *argv[]) {
   else{
 
     if(grid.NER==1){
+      write.write_vec(dkk,"rsq_dkk");
+      write.write_vec(dll,"rsq_dll");
+      write.write_vec(detM, "detM");
       write.write_NER_index(grid);
       write.write_vec(ncc_in, "ncc_in");
       write.write_vec(ncc_out, "ncc_out");
@@ -286,6 +301,9 @@ int main(int argc, char const *argv[]) {
     }
 
     if ((i_e%save_steps ==0) ){
+      write.write_vec(dkk,"rsq_dkk");
+      write.write_vec(dll,"rsq_dll");
+      write.write_vec(detM, "detM");
       write.write_NER_index(grid);
       write.write_vec(ncc_in, "ncc_in");
       write.write_vec(ncc_out, "ncc_out");
