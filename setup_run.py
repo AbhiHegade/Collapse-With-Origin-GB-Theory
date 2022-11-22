@@ -46,19 +46,19 @@ input_data = []
 # [0.026,0.8,0,0],
 # [0.022,0.9,0,0],
 # [0.018,1.0,0,0]]
-input_data = [[0.06,1.0,0,0],[0.1,0.5,0,0]]
+input_data = [[0.06,1.0,3,0],[0.1,0.5,3,0]]
 input_data = np.array(input_data)
 current_time = datetime.now()
 sim = Sim()
 sim.write_curvature = 1
 sim.slurm = False
 sim.cluster = False
-sim.write_runs =True
+sim.write_runs =False
 sim.animscript = home_path +"/Animation-Script.ipynb"
 sim.cl = 100.0
-sim.nx = 6000
-sim.nt = 6000
-sim.save_steps = int(sim.nt/100)
+sim.nx = 10000
+sim.nt = 40000
+sim.save_steps = int(sim.nt/0.5)
 sim.ex_ratio = 0.8
 sim.initial_mass = 0
 if(sim.initial_mass == 0):
@@ -70,7 +70,7 @@ sim.rl =8.
 sim.ru =12.
 sim.collapse_and_bh = 1
 sim.dissipation = 0.5
-sim.search =False
+sim.search =True
 sim.ic = "normal"
 sim.r0 = 0.
 sim.w0 = 0.
@@ -173,26 +173,27 @@ if sim.search == True:
     # data_search = [[0.01,0.02,1e-3,0,0,0]]
     r1 = "flat_space_to_naked_elliptic"
     r2 = "naked_elliptic_to_blackhole"
-    data_search = [
-    [0.1,0.2,1e-3,0,1.0,3,r2],
-    [0.1,0.2,1e-3,0,1.2,3,r2],
-    [0.1,0.2,1e-3,0,1.4,3,r2],
-    [0.1,0.2,1e-3,0,1.6,3,r2],
-    [0.1,0.2,1e-3,0,1.8,3,r2],
-    [0.1,0.2,1e-3,0,2.0,3,r2],
-    [0.1,0.2,1e-3,0,2.2,3,r2],
-    [0.1,0.2,1e-3,0,2.4,3,r2],
-    [0.1,0.2,1e-3,0,2.6,3,r2],
-    [1e-3,0.06,1e-4,0,1.0,3,r1],
-    [1e-3,0.06,1e-4,0,1.2,3,r1],
-    [1e-3,0.06,1e-4,0,1.4,3,r1],
-    [1e-3,0.06,1e-4,0,1.6,3,r1],
-    [1e-3,0.06,1e-4,0,1.8,3,r1],
-    [1e-3,0.06,1e-4,0,2.0,3,r1],
-    [1e-3,0.06,1e-4,0,2.2,3,r1],
-    [1e-3,0.06,1e-4,0,2.4,3,r1],
-    [1e-3,0.06,1e-4,0,2.6,3,r1],
-    ]
+    # data_search = [
+    # [0.1,0.2,1e-3,0,1.0,3,r2],
+    # [0.1,0.2,1e-3,0,1.2,3,r2],
+    # [0.1,0.2,1e-3,0,1.4,3,r2],
+    # [0.1,0.2,1e-3,0,1.6,3,r2],
+    # [0.1,0.2,1e-3,0,1.8,3,r2],
+    # [0.1,0.2,1e-3,0,2.0,3,r2],
+    # [0.1,0.2,1e-3,0,2.2,3,r2],
+    # [0.1,0.2,1e-3,0,2.4,3,r2],
+    # [0.1,0.2,1e-3,0,2.6,3,r2],
+    # [1e-3,0.06,1e-4,0,1.0,3,r1],
+    # [1e-3,0.06,1e-4,0,1.2,3,r1],
+    # [1e-3,0.06,1e-4,0,1.4,3,r1],
+    # [1e-3,0.06,1e-4,0,1.6,3,r1],
+    # [1e-3,0.06,1e-4,0,1.8,3,r1],
+    # [1e-3,0.06,1e-4,0,2.0,3,r1],
+    # [1e-3,0.06,1e-4,0,2.2,3,r1],
+    # [1e-3,0.06,1e-4,0,2.4,3,r1],
+    # [1e-3,0.06,1e-4,0,2.6,3,r1],
+    # ]
+    data_search = [[0.1,0.2,1e-3,0,2.2,48,r2]]
     #["flat_space_to_naked_elliptic","naked_elliptic_to_blackhole","flat_space_fs_to_blackhole","collapse_to_blackhole"]
 
     # run_type = "naked_elliptic_to_blackhole"
